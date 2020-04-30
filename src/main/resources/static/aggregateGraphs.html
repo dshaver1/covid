@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COVID-19 Stats</title>
+    <style>
+
+        .bar {
+            fill: steelblue;
+            shape-rendering: crispEdges;
+        }
+
+        .bar:hover {
+            fill: brown;
+            shape-rendering: crispEdges;
+        }
+
+        .axis {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+    </style>
+</head>
+<body>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script>
+
+    // set the dimensions of the canvas
+    var margin = {top: 20, right: 20, bottom: 120, left: 60},
+            width = 1000 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+
+    // set the ranges
+    var xScale = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+    var yScale = d3.scale.linear().range([height, 0]);
+
+    // define the axis
+    var xAxis = d3.svg.axis()
+            .scale(xScale)
+            .orient("bottom")
+
+
+    var yAxis = d3.svg.axis()
+            .scale(yScale)
+            .orient("left")
+            .ticks(10);
+
+
+    // add the SVG element
+    var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+
+    // load the data
+    d3.json("/reports/aggregate", function (error, data) {
+
+        var newCases = data.newCases;
+
+        // scale the range of the data
+        xScale.domain(newCases.map(function (d) {
+            return d.label;
+        }));
+        yScale.domain([0, d3.max(newCases, function (d) {
+            return d.y;
+        })]);
+
+        // add axis
+        svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "-.55em")
+                .attr("transform", "rotate(-90)");
+
+        svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 5)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("Cases Per Day");
+
+
+        // Add bar chart
+        svg.selectAll("bar")
+                .data(newCases)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", function (d) {
+                    return xScale(d.label);
+                })
+                .attr("width", xScale.rangeBand())
+                .attr("y", function (d) {
+                    return yScale(d.y);
+                })
+                .attr("height", function (d) {
+                    return height - yScale(d.y);
+                })
+                .on("mouseover", handleMouseOver)
+                .on("mouseout", handleMouseOut);
+
+    });
+
+    // Create Event Handlers for mouse
+    function handleMouseOver(d, i) {  // Add interactivity
+
+        // Specify where to put label of text
+        svg.append("text").attr({
+            id: "t" + d.label + "-" + d.y + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
+            x: function () {
+                return xScale(d.label);
+            },
+            y: function () {
+                return yScale(d.y) - 15;
+            }
+        })
+                .text(function () {
+                    return [d.label, d.y];  // Value of the text
+                });
+    }
+
+    function handleMouseOut(d, i) {
+
+        // Select text by id and then remove
+        d3.select("#t" + d.label + "-" + d.y + "-" + i).remove();  // Remove text location
+    }
+</script>
+</body>
+</html>
