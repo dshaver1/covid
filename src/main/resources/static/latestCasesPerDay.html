@@ -50,6 +50,15 @@
             font-size: 12px;
         }
 
+        .dashed {
+            stroke-dasharray: 5, 5;
+            color: black;
+        }
+
+        .notableDates {
+            font-size: smaller;
+        }
+
     </style>
 
 </head>
@@ -76,13 +85,37 @@
 </div>
 
 <script>
+    d3.selection.prototype.moveToFront = function () {
+        return this.each(function () {
+            this.parentNode.appendChild(this);
+        });
+    };
+</script>
+
+<script>
+
+    let notableDates = [{
+        "date": "2020-03-14",
+        "label": "Public Health State of Emergency Declared"
+    }, {
+        "date": "2020-03-16",
+        "label": "Majority of Schools Closed"
+    }, {
+        "date": "2020-04-03",
+        "label": "Stay-At-Home Order Began"
+    }, {
+        "date": "2020-05-01",
+        "label": "Stay-At-Home Order Expired"
+    }]
+
     var keys = ["Confirmed Cases", "Deaths"];
     var colors = ["#8a89a6", "#ff8c00", "#504aff", "#b81200"];
 
     // set the dimensions of the canvas
-    var margin = {top: 20, right: 20, bottom: 120, left: 60},
+    var margin = {top: 0, right: 20, bottom: 120, left: 60},
         width = 1000 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        height = 500 - margin.top - margin.bottom
+        topSvgHeight = 100;
 
 
     // set the ranges
@@ -96,6 +129,12 @@
 
     var yAxis = d3.axisLeft(yScale).ticks(10);
 
+    var topSvg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right + 400)
+        .attr("height", topSvgHeight)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + 0 + ")");
 
     // add the SVG element
     var svg = d3.select("body").append("svg")
@@ -123,9 +162,9 @@
         sliderTime = d3
             .sliderBottom()
             .min(14) // Just so happens that the 14th record is the first one with data...
-            .max(dataTime.length-1)
+            .max(dataTime.length - 1)
             .step(1)
-            .ticks(dataTime.length-1-14)
+            .ticks(dataTime.length - 1 - 14)
             .width(350)
             //.tickValues(dataTime)
             .on('onchange', val => {
@@ -144,8 +183,6 @@
         gTime.call(sliderTime);
 
         d3.select('p#value-time').text(dataTime[sliderTime.value()]);
-
-
 
         // Do the graph!
 
@@ -200,27 +237,37 @@
             .enter()
             .append("rect")
             .attr("x", 100)
-            .attr("y", function(d,i){ return 50 + i*(size+5)})
+            .attr("y", function (d, i) {
+                return 50 + i * (size + 5)
+            })
             .attr("width", size)
             .attr("height", size)
-            .style("fill", function(d){ return color(d)})
+            .style("fill", function (d) {
+                return color(d)
+            })
 
         svg.selectAll("mylabels")
             .data(keys)
             .enter()
             .append("text")
-            .attr("x", 100 + size*1.2)
-            .attr("y", function(d,i){ return 55 + i*(size+5) + (size/2)})
-            .style("fill", function(d){ return color(d)})
-            .text(function(d){ return d})
+            .attr("x", 100 + size * 1.2)
+            .attr("y", function (d, i) {
+                return 55 + i * (size + 5) + (size / 2)
+            })
+            .style("fill", function (d) {
+                return color(d)
+            })
+            .text(function (d) {
+                return d
+            })
             .attr("text-anchor", "left")
             .style("alignment-baseline", "middle")
 
         // Create Tooltips
-        tip = d3.tip().attr('class', 'd3-tip').direction('e').offset([0,5])
-            .html(function(d) {
+        tip = d3.tip().attr('class', 'd3-tip').direction('e').offset([0, 5])
+            .html(function (d) {
                 var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
-                content +=`
+                content += `
                     <table style="margin-top: 2.5px;">
                             <tr><td>Value: </td><td style="text-align: right">` + d.y + `</td></tr>
                     </table>
@@ -229,9 +276,58 @@
             });
         svg.call(tip);
 
+        // Create "Notable Dates" lines
+        svg.selectAll(".line")
+            .data(notableDates)
+            .enter()
+            .append("line")
+            .style("stroke", "black")
+            //.attr("class", "dashed")
+            .attr("x1", function (d) {
+                return xScale(d.date);
+            })
+            .attr("y1", 0)
+            .attr("x2", function (d) {
+                return xScale(d.date);
+            })
+            .attr("y2", height)
+
+        topSvg.selectAll(".line")
+            .data(notableDates)
+            .enter()
+            .append("line")
+            .style("stroke", "black")
+            //.attr("class", "dashed")
+            .attr("x1", function (d) {
+                return xScale(d.date);
+            })
+            .attr("y1", function(d,i) {
+                return topSvgHeight/2 + (i * 11)
+            })
+            .attr("x2", function (d) {
+                return xScale(d.date);
+            })
+            .attr("y2", topSvgHeight)
+
+        topSvg.selectAll("notableDatesTitles")
+            .data(notableDates)
+            .enter()
+            .append("text")
+            .attr("class", "notableDates")
+            .attr("x", function(d) {
+                return xScale(d.date) + 1
+            })
+            .attr("y", function(d,i) {
+                return (topSvgHeight/2 + (i * 11)) + 11
+            })
+            .text(function (d) {
+                return d.label
+            })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+
         // Add bar chart
         updateChart();
-
     });
 
     function getReportForDate(data, reportDate) {
@@ -241,7 +337,7 @@
             }
         }
 
-        return data.length-1;
+        return data.length - 1;
     }
 
     function updateChart() {
@@ -267,12 +363,18 @@
             })
             .attr("width", xScale.bandwidth())
             .style("fill", colors[0])
-            .on("mouseover", function(d,i) {handleCaseMouseOver(d,i,d3.select(this))})
-            .on("mouseout", function(d,i) {handleCaseMouseOut(d,i,d3.select(this))});
+            .on("mouseover", function (d, i) {
+                handleCaseMouseOver(d, i, d3.select(this))
+            })
+            .on("mouseout", function (d, i) {
+                handleCaseMouseOut(d, i, d3.select(this))
+            });
 
         deathEnter.append("rect")
             .attr("class", "deathbar")
-            .attr("id", function (d) {return d.label + "-deaths"})
+            .attr("id", function (d) {
+                return d.label + "-deaths"
+            })
             .attr("x", function (d) {
                 return xScale(d.label);
             })
@@ -284,8 +386,12 @@
             })
             .attr("width", xScale.bandwidth())
             .style("fill", colors[1])
-            .on("mouseover", function(d,i) {handleDeathMouseOver(d,i,d3.select(this))})
-            .on("mouseout", function(d,i) {handleDeathMouseOut(d,i,d3.select(this))});
+            .on("mouseover", function (d, i) {
+                handleDeathMouseOver(d, i, d3.select(this))
+            })
+            .on("mouseout", function (d, i) {
+                handleDeathMouseOut(d, i, d3.select(this))
+            });
 
 
         casesData.transition().duration(100)
@@ -306,27 +412,30 @@
 
         deathData.exit().remove();
         casesData.exit().remove();
+
+        // Ensure notable dates lines are on top!
+        svg.selectAll("line").moveToFront();
     }
 
     // Create Event Handlers for mouse
     function handleDeathMouseOver(d, i, d3This) {
         d3This.style("fill", colors[3]);
-        tip.show(d,i);
+        tip.show(d, i);
     }
 
     function handleDeathMouseOut(d, i, d3This) {
         d3This.style("fill", colors[1]);
-        tip.hide(d,i);
+        tip.hide(d, i);
     }
 
     function handleCaseMouseOver(d, i, d3This) {
         d3This.style("fill", colors[2]);
-        tip.show(d,i);
+        tip.show(d, i);
     }
 
     function handleCaseMouseOut(d, i, d3This) {
         d3This.style("fill", colors[0]);
-        tip.hide(d,i);
+        tip.hide(d, i);
     }
 </script>
 </body>
