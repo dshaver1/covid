@@ -51,6 +51,8 @@
 </div>
 
 <script>
+    var keys = ["Confirmed Cases", "Deaths"];
+    var colors = ["#8a89a6", "#ff8c00"];
 
     // set the dimensions of the canvas
     var margin = {top: 20, right: 20, bottom: 120, left: 60},
@@ -148,6 +150,33 @@
             .style("text-anchor", "end")
             .text("Cases Per Day");
 
+        // Legend
+        var color = d3.scaleOrdinal()
+            .domain(keys)
+            .range(colors);
+
+        var size = 10
+        svg.selectAll("mydots")
+            .data(keys)
+            .enter()
+            .append("rect")
+            .attr("x", 100)
+            .attr("y", function(d,i){ return 100 + i*(size+5)})
+            .attr("width", size)
+            .attr("height", size)
+            .style("fill", function(d){ return color(d)})
+
+        svg.selectAll("mylabels")
+            .data(keys)
+            .enter()
+            .append("text")
+            .attr("x", 100 + size*1.2)
+            .attr("y", function(d,i){ return 105 + i*(size+5) + (size/2)})
+            .style("fill", function(d){ return color(d)})
+            .text(function(d){ return d})
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+
 
         // Add bar chart
         updateChart();
@@ -186,7 +215,7 @@
                 return height - yScale(d.y);
             })
             .attr("width", xScale.bandwidth())
-            .style("fill", "#8a89a6")
+            .style("fill", colors[0])
             .on("mouseover", handleMouseOver)
             .on("mouseout", handleMouseOut);
 
@@ -202,7 +231,7 @@
                 return height - yScale(d.y);
             })
             .attr("width", xScale.bandwidth())
-            .style("fill", "#ff8c00")
+            .style("fill", colors[1])
             .on("mouseover", handleMouseOver)
             .on("mouseout", handleMouseOut);
 
