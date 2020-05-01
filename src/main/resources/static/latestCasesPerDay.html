@@ -10,8 +10,13 @@
             shape-rendering: crispEdges;
         }
 
-        .bar:hover {
-            fill: brown;
+        .deathbar:hover {
+            fill: #b81200;
+            shape-rendering: crispEdges;
+        }
+
+        .casebar:hover {
+            fill: #8885d4;
             shape-rendering: crispEdges;
         }
 
@@ -26,12 +31,32 @@
             shape-rendering: crispEdges;
         }
 
+        .grid line {
+            stroke: lightgrey;
+            stroke-opacity: 0.7;
+            shape-rendering: crispEdges;
+        }
+
+        .grid path {
+            stroke-width: 0;
+        }
+
+        .d3-tip {
+            line-height: 1;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
     </style>
 
 </head>
 <body>
 <script src="https://d3js.org/d3.v5.js"></script>
 <script src="https://unpkg.com/d3-simple-slider"></script>
+<script src="d3-tip.js"></script>
 
 <link
         rel="stylesheet"
@@ -52,7 +77,7 @@
 
 <script>
     var keys = ["Confirmed Cases", "Deaths"];
-    var colors = ["#8a89a6", "#ff8c00"];
+    var colors = ["#8a89a6", "#ff8c00", "#504aff", "#b81200"];
 
     // set the dimensions of the canvas
     var margin = {top: 20, right: 20, bottom: 120, left: 60},
@@ -80,7 +105,13 @@
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
-    var theData, dataTime, sliderTime;
+    // gridlines in y axis function
+    function make_y_gridlines() {
+        return d3.axisLeft(yScale)
+            .ticks(5)
+    }
+
+    var theData, dataTime, sliderTime, tip;
 
     // load the data
     d3.json("/reports/daily").then(function (data) {
@@ -129,6 +160,14 @@
             return d.y;
         })]);
 
+        // add the Y gridlines
+        svg.append("g")
+            .attr("class", "grid")
+            .call(make_y_gridlines()
+                .tickSize(-width)
+                .tickFormat("")
+            )
+
         // add axis
         svg.append("g")
             .attr("class", "x axis")
@@ -161,7 +200,7 @@
             .enter()
             .append("rect")
             .attr("x", 100)
-            .attr("y", function(d,i){ return 100 + i*(size+5)})
+            .attr("y", function(d,i){ return 50 + i*(size+5)})
             .attr("width", size)
             .attr("height", size)
             .style("fill", function(d){ return color(d)})
@@ -171,12 +210,24 @@
             .enter()
             .append("text")
             .attr("x", 100 + size*1.2)
-            .attr("y", function(d,i){ return 105 + i*(size+5) + (size/2)})
+            .attr("y", function(d,i){ return 55 + i*(size+5) + (size/2)})
             .style("fill", function(d){ return color(d)})
             .text(function(d){ return d})
             .attr("text-anchor", "left")
             .style("alignment-baseline", "middle")
 
+        // Create Tooltips
+        tip = d3.tip().attr('class', 'd3-tip').direction('e').offset([0,5])
+            .html(function(d) {
+                var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
+                content +=`
+                    <table style="margin-top: 2.5px;">
+                            <tr><td>Value: </td><td style="text-align: right">` + d.y + `</td></tr>
+                    </table>
+                    `;
+                return content;
+            });
+        svg.call(tip);
 
         // Add bar chart
         updateChart();
@@ -216,11 +267,12 @@
             })
             .attr("width", xScale.bandwidth())
             .style("fill", colors[0])
-            .on("mouseover", handleMouseOver)
-            .on("mouseout", handleMouseOut);
+            .on("mouseover", function(d,i) {handleCaseMouseOver(d,i,d3.select(this))})
+            .on("mouseout", function(d,i) {handleCaseMouseOut(d,i,d3.select(this))});
 
         deathEnter.append("rect")
             .attr("class", "deathbar")
+            .attr("id", function (d) {return d.label + "-deaths"})
             .attr("x", function (d) {
                 return xScale(d.label);
             })
@@ -232,8 +284,8 @@
             })
             .attr("width", xScale.bandwidth())
             .style("fill", colors[1])
-            .on("mouseover", handleMouseOver)
-            .on("mouseout", handleMouseOut);
+            .on("mouseover", function(d,i) {handleDeathMouseOver(d,i,d3.select(this))})
+            .on("mouseout", function(d,i) {handleDeathMouseOut(d,i,d3.select(this))});
 
 
         casesData.transition().duration(100)
@@ -257,27 +309,24 @@
     }
 
     // Create Event Handlers for mouse
-    function handleMouseOver(d, i) {  // Add interactivity
-
-        // Specify where to put label of text
-        svg.append("text").attr({
-            id: "t" + d.label + "-" + d.y + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
-            x: function () {
-                return xScale(d.label);
-            },
-            y: function () {
-                return yScale(d.y) - 15;
-            }
-        })
-            .text(function () {
-                return [d.label, d.y];  // Value of the text
-            });
+    function handleDeathMouseOver(d, i, d3This) {
+        d3This.style("fill", colors[3]);
+        tip.show(d,i);
     }
 
-    function handleMouseOut(d, i) {
+    function handleDeathMouseOut(d, i, d3This) {
+        d3This.style("fill", colors[1]);
+        tip.hide(d,i);
+    }
 
-        // Select text by id and then remove
-        d3.select("#t" + d.label + "-" + d.y + "-" + i).remove();  // Remove text location
+    function handleCaseMouseOver(d, i, d3This) {
+        d3This.style("fill", colors[2]);
+        tip.show(d,i);
+    }
+
+    function handleCaseMouseOut(d, i, d3This) {
+        d3This.style("fill", colors[0]);
+        tip.hide(d,i);
     }
 </script>
 </body>
