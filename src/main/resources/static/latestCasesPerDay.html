@@ -30,7 +30,7 @@
 
 </head>
 <body>
-<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://d3js.org/d3.v5.js"></script>
 <script src="https://unpkg.com/d3-simple-slider"></script>
 
 <link
@@ -41,8 +41,8 @@
 />
 
 <div class="container">
-    <h2>Snapshot</h2>
-    <div class="row align-items-left">
+    <h2>COVID-19 Confirmed Cases Per Day</h2>
+    <div class="row align-items-center">
         <div class="col-sm-2"><p id="value-time"></p></div>
         <div class="col-sm">
             <div id="slider-time"></div>
@@ -93,7 +93,7 @@
             .max(dataTime.length-1)
             .step(1)
             .ticks(dataTime.length-1-14)
-            .width(400)
+            .width(350)
             //.tickValues(dataTime)
             .on('onchange', val => {
                 d3.select('p#value-time').text(dataTime[val]);
@@ -166,13 +166,16 @@
 
     function updateChart() {
         var idx = getReportForDate(theData, dataTime[sliderTime.value()]);
-        var barData = svg.selectAll(".bar")
+        var deathData = svg.selectAll(".deathbar")
+            .data(theData[idx].deathsPerDay);
+        var casesData = svg.selectAll(".casebar")
             .data(theData[idx].casesPerDay);
 
-        var barEnter = barData.enter();
+        var deathEnter = deathData.enter();
+        var casesEnter = casesData.enter();
 
-        barEnter.append("rect")
-            .attr("class", "bar")
+        casesEnter.append("rect")
+            .attr("class", "casebar")
             .attr("x", function (d) {
                 return xScale(d.label);
             })
@@ -183,10 +186,28 @@
                 return height - yScale(d.y);
             })
             .attr("width", xScale.bandwidth())
+            .style("fill", "#8a89a6")
             .on("mouseover", handleMouseOver)
             .on("mouseout", handleMouseOut);
 
-        barData.transition().duration(100)
+        deathEnter.append("rect")
+            .attr("class", "deathbar")
+            .attr("x", function (d) {
+                return xScale(d.label);
+            })
+            .attr("y", function (d) {
+                return yScale(d.y);
+            })
+            .attr("height", function (d) {
+                return height - yScale(d.y);
+            })
+            .attr("width", xScale.bandwidth())
+            .style("fill", "#ff8c00")
+            .on("mouseover", handleMouseOver)
+            .on("mouseout", handleMouseOut);
+
+
+        casesData.transition().duration(100)
             .attr("y", function (d) {
                 return yScale(d.y);
             })
@@ -194,7 +215,16 @@
                 return height - yScale(d.y);
             });
 
-        barData.exit().remove();
+        deathData.transition().duration(100)
+            .attr("y", function (d) {
+                return yScale(d.y);
+            })
+            .attr("height", function (d) {
+                return height - yScale(d.y);
+            });
+
+        deathData.exit().remove();
+        casesData.exit().remove();
     }
 
     // Create Event Handlers for mouse
