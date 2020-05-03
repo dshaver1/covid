@@ -3,6 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>COVID-19 Stats</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(window).scroll(function () {
+            if ($(window).scrollTop() > 0) {
+                $(".header").addClass("sticky");
+            } else {
+                $(".header").removeClass("sticky");
+            }
+        });
+    </script>
+
     <style>
 
         .bar {
@@ -61,8 +73,19 @@
 
         #update-timestamp, #timestamp {
             font-size: smaller;
-            font-family: Consolas,serif;
+            font-family: Consolas, serif;
             color: dimgray;
+        }
+
+        .sticky {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .header {
+            background: white;
         }
 
     </style>
@@ -70,7 +93,7 @@
 </head>
 <body>
 <script src="https://d3js.org/d3.v5.js"></script>
-<script src="https://unpkg.com/d3-simple-slider"></script>
+<script src="d3-simple-slider.min.js"></script>
 <script src="d3-tip.js"></script>
 
 <link
@@ -80,16 +103,18 @@
         crossorigin="anonymous"
 />
 
-<div class="container">
-    <h2>COVID-19 Confirmed Cases Per Day In Georgia</h2>
-    <div class="row align-items-center">
-        <div class="col-sm-2">Current Snapshot<p id="value-time"></p></div>
-        <div class="col-sm">
-            <div id="slider-time"></div>
-        </div>
-        <div class="col-sm2" id="timestamp">Lastest update:&nbsp </div>
-        <div class="col-sm2">
-            <div id="update-timestamp"></div>
+<div class="header">
+    <div class="container">
+        <h2>COVID-19 Confirmed Cases Per Day In Georgia</h2>
+        <div class="row align-items-center">
+            <div class="col-sm-2">Current Snapshot<p id="value-time"></p></div>
+            <div class="col-sm">
+                <div id="slider-time"></div>
+            </div>
+            <div class="col-sm2" id="timestamp">Lastest update:&nbsp</div>
+            <div class="col-sm2">
+                <div id="update-timestamp"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -103,7 +128,6 @@
 </script>
 
 <script>
-
     let notableDates = [{
         "date": "2020-03-14",
         "label": "Public Health State of Emergency Declared"
@@ -125,8 +149,7 @@
     var margin = {top: 0, right: 20, bottom: 120, left: 60},
         width = 1000 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom
-        topSvgHeight = 100;
-
+    topSvgHeight = 100;
 
     // set the ranges
     var xScale = d3.scaleBand().rangeRound([0, width]);
@@ -135,7 +158,6 @@
 
     // define the axis
     var xAxis = d3.axisBottom(xScale);
-
 
     var yAxis = d3.axisLeft(yScale).ticks(10);
 
@@ -146,8 +168,16 @@
         .attr("transform",
             "translate(" + margin.left + "," + 0 + ")");
 
-    // add the SVG element
-    var svg = d3.select("body").append("svg")
+    // add the SVG element for the DPH-sorted graph
+    var dphSvg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    // add the SVG element for the update-sorted graph
+    var timeSvg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -165,9 +195,113 @@
     // load the data
     d3.json("/reports/daily").then(function (data) {
 
-        d3.select('div#update-timestamp').text(data[data.length-1].id);
+        d3.select('div#update-timestamp').text(data[data.length - 1].id);
 
-        // Set slider data
+        // Slider!
+        createSlider(data);
+
+        // Create DPH graph!
+        theData = data;
+        var casesPerDay = data[data.length - 1].casesPerDay;
+
+        // scale the range of the data
+        xScale.domain(casesPerDay.map(function (d) {
+            return d.label;
+        }));
+        yScale.domain([0, d3.max(casesPerDay, function (d) {
+            return d.y;
+        })]);
+
+        // add the Y gridlines
+        dphSvg.append("g")
+            .attr("class", "grid")
+            .call(make_y_gridlines()
+                .tickSize(-width)
+                .tickFormat("")
+            )
+
+        // add axis
+        dphSvg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-90)");
+
+        dphSvg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 5)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Cases Per Day");
+
+        // Legend
+        createLegend(data);
+
+        // Create Tooltips
+        createTooltips(data);
+
+        // Create "Notable Dates" lines
+        dphSvg.selectAll(".line")
+            .data(notableDates)
+            .enter()
+            .append("line")
+            .style("stroke", "black")
+            //.attr("class", "dashed")
+            .attr("x1", function (d) {
+                return xScale(d.date);
+            })
+            .attr("y1", 0)
+            .attr("x2", function (d) {
+                return xScale(d.date);
+            })
+            .attr("y2", height)
+
+        topSvg.selectAll(".line")
+            .data(notableDates)
+            .enter()
+            .append("line")
+            .style("stroke", "black")
+            //.attr("class", "dashed")
+            .attr("x1", function (d) {
+                return xScale(d.date);
+            })
+            .attr("y1", function (d, i) {
+                return topSvgHeight / 2 + (i * 11)
+            })
+            .attr("x2", function (d) {
+                return xScale(d.date);
+            })
+            .attr("y2", topSvgHeight)
+
+        topSvg.selectAll("notableDatesTitles")
+            .data(notableDates)
+            .enter()
+            .append("text")
+            .attr("class", "notableDates")
+            .attr("x", function (d) {
+                return xScale(d.date) + 1
+            })
+            .attr("y", function (d, i) {
+                return (topSvgHeight / 2 + (i * 11)) + 11
+            })
+            .text(function (d) {
+                return d.label
+            })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+
+        // Add bar chart
+        updateChart();
+    });
+
+    function createSlider(data) {
         dataTime = data.map(function (d) {
             return d.reportDate;
         });
@@ -196,56 +330,15 @@
         gTime.call(sliderTime);
 
         d3.select('p#value-time').text(dataTime[sliderTime.value()]);
+    }
 
-        // Do the graph!
-
-        theData = data;
-        var casesPerDay = data[data.length - 1].casesPerDay;
-
-        // scale the range of the data
-        xScale.domain(casesPerDay.map(function (d) {
-            return d.label;
-        }));
-        yScale.domain([0, d3.max(casesPerDay, function (d) {
-            return d.y;
-        })]);
-
-        // add the Y gridlines
-        svg.append("g")
-            .attr("class", "grid")
-            .call(make_y_gridlines()
-                .tickSize(-width)
-                .tickFormat("")
-            )
-
-        // add axis
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .selectAll("text")
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", "-.55em")
-            .attr("transform", "rotate(-90)");
-
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 5)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("Cases Per Day");
-
-        // Legend
+    function createLegend() {
         var color = d3.scaleOrdinal()
             .domain(keys)
             .range(colors);
 
         var size = 10
-        svg.selectAll("mydots")
+        dphSvg.selectAll("mydots")
             .data(keys)
             .enter()
             .append("rect")
@@ -259,7 +352,7 @@
                 return color(d)
             })
 
-        svg.selectAll("mylabels")
+        dphSvg.selectAll("mylabels")
             .data(keys)
             .enter()
             .append("text")
@@ -275,8 +368,9 @@
             })
             .attr("text-anchor", "left")
             .style("alignment-baseline", "middle")
+    }
 
-        // Create Tooltips
+    function createTooltips(data) {
         tip = d3.tip().attr('class', 'd3-tip').direction('e').offset([0, 5])
             .html(function (d) {
                 var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
@@ -287,61 +381,8 @@
                     `;
                 return content;
             });
-        svg.call(tip);
-
-        // Create "Notable Dates" lines
-        svg.selectAll(".line")
-            .data(notableDates)
-            .enter()
-            .append("line")
-            .style("stroke", "black")
-            //.attr("class", "dashed")
-            .attr("x1", function (d) {
-                return xScale(d.date);
-            })
-            .attr("y1", 0)
-            .attr("x2", function (d) {
-                return xScale(d.date);
-            })
-            .attr("y2", height)
-
-        topSvg.selectAll(".line")
-            .data(notableDates)
-            .enter()
-            .append("line")
-            .style("stroke", "black")
-            //.attr("class", "dashed")
-            .attr("x1", function (d) {
-                return xScale(d.date);
-            })
-            .attr("y1", function(d,i) {
-                return topSvgHeight/2 + (i * 11)
-            })
-            .attr("x2", function (d) {
-                return xScale(d.date);
-            })
-            .attr("y2", topSvgHeight)
-
-        topSvg.selectAll("notableDatesTitles")
-            .data(notableDates)
-            .enter()
-            .append("text")
-            .attr("class", "notableDates")
-            .attr("x", function(d) {
-                return xScale(d.date) + 1
-            })
-            .attr("y", function(d,i) {
-                return (topSvgHeight/2 + (i * 11)) + 11
-            })
-            .text(function (d) {
-                return d.label
-            })
-            .attr("text-anchor", "left")
-            .style("alignment-baseline", "middle")
-
-        // Add bar chart
-        updateChart();
-    });
+        dphSvg.call(tip);
+    }
 
     function getReportForDate(data, reportDate) {
         for (var i = 0; i < data.length; i++) {
@@ -355,9 +396,9 @@
 
     function updateChart() {
         var idx = getReportForDate(theData, dataTime[sliderTime.value()]);
-        var deathData = svg.selectAll(".deathbar")
+        var deathData = dphSvg.selectAll(".deathbar")
             .data(theData[idx].deathsPerDay);
-        var casesData = svg.selectAll(".casebar")
+        var casesData = dphSvg.selectAll(".casebar")
             .data(theData[idx].casesPerDay);
 
         var deathEnter = deathData.enter();
@@ -427,7 +468,7 @@
         casesData.exit().remove();
 
         // Ensure notable dates lines are on top!
-        svg.selectAll("line").moveToFront();
+        dphSvg.selectAll("line").moveToFront();
     }
 
     // Create Event Handlers for mouse
