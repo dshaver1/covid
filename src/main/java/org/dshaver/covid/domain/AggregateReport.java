@@ -5,6 +5,10 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  * Created by xpdf64 on 2020-04-29.
@@ -28,8 +32,24 @@ public class AggregateReport {
         totalDeaths = new TreeSet<>(Comparator.comparing(DataPoint::getSource));
         totalCases = new TreeSet<>(Comparator.comparing(DataPoint::getSource));
         totalTests = new TreeSet<>(Comparator.comparing(DataPoint::getSource));
+        newDeaths = new TreeSet<>(Comparator.comparing(DataPoint::getSource));
+        newCases = new TreeSet<>(Comparator.comparing(DataPoint::getSource));
+        newTests = new TreeSet<>(Comparator.comparing(DataPoint::getSource));
         minDate = reportList.get(0).getReportDate();
-        maxDate = reportList.get(0).getReportDate();
+        maxDate = reportList.get(reportList.size() - 1).getReportDate();
+
+        // populate map from 2020-02-01 to match backfilled data
+        LocalDate start = LocalDate.of(2020,2,1);
+        List<DataPoint> backfilledDataPoints = Stream.iterate(start, date -> date.plusDays(1))
+                .limit(DAYS.between(start, minDate))
+                .map(date -> new DataPoint(0, date.format(DateTimeFormatter.ISO_DATE).toUpperCase(), date.format(DateTimeFormatter.ISO_DATE).toUpperCase()))
+                .collect(Collectors.toList());
+        totalDeaths.addAll(backfilledDataPoints);
+        totalCases.addAll(backfilledDataPoints);
+        totalTests.addAll(backfilledDataPoints);
+        newDeaths.addAll(backfilledDataPoints);
+        newCases.addAll(backfilledDataPoints);
+        newTests.addAll(backfilledDataPoints);
 
         for (Report report : reportList) {
             if (report.getReportDate().isBefore(minDate)) {
@@ -41,23 +61,23 @@ public class AggregateReport {
             }
 
             if (report.getTotalDeaths() != null) {
-                tempTotalDeathMap.put(report.getReportDate().toString(), new DataPoint(report.getTotalDeaths(), report.getReportDate().format(LABEL_FORMAT).toUpperCase(), report.getId()));
+                tempTotalDeathMap.put(report.getReportDate().toString(), new DataPoint(report.getTotalDeaths(), report.getReportDate().format(DateTimeFormatter.ISO_DATE).toUpperCase(), report.getId()));
             }
 
             if (report.getTotalCases() != null) {
-                tempTotalCaseMap.put(report.getReportDate().toString(), new DataPoint(report.getTotalCases(), report.getReportDate().format(LABEL_FORMAT).toUpperCase(), report.getId()));
+                tempTotalCaseMap.put(report.getReportDate().toString(), new DataPoint(report.getTotalCases(), report.getReportDate().format(DateTimeFormatter.ISO_DATE).toUpperCase(), report.getId()));
             }
 
-            tempTotalTestMap.put(report.getReportDate().toString(), new DataPoint(report.getTotalTests(), report.getReportDate().format(LABEL_FORMAT).toUpperCase(), report.getId()));
+            tempTotalTestMap.put(report.getReportDate().toString(), new DataPoint(report.getTotalTests(), report.getReportDate().format(DateTimeFormatter.ISO_DATE).toUpperCase(), report.getId()));
         }
 
         totalDeaths.addAll(tempTotalDeathMap.values());
         totalCases.addAll(tempTotalCaseMap.values());
         totalTests.addAll(tempTotalTestMap.values());
 
-        newDeaths = calculateReturns(totalDeaths);
-        newCases = calculateReturns(totalCases);
-        newTests = calculateReturns(totalTests);
+        newDeaths.addAll(calculateReturns(totalDeaths));
+        newCases.addAll(calculateReturns(totalCases));
+        newTests.addAll(calculateReturns(totalTests));
     }
 
     private TreeSet<DataPoint> calculateReturns(Collection<DataPoint> dataPoints) {

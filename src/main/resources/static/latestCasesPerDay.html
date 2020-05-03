@@ -143,7 +143,7 @@
     }]
 
     var keys = ["Confirmed Cases", "Deaths"];
-    var colors = ["#8a89a6", "#ff8c00", "#504aff", "#b81200"];
+    var colors = ["#8a89a6", "#ff8c00", "#504aff", "#b81200", "#5f9e51", "#43d622"];
 
     // set the dimensions of the canvas
     var margin = {top: 0, right: 20, bottom: 120, left: 60},
@@ -152,15 +152,20 @@
     topSvgHeight = 100;
 
     // set the ranges
-    var xScale = d3.scaleBand().rangeRound([0, width]);
+    var dphxScale = d3.scaleBand().rangeRound([0, width]);
 
-    var yScale = d3.scaleLinear().range([height, 0]);
+    var dphyScale = d3.scaleLinear().range([height, 0]);
+
+    var diffyScale = d3.scaleLinear().range([height, 0]);
 
     // define the axis
-    var xAxis = d3.axisBottom(xScale);
+    var dphxAxis = d3.axisBottom(dphxScale);
 
-    var yAxis = d3.axisLeft(yScale).ticks(10);
+    var dphyAxis = d3.axisLeft(dphyScale).ticks(10);
 
+    var diffyAxis = d3.axisLeft(diffyScale).ticks(10);
+
+    // add SVG for notable dates
     var topSvg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right + 400)
         .attr("height", topSvgHeight)
@@ -177,7 +182,7 @@
             "translate(" + margin.left + "," + margin.top + ")");
 
     // add the SVG element for the update-sorted graph
-    var timeSvg = d3.select("body").append("svg")
+    var diffSvg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -186,13 +191,13 @@
 
     // gridlines in y axis function
     function make_y_gridlines() {
-        return d3.axisLeft(yScale)
+        return d3.axisLeft(dphyScale)
             .ticks(5)
     }
 
     var theData, dataTime, sliderTime, tip;
 
-    // load the data
+    // load the DPH data
     d3.json("/reports/daily").then(function (data) {
 
         d3.select('div#update-timestamp').text(data[data.length - 1].id);
@@ -202,13 +207,14 @@
 
         // Create DPH graph!
         theData = data;
+        // Axis should be set to the latest data.
         var casesPerDay = data[data.length - 1].casesPerDay;
 
         // scale the range of the data
-        xScale.domain(casesPerDay.map(function (d) {
+        dphxScale.domain(casesPerDay.map(function (d) {
             return d.label;
         }));
-        yScale.domain([0, d3.max(casesPerDay, function (d) {
+        dphyScale.domain([0, d3.max(casesPerDay, function (d) {
             return d.y;
         })]);
 
@@ -220,26 +226,8 @@
                 .tickFormat("")
             )
 
-        // add axis
-        dphSvg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .selectAll("text")
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", "-.55em")
-            .attr("transform", "rotate(-90)");
-
-        dphSvg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 5)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("Cases Per Day");
+        // add DPH axis
+        createAxis(dphSvg, dphxAxis, dphyAxis, height);
 
         // Legend
         createLegend(data);
@@ -255,11 +243,11 @@
             .style("stroke", "black")
             //.attr("class", "dashed")
             .attr("x1", function (d) {
-                return xScale(d.date);
+                return dphxScale(d.date);
             })
             .attr("y1", 0)
             .attr("x2", function (d) {
-                return xScale(d.date);
+                return dphxScale(d.date);
             })
             .attr("y2", height)
 
@@ -270,13 +258,13 @@
             .style("stroke", "black")
             //.attr("class", "dashed")
             .attr("x1", function (d) {
-                return xScale(d.date);
+                return dphxScale(d.date);
             })
             .attr("y1", function (d, i) {
                 return topSvgHeight / 2 + (i * 11)
             })
             .attr("x2", function (d) {
-                return xScale(d.date);
+                return dphxScale(d.date);
             })
             .attr("y2", topSvgHeight)
 
@@ -286,7 +274,7 @@
             .append("text")
             .attr("class", "notableDates")
             .attr("x", function (d) {
-                return xScale(d.date) + 1
+                return dphxScale(d.date) + 1
             })
             .attr("y", function (d, i) {
                 return (topSvgHeight / 2 + (i * 11)) + 11
@@ -299,6 +287,24 @@
 
         // Add bar chart
         updateChart();
+    });
+
+    d3.json("/reports/aggregate").then(function (data) {
+        var newTests = data.newTests;
+
+        dphxScale.domain(newTests.map(function (d) {
+            return d.label;
+        }));
+        diffyScale.domain([0, d3.max(newTests, function (d) {
+            return d.y;
+        })]);
+
+        // add diff axis
+        createAxis(diffSvg, dphxAxis, diffyAxis, height);
+
+        updateDiffChart(data.newTests, ".newTestsBar", colors[4], colors[5]);
+        updateDiffChart(data.newCases, ".newCasesBar", colors[0], colors[2]);
+        updateDiffChart(data.newDeaths, ".newDeathsBar", colors[1], colors[3]);
     });
 
     function createSlider(data) {
@@ -330,6 +336,28 @@
         gTime.call(sliderTime);
 
         d3.select('p#value-time').text(dataTime[sliderTime.value()]);
+    }
+
+    function createAxis(parent, xAxis, yAxis, height) {
+        parent.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-90)");
+
+        parent.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 5)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Cases Per Day");
     }
 
     function createLegend() {
@@ -407,21 +435,21 @@
         casesEnter.append("rect")
             .attr("class", "casebar")
             .attr("x", function (d) {
-                return xScale(d.label);
+                return dphxScale(d.label);
             })
             .attr("y", function (d) {
-                return yScale(d.y);
+                return dphyScale(d.y);
             })
             .attr("height", function (d) {
-                return height - yScale(d.y);
+                return height - dphyScale(d.y);
             })
-            .attr("width", xScale.bandwidth())
+            .attr("width", dphxScale.bandwidth())
             .style("fill", colors[0])
             .on("mouseover", function (d, i) {
-                handleCaseMouseOver(d, i, d3.select(this))
+                handleDeathMouseOver(d, i, d3.select(this), colors[2])
             })
             .on("mouseout", function (d, i) {
-                handleCaseMouseOut(d, i, d3.select(this))
+                handleDeathMouseOut(d, i, d3.select(this), colors[0])
             });
 
         deathEnter.append("rect")
@@ -430,38 +458,38 @@
                 return d.label + "-deaths"
             })
             .attr("x", function (d) {
-                return xScale(d.label);
+                return dphxScale(d.label);
             })
             .attr("y", function (d) {
-                return yScale(d.y);
+                return dphyScale(d.y);
             })
             .attr("height", function (d) {
-                return height - yScale(d.y);
+                return height - dphyScale(d.y);
             })
-            .attr("width", xScale.bandwidth())
+            .attr("width", dphxScale.bandwidth())
             .style("fill", colors[1])
             .on("mouseover", function (d, i) {
-                handleDeathMouseOver(d, i, d3.select(this))
+                handleDeathMouseOver(d, i, d3.select(this), colors[3])
             })
             .on("mouseout", function (d, i) {
-                handleDeathMouseOut(d, i, d3.select(this))
+                handleDeathMouseOut(d, i, d3.select(this), colors[1])
             });
 
 
         casesData.transition().duration(100)
             .attr("y", function (d) {
-                return yScale(d.y);
+                return dphyScale(d.y);
             })
             .attr("height", function (d) {
-                return height - yScale(d.y);
+                return height - dphyScale(d.y);
             });
 
         deathData.transition().duration(100)
             .attr("y", function (d) {
-                return yScale(d.y);
+                return dphyScale(d.y);
             })
             .attr("height", function (d) {
-                return height - yScale(d.y);
+                return height - dphyScale(d.y);
             });
 
         deathData.exit().remove();
@@ -471,14 +499,49 @@
         dphSvg.selectAll("line").moveToFront();
     }
 
+    function updateDiffChart(data, clazz, color, highlightColor) {
+        var selectedData = diffSvg.selectAll(clazz).data(data);
+        var enterData = selectedData.enter();
+
+        enterData.append("rect")
+            .attr("class", "casebar")
+            .attr("x", function (d) {
+                return dphxScale(d.label);
+            })
+            .attr("y", function (d) {
+                return diffyScale(d.y);
+            })
+            .attr("height", function (d) {
+                return height - diffyScale(d.y);
+            })
+            .attr("width", dphxScale.bandwidth())
+            .style("fill", color)
+            .on("mouseover", function (d, i) {
+                handleDeathMouseOver(d, i, d3.select(this), highlightColor)
+            })
+            .on("mouseout", function (d, i) {
+                handleDeathMouseOut(d, i, d3.select(this), color)
+            });
+
+        selectedData.transition().duration(100)
+            .attr("y", function (d) {
+                return diffyScale(d.y);
+            })
+            .attr("height", function (d) {
+                return height - diffyScale(d.y);
+            });
+
+        selectedData.exit().remove();
+    }
+
     // Create Event Handlers for mouse
-    function handleDeathMouseOver(d, i, d3This) {
-        d3This.style("fill", colors[3]);
+    function handleDeathMouseOver(d, i, d3This, color) {
+        d3This.style("fill", color);
         tip.show(d, i);
     }
 
-    function handleDeathMouseOut(d, i, d3This) {
-        d3This.style("fill", colors[1]);
+    function handleDeathMouseOut(d, i, d3This, color) {
+        d3This.style("fill", color);
         tip.hide(d, i);
     }
 

@@ -15,8 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,7 +49,7 @@ public class ReportFactory {
         this.objectMapper = objectMapper;
     }
 
-    public Report createReport(RawData rawData) throws Exception {
+    public Report createReport(RawData rawData) {
         List<String> filteredStrings = rawData.getLines()
                 .stream()
                 .filter(s -> whiteList.stream().anyMatch(white -> s.toUpperCase().contains(white)))
@@ -92,14 +91,18 @@ public class ReportFactory {
         return report;
     }
 
-    private Series getSeries(String seriesString, String source) throws IOException {
+    private Series getSeries(String seriesString, String source) {
         Series series = null;
-        if (StringUtils.isNotEmpty(seriesString)) {
-            series = objectMapper.readValue(seriesString, Series.class);
-            series.getDataPoints().forEach(d -> {
-                d.setSource(source);
-                d.setLabel(LocalDate.parse(d.getLabel(), SOURCE_LABEL_FORMAT).format(DateTimeFormatter.ISO_DATE).toUpperCase());
-            });
+        try {
+            if (StringUtils.isNotEmpty(seriesString)) {
+                series = objectMapper.readValue(seriesString, Series.class);
+                series.getDataPoints().forEach(d -> {
+                    d.setSource(source);
+                    d.setLabel(LocalDate.parse(d.getLabel(), SOURCE_LABEL_FORMAT).format(DateTimeFormatter.ISO_DATE).toUpperCase());
+                });
+            }
+        } catch (IOException e) {
+            logger.error("Could not create report from source! " + source + " Failed on: " + seriesString, e);
         }
 
         return series;
