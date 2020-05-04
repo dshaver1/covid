@@ -319,14 +319,14 @@
 
         sliderTime = d3
             .sliderBottom()
-            .min(14) // Just so happens that the 14th record is the first one with data...
-            .max(dataTime.length - 1)
+            .min(-1*(dataTime.length-15)) // We want to stop at 2020-04-13 isnce that's when DPH started reporting this data.
+            .max(0)
             .step(1)
-            .ticks(dataTime.length - 1 - 14)
+            //.ticks(dataTime.length - 1 - 14)
             .width(350)
             //.tickValues(dataTime)
             .on('onchange', val => {
-                d3.select('p#value-time').text(dataTime[val]);
+                d3.select('p#value-time').text(getReverseIdxValue(dataTime, val));
                 updateChart();
             });
 
@@ -336,11 +336,19 @@
             .attr('width', 400)
             .attr('height', 100)
             .append('g')
-            .attr('transform', 'translate(0,30)');
+            .attr('transform', 'translate(30,30)');
 
         gTime.call(sliderTime);
 
-        d3.select('p#value-time').text(dataTime[sliderTime.value()]);
+        d3.select('p#value-time').text(getReverseIdxValue(dataTime, sliderTime.value()));
+    }
+
+    /**
+     * Gets the value from the provided array as if it were indexed from the end. So 0 gets the last element, and -data.length-1 gets the first element.
+     * -1 Gets the next to the last element.
+     */
+    function getReverseIdxValue(data, idx) {
+        return data[data.length-1+idx];
     }
 
     function createLegend() {
@@ -406,7 +414,7 @@
     }
 
     function updateChart() {
-        var idx = getReportForDate(theData, dataTime[sliderTime.value()]);
+        var idx = getReportForDate(theData, getReverseIdxValue(dataTime, sliderTime.value())); // Offset since the first 13 days don't have data
         var deathData = dphSvg.selectAll(".deathbar")
             .data(theData[idx].deathsPerDay);
         var casesData = dphSvg.selectAll(".casebar")
