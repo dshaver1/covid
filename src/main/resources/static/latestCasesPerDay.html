@@ -5,7 +5,7 @@
     <title>COVID-19 Stats</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script type="text/javascript">
+<!--    <script type="text/javascript">
         $(window).scroll(function () {
             if ($(window).scrollTop() > 0) {
                 $(".header").addClass("sticky");
@@ -13,7 +13,7 @@
                 $(".header").removeClass("sticky");
             }
         });
-    </script>
+    </script>-->
 
     <style>
 
@@ -71,7 +71,7 @@
             font-size: smaller;
         }
 
-        #update-timestamp, #timestamp {
+        #update-timestamp, #timestamp, #footer {
             font-size: smaller;
             font-family: Consolas, serif;
             color: dimgray;
@@ -119,6 +119,16 @@
     </div>
 </div>
 
+<div class="footer">
+    <div class="row align-items-left">
+        <div class="col-sm" id="footer">Confirmed cases of COVID-19 by date of earliest known sign of illness. <br/>
+            Please note that these data represent our most current understanding of the cases at the time of report. <br/>
+            The most recent days of these trend data are impacted by a reporting lag that varies based on how the case is
+            reported to public health and are subject to change.
+        </div>
+    </div>
+</div>
+
 <script>
     d3.selection.prototype.moveToFront = function () {
         return this.each(function () {
@@ -161,7 +171,7 @@
 
     var yAxis = d3.axisLeft(yScale).ticks(10);
 
-    var topSvg = d3.select("body").append("svg")
+    var topSvg = d3.select(".header").append("svg")
         .attr("width", width + margin.left + margin.right + 400)
         .attr("height", topSvgHeight)
         .append("g")
@@ -169,20 +179,20 @@
             "translate(" + margin.left + "," + 0 + ")");
 
     // add the SVG element for the DPH-sorted graph
-    var dphSvg = d3.select("body").append("svg")
+    var dphSvg = d3.select(".header").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
-
-    // add the SVG element for the update-sorted graph
-    var timeSvg = d3.select("body").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+    /*
+        // add the SVG element for the update-sorted graph
+        var timeSvg = d3.select(".header").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");*/
 
     // gridlines in y axis function
     function make_y_gridlines() {
