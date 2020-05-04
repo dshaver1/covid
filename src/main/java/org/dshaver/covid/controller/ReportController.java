@@ -34,8 +34,15 @@ public class ReportController {
     }
 
     @GetMapping("/reports/daily")
-    public Collection<Report> getReports() {
-        List<Report> reportList = reportRepository.findAllByOrderByIdAsc();
+    public Collection<Report> getReports(@RequestParam(name = "startDate", required = false)
+                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                     LocalDate startDate,
+                                         @RequestParam(name = "endDate", required = false)
+                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020,1,1) : startDate.minusDays(1);
+        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030,1,1) : endDate.plusDays(1);
+
+        List<Report> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate);
 
         Map<LocalDate, Report> reportMap = new HashMap<>();
         reportList.forEach(report -> reportMap.put(report.getReportDate(), report));

@@ -2,6 +2,7 @@ package org.dshaver.covid.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.dshaver.covid.domain.DataPoint;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.domain.Series;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +31,7 @@ public class ReportFactory {
     private static final Logger logger = LoggerFactory.getLogger(ReportFactory.class);
     private static final DateTimeFormatter SOURCE_LABEL_FORMAT = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MMM-yy").toFormatter();
     private static final DateTimeFormatter TARGET_LABEL_FORMAT = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("MMM-dd").toFormatter();
+    private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
     private final Pattern onlyNumbersPattern = Pattern.compile("(\\d+).*");
     private final List<String> whiteList = new ArrayList<>();
     private final String filter = "\"dataPoints\" : ";
@@ -94,13 +97,23 @@ public class ReportFactory {
 
     private Series getSeries(String seriesString, String source) throws IOException {
         Series series = null;
+        List<DataPoint> filteredDataPoints = new ArrayList<>();
         if (StringUtils.isNotEmpty(seriesString)) {
             series = objectMapper.readValue(seriesString, Series.class);
-            series.getDataPoints().forEach(d -> {
-                d.setSource(source);
-                d.setLabel(LocalDate.parse(d.getLabel(), SOURCE_LABEL_FORMAT).format(DateTimeFormatter.ISO_DATE).toUpperCase());
-            });
+            if (series != null && series.getDataPoints() != null && !series.getDataPoints().isEmpty()) {
+                for (DataPoint current : series.getDataPoints()) {
+                    LocalDate labelDate = LocalDate.parse(current.getLabel(), SOURCE_LABEL_FORMAT);
+                    if (labelDate.isAfter(EARLIEST_DATE)) {
+                        current.setSource(source);
+                        current.setLabel(labelDate.format(DateTimeFormatter.ISO_DATE).toUpperCase());
+                        filteredDataPoints.add(current);
+                    }
+                }
+
+                series.setDataPoints(filteredDataPoints);
+            }
         }
+
 
         return series;
     }
