@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 public class ReportController {
+    private static final String REPORT_TGT_DIR = "H:\\dev\\covid\\src\\main\\resources\\static\\reports\\";
     private final ReportRepository reportRepository;
     private final RawDataRepository rawDataRepository;
     private final ReportService reportService;
@@ -57,7 +58,7 @@ public class ReportController {
         TreeSet<Report> sorted = new TreeSet<>(Comparator.comparing(Report::getId));
         sorted.addAll(reportMap.values());
 
-        File file = Paths.get("H:\\dev\\covid\\src\\main\\resources\\static\\latest-covid-data.json").toFile();
+        File file = Paths.get(REPORT_TGT_DIR, "daily").toFile();
         objectMapper.writeValue(file, sorted);
 
         return sorted;
