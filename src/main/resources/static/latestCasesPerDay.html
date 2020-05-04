@@ -336,9 +336,9 @@
             .min(-1 * (dataTime.length - 15)) // We want to stop at 2020-04-13 isnce that's when DPH started reporting this data.
             .max(0)
             .step(1)
-            //.ticks(dataTime.length - 1 - 14)
+            //.ticks(5)
             .width(350)
-            //.tickValues(dataTime)
+            .tickValues([0,-7,-14,-21])
             .on('onchange', val => {
                 d3.select('p#value-time').text(getReverseIdxValue(dataTime, val));
                 var idx = getReportForDate(theData, getReverseIdxValue(dataTime, sliderTime.value()))
