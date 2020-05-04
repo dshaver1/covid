@@ -69,9 +69,11 @@
 
         .notableDates {
             font-size: smaller;
+            font-family: Consolas, serif;
+            color: #8a89a6;
         }
 
-        #update-timestamp, #timestamp, #footer {
+        #update-timestamp, #timestamp, #footer, .header {
             font-size: smaller;
             font-family: Consolas, serif;
             color: dimgray;
@@ -84,14 +86,10 @@
             left: 0;
         }
 
-        .header {
-            background: white;
-        }
-
     </style>
 
 </head>
-<body>
+<body style="overflow-y: scroll;overflow-x: hidden;">
 <script src="https://d3js.org/d3.v5.js"></script>
 <script src="d3-simple-slider.min.js"></script>
 <script src="d3-tip.js"></script>
@@ -120,16 +118,53 @@
     </div>
 </div>
 
+<div id="graphContent"></div>
+
 <div class="footer">
     <div class="row align-items-left">
-        <div class="col-sm" id="footer"><p>Confirmed cases of COVID-19 by date of earliest known sign of illness. <br/>
-            Please note that these data represent our most current understanding of the cases at the time of report.
-            <br/>
-            The most recent days of these trend data are impacted by a reporting lag that varies based on how the case
-            is
-            reported to public health and are subject to change.</p>
-            <p>Source: <a href="https://dph.georgia.gov/covid-19-daily-status-report">https://dph.georgia.gov/covid-19-daily-status-report</a>
+        <div class="col-sm" id="footer">
+            <p>This data is sourced from <a href="https://dph.georgia.gov/covid-19-daily-status-report">https://dph.georgia.gov/covid-19-daily-status-report</a>,
+                which states that a "Confirmed case" is defined by:
+            <div class="row align-items-left">
+                <div class="col-sm2" style="width:50px">&nbsp</div>
+                <div class="col-sm"><i>Confirmed cases of COVID-19 by date of earliest known sign of illness. <br/>
+                    Please note that these data represent our most current understanding of the cases at the time of
+                    report.
+                    <br/>
+                    The most recent days of these trend data are impacted by a reporting lag that varies based on how
+                    the case
+                    is reported to public health and are subject to change.
+                </i></div>
+            </div>
             </p>
+            <p>This type of graph is called an <a
+                    href="https://www.cdc.gov/foodsafety/outbreaks/investigating-outbreaks/epi-curves.html">Epidemic
+                Curve (epi curve)</a>. According to the CDC, this type of graph
+                should not be used to determine whether or not an ongoing outbreak is ending: </p>
+
+            <div class="row align-items-left">
+                <div class="col-sm2" style="width:50px">&nbsp</div>
+                <div class="col-sm"><i>It can be difficult to say when the outbreak is over because of the reporting
+                    delay.
+                    The delay means that the curve for the most recent 3 weeks always <br/> looks like the outbreak
+                    could be
+                    ending even during an active outbreak. The full shape of the curve is clear only after the outbreak
+                    is over.
+                </i></div>
+            </div>
+
+            <p></p>
+            <p>
+                If you have feedback, please send me a message. I'm @xionnova on <a
+                    href="https://twitter.com/xionnova/">twitter</a> or <a
+                    href="https://www.reddit.com/user/xionnova/">reddit</a>. Source code is on <a
+                    href="https://github.com/dshaver1/covid/">github</a>.
+            </p>
+
+            <div class="row align-items-left">
+                <div class="col-sm2" style="width:50px">&nbsp</div>
+                <div class="col-sm">&nbsp</div>
+            </div>
         </div>
     </div>
 </div>
@@ -176,15 +211,17 @@
 
     var yAxis = d3.axisLeft(yScale).ticks(10);
 
-    var topSvg = d3.select(".header").append("svg")
-        .attr("width", width + margin.left + margin.right + 400)
+    var topSvg = d3.select("#graphContent").append("svg")
+        .attr("id", "topSvg")
+        .attr("width", width + margin.left + margin.right + 100)
         .attr("height", topSvgHeight)
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + 0 + ")");
 
     // add the SVG element for the DPH-sorted graph
-    var dphSvg = d3.select(".header").append("svg")
+    var dphSvg = d3.select("#graphContent").append("svg")
+        .attr("id", "dphSvg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
