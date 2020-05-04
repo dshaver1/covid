@@ -1,5 +1,6 @@
 package org.dshaver.covid.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.dshaver.covid.dao.RawDataRepository;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.AggregateReport;
@@ -11,6 +12,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,14 +27,17 @@ public class ReportController {
     private final ReportRepository reportRepository;
     private final RawDataRepository rawDataRepository;
     private final ReportService reportService;
+    private final ObjectMapper objectMapper;
 
     @Inject
     public ReportController(ReportRepository reportRepository,
                             RawDataRepository rawDataRepository,
-                            ReportService reportService) {
+                            ReportService reportService,
+                            ObjectMapper objectMapper) {
         this.reportRepository = reportRepository;
         this.rawDataRepository = rawDataRepository;
         this.reportService = reportService;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("/reports/daily")
@@ -38,7 +45,7 @@ public class ReportController {
                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                                      LocalDate startDate,
                                          @RequestParam(name = "endDate", required = false)
-                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020,1,1) : startDate.minusDays(1);
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030,1,1) : endDate.plusDays(1);
 
@@ -49,6 +56,9 @@ public class ReportController {
 
         TreeSet<Report> sorted = new TreeSet<>(Comparator.comparing(Report::getId));
         sorted.addAll(reportMap.values());
+
+        File file = Paths.get("H:\\dev\\covid\\src\\main\\resources\\static\\latest-covid-data.json").toFile();
+        objectMapper.writeValue(file, sorted);
 
         return sorted;
     }
