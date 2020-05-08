@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
 public class RawDataDownloader2 {
     private static final Logger logger = LoggerFactory.getLogger(RawDataDownloader2.class);
     private final Pattern timePattern = Pattern.compile(".*JSON.parse\\('\\{\"currdate\":\"(\\d{1,2}/\\d{1,2}/\\d{4},\\s\\d{1,2}:\\d{1,2}:\\d{1,2}\\s[AP]M)\"}.*");
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("MM/dd/uuuu, HH:mm:ss a");
+    private final DateTimeFormatter timeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().parseLenient().appendPattern("M/dd/uuuu, hh:mm:ss a").toFormatter();
 
 
     public RawDataV2 download(String urlString) {
@@ -45,9 +46,9 @@ public class RawDataDownloader2 {
             br = new BufferedReader(new InputStreamReader(is));
             while ((line = br.readLine()) != null) {
                 downloadedStrings.add(line);
-                Matcher matcher = timePattern.matcher(line);
-                if (matcher.matches()) {
-                    String dateTimeString = matcher.group(1);
+                Matcher timeMatcher = timePattern.matcher(line);
+                if (timeMatcher.matches()) {
+                    String dateTimeString = timeMatcher.group(1);
                     LocalDateTime dateObj = LocalDateTime.from(timeFormatter.parse(dateTimeString));
                     rawData.setId(dateObj.format(DateTimeFormatter.ISO_DATE_TIME));
                     rawData.setReportDate(dateObj.toLocalDate());
@@ -66,7 +67,7 @@ public class RawDataDownloader2 {
             }
         }
 
-        rawData.setPayload("downloadedStrings");
+        rawData.setPayload(downloadedStrings);
         return rawData;
     }
 }

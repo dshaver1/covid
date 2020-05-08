@@ -27,8 +27,12 @@ import java.util.stream.Collectors;
 public class ReportFactory {
     private static final Logger logger = LoggerFactory.getLogger(ReportFactory.class);
     private static final DateTimeFormatter SOURCE_LABEL_FORMAT = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MMM-yy").toFormatter();
+    private static final DateTimeFormatter SOURCE_LABEL_FORMAT_V2 = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("ddMMMyyyy").toFormatter();
     private static final DateTimeFormatter TARGET_LABEL_FORMAT = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("MMM-dd").toFormatter();
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
+    private static final Pattern epicurvePattern = Pattern.compile(".*JSON.parse\\('(\\{\"SASJSONExport\":\"\\d\\.\\d.+?\",\"SASTableData\\+EPICURVE\".+?}]}).*");
+    private static final Pattern countyPattern = Pattern.compile(".*JSON.parse\\('(\\{\"SASJSONExport\":\"\\d\\.\\d.+?\",\"SASTableData\\+COUNTYCASES\".+?}]}).*");
+    private static final Pattern overviewPattern = Pattern.compile(".*JSON.parse\\('(\\{\"SASJSONExport\":\"\\d\\.\\d.+?\",\"SASTableData\\+GA_COVID19_OVERALL\".+?}]}).*");
     private final Pattern onlyNumbersPattern = Pattern.compile("(\\d+).*");
     private final List<String> whiteList = new ArrayList<>();
     private final String filter = "\"dataPoints\" : ";
@@ -50,8 +54,43 @@ public class ReportFactory {
         this.objectMapper = objectMapper;
     }
 
-    public Report createReport(RawDataV2 rawDataV2) throws Exception {
-        return new Report();
+    public Report createReport(RawDataV2 rawData) throws Exception {
+        Optional<String> epicurveString = getVarFromRegex(rawData, epicurvePattern);
+        Epicurve epicurve = null;
+        if (epicurveString.isPresent()) {
+            List<EpicurvePoint> filteredDataPoints = new ArrayList<>();
+            epicurve = objectMapper.readValue(epicurveString.get(), Epicurve.class);
+            for (EpicurvePoint current : epicurve.getEpicurvePoints()) {
+                LocalDate labelDate = LocalDate.parse(current.getTestDate(), SOURCE_LABEL_FORMAT_V2);
+                if (labelDate.isAfter(EARLIEST_DATE)) {
+                    current.setSource(rawData.getId());
+                    current.setLabel(labelDate.format(DateTimeFormatter.ISO_DATE).toUpperCase());
+                    filteredDataPoints.add(current);
+                }
+            }
+            epicurve.setEpicurvePoints(filteredDataPoints);
+        }
+
+        Optional<String> overviewString = getVarFromRegex(rawData, overviewPattern);
+        ReportOverviewContainer reportOverviewContainer = null;
+        if (overviewString.isPresent()) {
+            reportOverviewContainer = objectMapper.readValue(overviewString.get(), ReportOverviewContainer.class);
+        }
+
+        // Just assuming there's only going to be one here... because why would there be more?
+        ReportOverview overview = reportOverviewContainer.getReportOverviewList().get(0);
+
+        Report report = new Report(LocalDateTime.now(),
+                rawData.getId(),
+                rawData.getReportDate(),
+                epicurve,
+                overview.getTotalTests(),
+                overview.getConfirmedCovid(),
+                overview.getHospitalization(),
+                overview.getDeaths(),
+                overview.getIcu());
+
+        return report;
     }
 
     public Report createReport(RawDataV1 rawData) throws Exception {
@@ -93,6 +132,17 @@ public class ReportFactory {
         logger.info("Done parsing report for " + report.getId());
 
         return report;
+    }
+
+    private Optional<String> getVarFromRegex(RawDataV2 rawDataV2, Pattern pattern) {
+        for (String s : rawDataV2.getPayload()) {
+            Matcher epicurveMatcher = pattern.matcher(s);
+            if (epicurveMatcher.matches()) {
+                return Optional.of(epicurveMatcher.group(1));
+            }
+        }
+
+        return Optional.empty();
     }
 
     private Epicurve createEpicurveFromSeries(Series caseDaySeries, Series caseCumSeries, Series deathDaySeries, Series deathCumSeries) {

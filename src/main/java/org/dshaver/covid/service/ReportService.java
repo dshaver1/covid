@@ -150,8 +150,8 @@ public class ReportService {
     @Scheduled(cron = "0 0 * * * *")
     public List<DownloadResponse> checkForData() {
         List<DownloadResponse> responses = new ArrayList<>();
-        responses.add(downloadDataV1(downloadUrl1));
-        //responses.add(downloadDataV2(downloadUrl2));
+        //responses.add(downloadDataV1(downloadUrl1));
+        responses.add(downloadDataV2(downloadUrl2));
 
         return responses;
     }

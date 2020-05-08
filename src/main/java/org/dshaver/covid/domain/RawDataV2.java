@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Similar to {@link RawDataV1}, but used to hold data from https://ga-covid19.ondemand.sas.com/static/js/main.js, which
@@ -23,7 +24,7 @@ public class RawDataV2 {
 
     private LocalDate reportDate;
 
-    private String payload;
+    private List<String> payload;
 
     private Integer epicurveStartIndex;
 

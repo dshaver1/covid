@@ -35,6 +35,7 @@ public class Report {
     private int confirmedCases;
     private int hospitalized;
     private int deaths;
+    private int icu;
     private Map<String, Integer> countyCaseMap;
     private Map<String, Integer> countyDeathMap;
 
@@ -51,5 +52,18 @@ public class Report {
         this.hospitalized = hospitalized;
         this.deaths = deaths;
         this.epicurve = epicurve;
+    }
+
+    public Report(LocalDateTime createTime, String id, LocalDate reportDate, Epicurve epicurve, int totalTests, int confirmedCases, int hospitalized,
+                  int deaths, int icu) {
+        this.createTime = createTime;
+        this.id = id;
+        this.reportDate = reportDate;
+        this.totalTests = totalTests;
+        this.confirmedCases = confirmedCases;
+        this.hospitalized = hospitalized;
+        this.deaths = deaths;
+        this.epicurve = epicurve;
+        this.icu = icu;
     }
 }
