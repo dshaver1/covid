@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
@@ -79,11 +78,11 @@ public class ReportController {
 
     @PostMapping("/reports/download")
     public List<DownloadResponse> download(@RequestBody DownloadRequest request) {
-        return request.getUrls().stream().map(reportService::downloadData).collect(Collectors.toList());
+        return request.getUrls().stream().map(reportService::downloadDataV1).collect(Collectors.toList());
     }
 
     @PostMapping("/reports/downloadLatest")
-    public DownloadResponse downloadLatest() {
+    public List<DownloadResponse> downloadLatest() {
         return reportService.checkForData();
     }
 

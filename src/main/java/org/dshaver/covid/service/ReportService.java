@@ -1,9 +1,11 @@
 package org.dshaver.covid.service;
 
 import org.dshaver.covid.dao.RawDataRepository;
+import org.dshaver.covid.dao.RawDataRepository2;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.DownloadResponse;
-import org.dshaver.covid.domain.RawData;
+import org.dshaver.covid.domain.RawDataV1;
+import org.dshaver.covid.domain.RawDataV2;
 import org.dshaver.covid.domain.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,22 +26,31 @@ public class ReportService {
     private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
 
     private final RawDataRepository rawDataRepository;
+    private final RawDataRepository2 rawDataRepository2;
     private final RawDataDownloader rawDataDownloader;
+    private final RawDataDownloader2 rawDataDownloader2;
     private final ReportFactory reportFactory;
     private final ReportRepository reportRepository;
-    private final String downloadUrl;
+    private final String downloadUrl1;
+    private final String downloadUrl2;
 
     @Inject
     public ReportService(ReportFactory reportFactory,
                          RawDataRepository rawDataRepository,
+                         RawDataRepository2 rawDataRepository2,
                          RawDataDownloader rawDataDownloader,
+                         RawDataDownloader2 rawDataDownloader2,
                          ReportRepository reportRepository,
-                         @Value("${covid.download.url}") String downloadUrl) {
+                         @Value("${covid.download.url}") String downloadUrl1,
+                         @Value("${covid.download.url2}") String downloadUrl2) {
         this.reportFactory = reportFactory;
         this.rawDataRepository = rawDataRepository;
+        this.rawDataRepository2 = rawDataRepository2;
         this.rawDataDownloader = rawDataDownloader;
+        this.rawDataDownloader2 = rawDataDownloader2;
         this.reportRepository = reportRepository;
-        this.downloadUrl = downloadUrl;
+        this.downloadUrl1 = downloadUrl1;
+        this.downloadUrl2 = downloadUrl2;
     }
 
     /**
@@ -108,21 +117,21 @@ public class ReportService {
         urls.add("https://web.archive.org/web/20200427161042/https://d20s4vd27d0hk0.cloudfront.net/");
         urls.add("https://web.archive.org/web/20200428170749/https://d20s4vd27d0hk0.cloudfront.net/");
 
-        urls.forEach(this::downloadData);
+        urls.forEach(this::downloadDataV1);
     }
 
     /**
      * Wrote this to do the one-time download from internet archives.
      */
     public void bulkProcess(boolean deleteFirst) {
-        List<RawData> allData = rawDataRepository.findAll();
+        List<RawDataV1> allData = rawDataRepository.findAll();
 
         if (deleteFirst) {
             logger.info("Deleting all reports!");
             reportRepository.deleteAll();
         }
 
-        for (RawData rawData : allData) {
+        for (RawDataV1 rawData : allData) {
             try {
                 Report report = reportFactory.createReport(rawData);
                 reportRepository.insert(report);
@@ -139,19 +148,60 @@ public class ReportService {
      */
     //@PostConstruct
     @Scheduled(cron = "0 0 * * * *")
-    public DownloadResponse checkForData() {
-        return downloadData(downloadUrl);
+    public List<DownloadResponse> checkForData() {
+        List<DownloadResponse> responses = new ArrayList<>();
+        responses.add(downloadDataV1(downloadUrl1));
+        //responses.add(downloadDataV2(downloadUrl2));
+
+        return responses;
+    }
+
+    /**
+     * Downloads latest report in newfangled javascript format.
+     *
+     * @param url Configured in covid.download.url2.
+     */
+    public DownloadResponse downloadDataV2(String url) {
+        DownloadResponse response = new DownloadResponse();
+        RawDataV2 rawData = rawDataDownloader2.download(url);
+
+        logger.info("Got RawDataV2 from {}.", url);
+
+        try {
+            rawDataRepository2.insert(rawData);
+            logger.info("Done saving RawDataV2.");
+        } catch (DuplicateKeyException e) {
+            logger.info("Already saved this page. Skipping...");
+        }
+
+        try {
+            Report report = reportFactory.createReport(rawData);
+            response.setReport(report);
+            logger.info("Done creating Report.");
+
+            reportRepository.insert(report);
+
+            logger.info("Done saving report");
+
+            response.setFoundNew(true);
+        } catch (DuplicateKeyException e) {
+            logger.info("Already saved this report. Skipping...");
+        } catch (Exception e) {
+            logger.info("Could not create report from rawData! {}", rawData);
+        }
+
+        return response;
     }
 
 
     /**
-     * Downloads latest report. If we've already seen it, do nothing.
+     * Downloads latest report. If we've already seen it, do nothing. Made for the original format
      *
      * @param url Configured in covid.download.url.
      */
-    public DownloadResponse downloadData(String url) {
+    public DownloadResponse downloadDataV1(String url) {
         DownloadResponse response = new DownloadResponse();
-        RawData rawData = rawDataDownloader.download(url);
+        RawDataV1 rawData = rawDataDownloader.download(url);
 
         logger.info("Got RawData from {}.", url);
 
@@ -175,39 +225,8 @@ public class ReportService {
         } catch (DuplicateKeyException e) {
             logger.info("Already saved this report. Skipping...");
         } catch (Exception e) {
-            logger.info("Could not create report from rawData! {}", rawData);
+            logger.info("Could not create report from rawData! " + rawData, e);
         }
-
-        /*
-        if (reportList.size() > 1) {
-            logger.info("Comparing to previous run...");
-            Report lastReport = reportList.get(reportList.size()-2);
-            logger.info(
-                    "\n\t--------------------Total Deaths--------------------- \n" +
-                            "\t {} \t {}\n" +
-                            "\t {} \t\t\t\t\t\t {}",
-                    report.getReportTime(), lastReport.getReportTime(),
-                    report.getTotalDeaths(), lastReport.getTotalDeaths());
-            logger.info(
-                    "\n\t--------------------Total Cases--------------------- \n" +
-                            "\t {} \t {}\n" +
-                            "\t {} \t\t\t\t\t\t {}",
-                    report.getReportTime(), lastReport.getReportTime(),
-                    report.getTotalCases(), lastReport.getTotalCases());
-
-            if (report.getTotalCases() != lastReport.getTotalCases() || report.getTotalDeaths() != lastReport.getTotalDeaths()) {
-                report.writeReport();
-            }
-
-            if (report.getTotalCases() != lastReport.getTotalCases()) {
-                logger.info("!!!CASE DATA UPDATED!!!");
-            }
-
-            if (report.getTotalDeaths() != lastReport.getTotalDeaths()) {
-                logger.info("!!!DEATH DATA UPDATED!!!");
-            }
-        }
-        */
 
         return response;
     }

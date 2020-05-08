@@ -2,10 +2,7 @@ package org.dshaver.covid.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.dshaver.covid.domain.DataPoint;
-import org.dshaver.covid.domain.RawData;
-import org.dshaver.covid.domain.Report;
-import org.dshaver.covid.domain.Series;
+import org.dshaver.covid.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,8 +14,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,7 +50,11 @@ public class ReportFactory {
         this.objectMapper = objectMapper;
     }
 
-    public Report createReport(RawData rawData) throws Exception {
+    public Report createReport(RawDataV2 rawDataV2) throws Exception {
+        return new Report();
+    }
+
+    public Report createReport(RawDataV1 rawData) throws Exception {
         List<String> filteredStrings = rawData.getLines()
                 .stream()
                 .filter(s -> whiteList.stream().anyMatch(white -> s.toUpperCase().contains(white)))
@@ -78,13 +79,12 @@ public class ReportFactory {
         int hospitalized = getTableValue(filteredStrings, "COVID-19 Confirmed Cases:", "Hospitalized");
         int deaths = getTableValue(filteredStrings, "COVID-19 Confirmed Cases:", "Deaths");
 
+        Epicurve epicurve = createEpicurveFromSeries(ccasedaySeries, ccasecumSeries, cdeathdaySeries, cdeathcumSeries);
+
         Report report = new Report(LocalDateTime.now(),
                 rawData.getId(),
                 rawData.getReportDate(),
-                ccasecumSeries,
-                ccasedaySeries,
-                cdeathcumSeries,
-                cdeathdaySeries,
+                epicurve,
                 totalTestsPerformed,
                 confirmedCases,
                 hospitalized,
@@ -93,6 +93,68 @@ public class ReportFactory {
         logger.info("Done parsing report for " + report.getId());
 
         return report;
+    }
+
+    private Epicurve createEpicurveFromSeries(Series caseDaySeries, Series caseCumSeries, Series deathDaySeries, Series deathCumSeries) {
+        Epicurve epicurve = new Epicurve();
+        epicurve.setExportFormat("Sourced from old DPH site");
+        int minLength = caseDaySeries.getDataPoints().size();
+        if (caseCumSeries.getDataPoints().size() < minLength) minLength = caseCumSeries.getDataPoints().size();
+        if (deathDaySeries.getDataPoints().size() < minLength) minLength = deathDaySeries.getDataPoints().size();
+        if (deathCumSeries.getDataPoints().size() < minLength) minLength = deathCumSeries.getDataPoints().size();
+
+        // Only build the epicurve out to the point where we have all 4 series. Basically, we can't build the epicurve
+        // if we don't have all 4 series for the date.
+        for (int i = 0; i < minLength; i++) {
+            EpicurvePoint epicurvePoint = new EpicurvePoint();
+            StringBuilder labelBuilder = new StringBuilder();
+            getReverseDatapoint(caseDaySeries, i).ifPresent(dataPoint -> {
+                labelBuilder.append(dataPoint.getLabel());
+                epicurvePoint.setLabel(dataPoint.getLabel());
+                epicurvePoint.setSource(dataPoint.getSource());
+                epicurvePoint.setTestDate(dataPoint.getLabel());
+                epicurvePoint.setPositiveCount(dataPoint.getY());
+            });
+            String labelToMatch = labelBuilder.toString();
+
+            getReverseDatapoint(caseCumSeries, i).ifPresent(dataPoint -> {
+                if (!labelToMatch.equals(dataPoint.getLabel())) {
+                    throw new IllegalArgumentException("caseCumSeries array label mismatch! Aborting report creation");
+                }
+                epicurvePoint.setPositivesCumulative(dataPoint.getY());
+            });
+
+            getReverseDatapoint(deathDaySeries, i).ifPresent(dataPoint -> {
+                if (!labelToMatch.equals(dataPoint.getLabel())) {
+                    throw new IllegalArgumentException("deathDaySeries array label mismatch! Aborting report creation");
+                }
+                epicurvePoint.setDeathCount(dataPoint.getY());
+            });
+
+            getReverseDatapoint(deathCumSeries, i).ifPresent(dataPoint -> {
+                if (!labelToMatch.equals(dataPoint.getLabel())) {
+                    throw new IllegalArgumentException("deathCumSeries array label mismatch! Aborting report creation");
+                }
+                epicurvePoint.setDeathsCumulative(dataPoint.getY());
+            });
+
+            epicurve.getEpicurvePoints().add(epicurvePoint);
+        }
+
+        return epicurve;
+    }
+
+    /**
+     * Get the datapoint from the reverse end of the list. idx 0 will retrieve the last element. idx 1 will retrieve the
+     * next to the last element, and so on until we get to idx {series.length - 1}, which will retrieve the first
+     * element.
+     */
+    private Optional<DataPoint> getReverseDatapoint(Series series, int reverseIdx) {
+        if (reverseIdx > series.getDataPoints().size()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(series.getDataPoints().get(series.getDataPoints().size() - 1 - reverseIdx));
     }
 
     private Series getSeries(String seriesString, String source) throws IOException {

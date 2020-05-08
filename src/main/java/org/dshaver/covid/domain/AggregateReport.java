@@ -60,14 +60,6 @@ public class AggregateReport {
                 maxDate = report.getReportDate();
             }
 
-            if (report.getTotalDeaths() != null) {
-                tempTotalDeathMap.put(report.getReportDate().toString(), new DataPoint(report.getTotalDeaths(), report.getReportDate().format(DateTimeFormatter.ISO_DATE).toUpperCase(), report.getId()));
-            }
-
-            if (report.getTotalCases() != null) {
-                tempTotalCaseMap.put(report.getReportDate().toString(), new DataPoint(report.getTotalCases(), report.getReportDate().format(DateTimeFormatter.ISO_DATE).toUpperCase(), report.getId()));
-            }
-
             tempTotalTestMap.put(report.getReportDate().toString(), new DataPoint(report.getTotalTests(), report.getReportDate().format(DateTimeFormatter.ISO_DATE).toUpperCase(), report.getId()));
         }
 

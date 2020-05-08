@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @ToString(exclude = "lines")
 @Document("rawdata")
-public class RawData {
+public class RawDataV1 {
     @Id
     private String id;
 
