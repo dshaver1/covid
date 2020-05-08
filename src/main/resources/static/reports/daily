@@ -15899,14 +15899,14 @@
   "countyCaseMap" : null,
   "countyDeathMap" : null
 }, {
-  "id" : "2020-05-08T10:25:03",
-  "createTime" : "2020-05-08T10:47:51.387",
+  "id" : "2020-05-08T12:25:03",
+  "createTime" : "2020-05-08T13:00:00.439",
   "reportDate" : "2020-05-08",
   "epicurve" : {
     "SASJSONExport" : "1.0 PRETTY",
     "epicurvePoints" : [ {
       "label" : "2020-02-17",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "17FEB2020",
       "POSITIVES" : 2,
       "deathcnt" : 0,
@@ -15915,7 +15915,7 @@
       "moving_avg" : 1.42857142857
     }, {
       "label" : "2020-02-18",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "18FEB2020",
       "POSITIVES" : 3,
       "deathcnt" : 0,
@@ -15924,7 +15924,7 @@
       "moving_avg" : 1.71428571429
     }, {
       "label" : "2020-02-19",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "19FEB2020",
       "POSITIVES" : 3,
       "deathcnt" : 0,
@@ -15933,7 +15933,7 @@
       "moving_avg" : 2
     }, {
       "label" : "2020-02-20",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "20FEB2020",
       "POSITIVES" : 4,
       "deathcnt" : 0,
@@ -15942,7 +15942,7 @@
       "moving_avg" : 2.42857142857
     }, {
       "label" : "2020-02-21",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "21FEB2020",
       "POSITIVES" : 2,
       "deathcnt" : 0,
@@ -15951,7 +15951,7 @@
       "moving_avg" : 2.42857142857
     }, {
       "label" : "2020-02-22",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "22FEB2020",
       "POSITIVES" : 3,
       "deathcnt" : 0,
@@ -15960,7 +15960,7 @@
       "moving_avg" : 2.71428571429
     }, {
       "label" : "2020-02-23",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "23FEB2020",
       "POSITIVES" : 8,
       "deathcnt" : 0,
@@ -15969,7 +15969,7 @@
       "moving_avg" : 3.57142857143
     }, {
       "label" : "2020-02-24",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "24FEB2020",
       "POSITIVES" : 6,
       "deathcnt" : 0,
@@ -15978,677 +15978,677 @@
       "moving_avg" : 4.14285714286
     }, {
       "label" : "2020-02-25",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "25FEB2020",
-      "POSITIVES" : 7,
+      "POSITIVES" : 8,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 53,
+      "POSITIVES_CUM" : 54,
       "death_cum" : 0,
-      "moving_avg" : 4.71428571429
+      "moving_avg" : 4.85714285714
     }, {
       "label" : "2020-02-26",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "26FEB2020",
       "POSITIVES" : 9,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 62,
+      "POSITIVES_CUM" : 63,
       "death_cum" : 0,
-      "moving_avg" : 5.57142857143
+      "moving_avg" : 5.71428571429
     }, {
       "label" : "2020-02-27",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "27FEB2020",
       "POSITIVES" : 10,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 72,
+      "POSITIVES_CUM" : 73,
       "death_cum" : 0,
-      "moving_avg" : 6.42857142857
+      "moving_avg" : 6.57142857143
     }, {
       "label" : "2020-02-28",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "28FEB2020",
       "POSITIVES" : 12,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 84,
+      "POSITIVES_CUM" : 85,
       "death_cum" : 0,
-      "moving_avg" : 7.85714285714
+      "moving_avg" : 8
     }, {
       "label" : "2020-02-29",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "29FEB2020",
       "POSITIVES" : 12,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 96,
+      "POSITIVES_CUM" : 97,
       "death_cum" : 0,
-      "moving_avg" : 9.14285714286
+      "moving_avg" : 9.28571428571
     }, {
       "label" : "2020-03-01",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "01MAR2020",
       "POSITIVES" : 64,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 160,
+      "POSITIVES_CUM" : 161,
       "death_cum" : 0,
-      "moving_avg" : 17.1428571429
+      "moving_avg" : 17.2857142857
     }, {
       "label" : "2020-03-02",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "02MAR2020",
       "POSITIVES" : 40,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 200,
+      "POSITIVES_CUM" : 201,
       "death_cum" : 0,
-      "moving_avg" : 22
+      "moving_avg" : 22.1428571429
     }, {
       "label" : "2020-03-03",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "03MAR2020",
       "POSITIVES" : 39,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 239,
+      "POSITIVES_CUM" : 240,
       "death_cum" : 0,
       "moving_avg" : 26.5714285714
     }, {
       "label" : "2020-03-04",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "04MAR2020",
       "POSITIVES" : 47,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 286,
+      "POSITIVES_CUM" : 287,
       "death_cum" : 0,
       "moving_avg" : 32
     }, {
       "label" : "2020-03-05",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "05MAR2020",
       "POSITIVES" : 40,
       "deathcnt" : 1,
-      "POSITIVES_CUM" : 326,
+      "POSITIVES_CUM" : 327,
       "death_cum" : 1,
       "moving_avg" : 36.2857142857
     }, {
       "label" : "2020-03-06",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "06MAR2020",
       "POSITIVES" : 56,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 382,
+      "POSITIVES_CUM" : 383,
       "death_cum" : 1,
       "moving_avg" : 42.5714285714
     }, {
       "label" : "2020-03-07",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "07MAR2020",
       "POSITIVES" : 59,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 441,
+      "POSITIVES_CUM" : 442,
       "death_cum" : 1,
       "moving_avg" : 49.2857142857
     }, {
       "label" : "2020-03-08",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "08MAR2020",
       "POSITIVES" : 75,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 516,
+      "POSITIVES_CUM" : 517,
       "death_cum" : 1,
       "moving_avg" : 50.8571428571
     }, {
       "label" : "2020-03-09",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "09MAR2020",
       "POSITIVES" : 117,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 633,
+      "POSITIVES_CUM" : 634,
       "death_cum" : 1,
       "moving_avg" : 61.8571428571
     }, {
       "label" : "2020-03-10",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "10MAR2020",
       "POSITIVES" : 141,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 774,
+      "POSITIVES_CUM" : 775,
       "death_cum" : 1,
       "moving_avg" : 76.4285714286
     }, {
       "label" : "2020-03-11",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "11MAR2020",
       "POSITIVES" : 154,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 928,
+      "POSITIVES_CUM" : 929,
       "death_cum" : 1,
       "moving_avg" : 91.7142857143
     }, {
       "label" : "2020-03-12",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "12MAR2020",
       "POSITIVES" : 175,
       "deathcnt" : 1,
-      "POSITIVES_CUM" : 1103,
+      "POSITIVES_CUM" : 1104,
       "death_cum" : 2,
       "moving_avg" : 111
     }, {
       "label" : "2020-03-13",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "13MAR2020",
       "POSITIVES" : 253,
       "deathcnt" : 0,
-      "POSITIVES_CUM" : 1356,
+      "POSITIVES_CUM" : 1357,
       "death_cum" : 2,
       "moving_avg" : 139.142857143
     }, {
       "label" : "2020-03-14",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "14MAR2020",
       "POSITIVES" : 214,
       "deathcnt" : 2,
-      "POSITIVES_CUM" : 1570,
+      "POSITIVES_CUM" : 1571,
       "death_cum" : 4,
       "moving_avg" : 161.285714286
     }, {
       "label" : "2020-03-15",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "15MAR2020",
-      "POSITIVES" : 259,
+      "POSITIVES" : 261,
       "deathcnt" : 4,
-      "POSITIVES_CUM" : 1829,
+      "POSITIVES_CUM" : 1832,
       "death_cum" : 8,
-      "moving_avg" : 187.571428571
+      "moving_avg" : 187.857142857
     }, {
       "label" : "2020-03-16",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "16MAR2020",
-      "POSITIVES" : 399,
+      "POSITIVES" : 400,
       "deathcnt" : 2,
-      "POSITIVES_CUM" : 2228,
+      "POSITIVES_CUM" : 2232,
       "death_cum" : 10,
-      "moving_avg" : 227.857142857
+      "moving_avg" : 228.285714286
     }, {
       "label" : "2020-03-17",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "17MAR2020",
-      "POSITIVES" : 391,
+      "POSITIVES" : 390,
       "deathcnt" : 2,
-      "POSITIVES_CUM" : 2619,
+      "POSITIVES_CUM" : 2622,
       "death_cum" : 12,
-      "moving_avg" : 263.571428571
+      "moving_avg" : 263.857142857
     }, {
       "label" : "2020-03-18",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "18MAR2020",
       "POSITIVES" : 419,
       "deathcnt" : 9,
-      "POSITIVES_CUM" : 3038,
+      "POSITIVES_CUM" : 3041,
       "death_cum" : 21,
-      "moving_avg" : 301.428571429
+      "moving_avg" : 301.714285714
     }, {
       "label" : "2020-03-19",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "19MAR2020",
       "POSITIVES" : 399,
       "deathcnt" : 5,
-      "POSITIVES_CUM" : 3437,
+      "POSITIVES_CUM" : 3440,
       "death_cum" : 26,
-      "moving_avg" : 333.428571429
+      "moving_avg" : 333.714285714
     }, {
       "label" : "2020-03-20",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "20MAR2020",
       "POSITIVES" : 470,
       "deathcnt" : 5,
-      "POSITIVES_CUM" : 3907,
+      "POSITIVES_CUM" : 3910,
       "death_cum" : 31,
-      "moving_avg" : 364.428571429
+      "moving_avg" : 364.714285714
     }, {
       "label" : "2020-03-21",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "21MAR2020",
-      "POSITIVES" : 305,
+      "POSITIVES" : 306,
       "deathcnt" : 18,
-      "POSITIVES_CUM" : 4212,
+      "POSITIVES_CUM" : 4216,
       "death_cum" : 49,
-      "moving_avg" : 377.428571429
+      "moving_avg" : 377.857142857
     }, {
       "label" : "2020-03-22",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "22MAR2020",
       "POSITIVES" : 329,
       "deathcnt" : 9,
-      "POSITIVES_CUM" : 4541,
+      "POSITIVES_CUM" : 4545,
       "death_cum" : 58,
-      "moving_avg" : 387.428571429
+      "moving_avg" : 387.571428571
     }, {
       "label" : "2020-03-23",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "23MAR2020",
       "POSITIVES" : 566,
       "deathcnt" : 10,
-      "POSITIVES_CUM" : 5107,
+      "POSITIVES_CUM" : 5111,
       "death_cum" : 68,
       "moving_avg" : 411.285714286
     }, {
       "label" : "2020-03-24",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "24MAR2020",
-      "POSITIVES" : 519,
+      "POSITIVES" : 518,
       "deathcnt" : 15,
-      "POSITIVES_CUM" : 5626,
+      "POSITIVES_CUM" : 5629,
       "death_cum" : 83,
       "moving_avg" : 429.571428571
     }, {
       "label" : "2020-03-25",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "25MAR2020",
-      "POSITIVES" : 567,
+      "POSITIVES" : 565,
       "deathcnt" : 19,
-      "POSITIVES_CUM" : 6193,
+      "POSITIVES_CUM" : 6194,
       "death_cum" : 102,
-      "moving_avg" : 450.714285714
+      "moving_avg" : 450.428571429
     }, {
       "label" : "2020-03-26",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "26MAR2020",
-      "POSITIVES" : 506,
+      "POSITIVES" : 505,
       "deathcnt" : 14,
       "POSITIVES_CUM" : 6699,
       "death_cum" : 116,
-      "moving_avg" : 466
+      "moving_avg" : 465.571428571
     }, {
       "label" : "2020-03-27",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "27MAR2020",
       "POSITIVES" : 528,
       "deathcnt" : 13,
       "POSITIVES_CUM" : 7227,
       "death_cum" : 129,
-      "moving_avg" : 474.285714286
+      "moving_avg" : 473.857142857
     }, {
       "label" : "2020-03-28",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "28MAR2020",
       "POSITIVES" : 433,
       "deathcnt" : 21,
       "POSITIVES_CUM" : 7660,
       "death_cum" : 150,
-      "moving_avg" : 492.571428571
+      "moving_avg" : 492
     }, {
       "label" : "2020-03-29",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "29MAR2020",
       "POSITIVES" : 377,
       "deathcnt" : 27,
       "POSITIVES_CUM" : 8037,
       "death_cum" : 177,
-      "moving_avg" : 499.428571429
+      "moving_avg" : 498.857142857
     }, {
       "label" : "2020-03-30",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "30MAR2020",
-      "POSITIVES" : 713,
+      "POSITIVES" : 714,
       "deathcnt" : 23,
-      "POSITIVES_CUM" : 8750,
+      "POSITIVES_CUM" : 8751,
       "death_cum" : 200,
-      "moving_avg" : 520.428571429
+      "moving_avg" : 520
     }, {
       "label" : "2020-03-31",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "31MAR2020",
       "POSITIVES" : 535,
       "deathcnt" : 27,
-      "POSITIVES_CUM" : 9285,
+      "POSITIVES_CUM" : 9286,
       "death_cum" : 227,
-      "moving_avg" : 522.714285714
+      "moving_avg" : 522.428571429
     }, {
       "label" : "2020-04-01",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "01APR2020",
       "POSITIVES" : 734,
       "deathcnt" : 28,
-      "POSITIVES_CUM" : 10019,
+      "POSITIVES_CUM" : 10020,
       "death_cum" : 255,
       "moving_avg" : 546.571428571
     }, {
       "label" : "2020-04-02",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "02APR2020",
       "POSITIVES" : 632,
       "deathcnt" : 35,
-      "POSITIVES_CUM" : 10651,
+      "POSITIVES_CUM" : 10652,
       "death_cum" : 290,
-      "moving_avg" : 564.571428571
+      "moving_avg" : 564.714285714
     }, {
       "label" : "2020-04-03",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "03APR2020",
       "POSITIVES" : 687,
-      "deathcnt" : 42,
-      "POSITIVES_CUM" : 11338,
-      "death_cum" : 332,
-      "moving_avg" : 587.285714286
+      "deathcnt" : 43,
+      "POSITIVES_CUM" : 11339,
+      "death_cum" : 333,
+      "moving_avg" : 587.428571429
     }, {
       "label" : "2020-04-04",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "04APR2020",
-      "POSITIVES" : 452,
+      "POSITIVES" : 453,
       "deathcnt" : 40,
-      "POSITIVES_CUM" : 11790,
-      "death_cum" : 372,
-      "moving_avg" : 590
+      "POSITIVES_CUM" : 11792,
+      "death_cum" : 373,
+      "moving_avg" : 590.285714286
     }, {
       "label" : "2020-04-05",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "05APR2020",
       "POSITIVES" : 407,
       "deathcnt" : 30,
-      "POSITIVES_CUM" : 12197,
-      "death_cum" : 402,
-      "moving_avg" : 594.285714286
+      "POSITIVES_CUM" : 12199,
+      "death_cum" : 403,
+      "moving_avg" : 594.571428571
     }, {
       "label" : "2020-04-06",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "06APR2020",
-      "POSITIVES" : 892,
-      "deathcnt" : 42,
-      "POSITIVES_CUM" : 13089,
+      "POSITIVES" : 894,
+      "deathcnt" : 41,
+      "POSITIVES_CUM" : 13093,
       "death_cum" : 444,
-      "moving_avg" : 619.857142857
+      "moving_avg" : 620.285714286
     }, {
       "label" : "2020-04-07",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "07APR2020",
       "POSITIVES" : 701,
-      "deathcnt" : 32,
-      "POSITIVES_CUM" : 13790,
-      "death_cum" : 476,
-      "moving_avg" : 643.571428571
+      "deathcnt" : 31,
+      "POSITIVES_CUM" : 13794,
+      "death_cum" : 475,
+      "moving_avg" : 644
     }, {
       "label" : "2020-04-08",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "08APR2020",
-      "POSITIVES" : 767,
+      "POSITIVES" : 766,
       "deathcnt" : 33,
-      "POSITIVES_CUM" : 14557,
-      "death_cum" : 509,
-      "moving_avg" : 648.285714286
+      "POSITIVES_CUM" : 14560,
+      "death_cum" : 508,
+      "moving_avg" : 648.571428571
     }, {
       "label" : "2020-04-09",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "09APR2020",
-      "POSITIVES" : 845,
+      "POSITIVES" : 846,
       "deathcnt" : 33,
-      "POSITIVES_CUM" : 15402,
-      "death_cum" : 542,
-      "moving_avg" : 678.714285714
+      "POSITIVES_CUM" : 15406,
+      "death_cum" : 541,
+      "moving_avg" : 679.142857143
     }, {
       "label" : "2020-04-10",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "10APR2020",
-      "POSITIVES" : 880,
-      "deathcnt" : 37,
-      "POSITIVES_CUM" : 16282,
-      "death_cum" : 579,
-      "moving_avg" : 706.285714286
+      "POSITIVES" : 881,
+      "deathcnt" : 36,
+      "POSITIVES_CUM" : 16287,
+      "death_cum" : 577,
+      "moving_avg" : 706.857142857
     }, {
       "label" : "2020-04-11",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "11APR2020",
       "POSITIVES" : 539,
-      "deathcnt" : 26,
-      "POSITIVES_CUM" : 16821,
-      "death_cum" : 605,
-      "moving_avg" : 718.714285714
+      "deathcnt" : 27,
+      "POSITIVES_CUM" : 16826,
+      "death_cum" : 604,
+      "moving_avg" : 719.142857143
     }, {
       "label" : "2020-04-12",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "12APR2020",
       "POSITIVES" : 397,
       "deathcnt" : 29,
-      "POSITIVES_CUM" : 17218,
-      "death_cum" : 634,
-      "moving_avg" : 717.285714286
+      "POSITIVES_CUM" : 17223,
+      "death_cum" : 633,
+      "moving_avg" : 717.714285714
     }, {
       "label" : "2020-04-13",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "13APR2020",
       "POSITIVES" : 851,
       "deathcnt" : 29,
-      "POSITIVES_CUM" : 18069,
-      "death_cum" : 663,
-      "moving_avg" : 711.428571429
+      "POSITIVES_CUM" : 18074,
+      "death_cum" : 662,
+      "moving_avg" : 711.571428571
     }, {
       "label" : "2020-04-14",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "14APR2020",
-      "POSITIVES" : 870,
+      "POSITIVES" : 873,
       "deathcnt" : 46,
-      "POSITIVES_CUM" : 18939,
-      "death_cum" : 709,
-      "moving_avg" : 735.571428571
+      "POSITIVES_CUM" : 18947,
+      "death_cum" : 708,
+      "moving_avg" : 736.142857143
     }, {
       "label" : "2020-04-15",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "15APR2020",
-      "POSITIVES" : 755,
+      "POSITIVES" : 757,
       "deathcnt" : 29,
-      "POSITIVES_CUM" : 19694,
-      "death_cum" : 738,
-      "moving_avg" : 733.857142857
+      "POSITIVES_CUM" : 19704,
+      "death_cum" : 737,
+      "moving_avg" : 734.857142857
     }, {
       "label" : "2020-04-16",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "16APR2020",
       "POSITIVES" : 811,
       "deathcnt" : 50,
-      "POSITIVES_CUM" : 20505,
-      "death_cum" : 788,
-      "moving_avg" : 729
+      "POSITIVES_CUM" : 20515,
+      "death_cum" : 787,
+      "moving_avg" : 729.857142857
     }, {
       "label" : "2020-04-17",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "17APR2020",
       "POSITIVES" : 868,
       "deathcnt" : 31,
-      "POSITIVES_CUM" : 21373,
-      "death_cum" : 819,
-      "moving_avg" : 727.285714286
+      "POSITIVES_CUM" : 21383,
+      "death_cum" : 818,
+      "moving_avg" : 728
     }, {
       "label" : "2020-04-18",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "18APR2020",
       "POSITIVES" : 471,
       "deathcnt" : 30,
-      "POSITIVES_CUM" : 21844,
-      "death_cum" : 849,
-      "moving_avg" : 717.571428571
+      "POSITIVES_CUM" : 21854,
+      "death_cum" : 848,
+      "moving_avg" : 718.285714286
     }, {
       "label" : "2020-04-19",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "19APR2020",
-      "POSITIVES" : 568,
+      "POSITIVES" : 567,
       "deathcnt" : 37,
-      "POSITIVES_CUM" : 22412,
-      "death_cum" : 886,
-      "moving_avg" : 742
+      "POSITIVES_CUM" : 22421,
+      "death_cum" : 885,
+      "moving_avg" : 742.571428571
     }, {
       "label" : "2020-04-20",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "20APR2020",
-      "POSITIVES" : 923,
+      "POSITIVES" : 925,
       "deathcnt" : 35,
-      "POSITIVES_CUM" : 23335,
-      "death_cum" : 921,
-      "moving_avg" : 752.285714286
+      "POSITIVES_CUM" : 23346,
+      "death_cum" : 920,
+      "moving_avg" : 753.142857143
     }, {
       "label" : "2020-04-21",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "21APR2020",
       "POSITIVES" : 870,
       "deathcnt" : 33,
-      "POSITIVES_CUM" : 24205,
-      "death_cum" : 954,
-      "moving_avg" : 752.285714286
+      "POSITIVES_CUM" : 24216,
+      "death_cum" : 953,
+      "moving_avg" : 752.714285714
     }, {
       "label" : "2020-04-22",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "22APR2020",
-      "POSITIVES" : 845,
+      "POSITIVES" : 844,
       "deathcnt" : 35,
-      "POSITIVES_CUM" : 25050,
-      "death_cum" : 989,
+      "POSITIVES_CUM" : 25060,
+      "death_cum" : 988,
       "moving_avg" : 765.142857143
     }, {
       "label" : "2020-04-23",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "23APR2020",
-      "POSITIVES" : 673,
-      "deathcnt" : 29,
-      "POSITIVES_CUM" : 25723,
-      "death_cum" : 1018,
-      "moving_avg" : 745.428571429
+      "POSITIVES" : 677,
+      "deathcnt" : 28,
+      "POSITIVES_CUM" : 25737,
+      "death_cum" : 1016,
+      "moving_avg" : 746
     }, {
       "label" : "2020-04-24",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "24APR2020",
-      "POSITIVES" : 788,
-      "deathcnt" : 33,
-      "POSITIVES_CUM" : 26511,
-      "death_cum" : 1051,
-      "moving_avg" : 734
+      "POSITIVES" : 787,
+      "deathcnt" : 34,
+      "POSITIVES_CUM" : 26524,
+      "death_cum" : 1050,
+      "moving_avg" : 734.428571429
     }, {
       "label" : "2020-04-25",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "25APR2020",
-      "POSITIVES" : 384,
-      "deathcnt" : 28,
-      "POSITIVES_CUM" : 26895,
+      "POSITIVES" : 388,
+      "deathcnt" : 29,
+      "POSITIVES_CUM" : 26912,
       "death_cum" : 1079,
-      "moving_avg" : 721.571428571
+      "moving_avg" : 722.571428571
     }, {
       "label" : "2020-04-26",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "26APR2020",
-      "POSITIVES" : 289,
+      "POSITIVES" : 293,
       "deathcnt" : 30,
-      "POSITIVES_CUM" : 27184,
+      "POSITIVES_CUM" : 27205,
       "death_cum" : 1109,
-      "moving_avg" : 681.714285714
+      "moving_avg" : 683.428571429
     }, {
       "label" : "2020-04-27",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "27APR2020",
-      "POSITIVES" : 885,
+      "POSITIVES" : 890,
       "deathcnt" : 34,
-      "POSITIVES_CUM" : 28069,
+      "POSITIVES_CUM" : 28095,
       "death_cum" : 1143,
-      "moving_avg" : 676.285714286
+      "moving_avg" : 678.428571429
     }, {
       "label" : "2020-04-28",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "28APR2020",
-      "POSITIVES" : 820,
+      "POSITIVES" : 823,
       "deathcnt" : 35,
-      "POSITIVES_CUM" : 28889,
+      "POSITIVES_CUM" : 28918,
       "death_cum" : 1178,
-      "moving_avg" : 669.142857143
+      "moving_avg" : 671.714285714
     }, {
       "label" : "2020-04-29",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "29APR2020",
-      "POSITIVES" : 625,
+      "POSITIVES" : 641,
       "deathcnt" : 33,
-      "POSITIVES_CUM" : 29514,
+      "POSITIVES_CUM" : 29559,
       "death_cum" : 1211,
-      "moving_avg" : 637.714285714
+      "moving_avg" : 642.714285714
     }, {
       "label" : "2020-04-30",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "30APR2020",
-      "POSITIVES" : 543,
-      "deathcnt" : 23,
-      "POSITIVES_CUM" : 30057,
-      "death_cum" : 1234,
-      "moving_avg" : 619.142857143
+      "POSITIVES" : 550,
+      "deathcnt" : 24,
+      "POSITIVES_CUM" : 30109,
+      "death_cum" : 1235,
+      "moving_avg" : 624.571428571
     }, {
       "label" : "2020-05-01",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "01MAY2020",
-      "POSITIVES" : 551,
-      "deathcnt" : 26,
-      "POSITIVES_CUM" : 30608,
+      "POSITIVES" : 564,
+      "deathcnt" : 25,
+      "POSITIVES_CUM" : 30673,
       "death_cum" : 1260,
-      "moving_avg" : 585.285714286
+      "moving_avg" : 592.714285714
     }, {
       "label" : "2020-05-02",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "02MAY2020",
-      "POSITIVES" : 244,
+      "POSITIVES" : 261,
       "deathcnt" : 26,
-      "POSITIVES_CUM" : 30852,
+      "POSITIVES_CUM" : 30934,
       "death_cum" : 1286,
-      "moving_avg" : 565.285714286
+      "moving_avg" : 574.571428571
     }, {
       "label" : "2020-05-03",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "03MAY2020",
-      "POSITIVES" : 160,
-      "deathcnt" : 17,
-      "POSITIVES_CUM" : 31012,
-      "death_cum" : 1303,
-      "moving_avg" : 546.857142857
+      "POSITIVES" : 168,
+      "deathcnt" : 19,
+      "POSITIVES_CUM" : 31102,
+      "death_cum" : 1305,
+      "moving_avg" : 556.714285714
     }, {
       "label" : "2020-05-04",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "04MAY2020",
-      "POSITIVES" : 382,
+      "POSITIVES" : 429,
       "deathcnt" : 20,
-      "POSITIVES_CUM" : 31394,
-      "death_cum" : 1323,
-      "moving_avg" : 475
+      "POSITIVES_CUM" : 31531,
+      "death_cum" : 1325,
+      "moving_avg" : 490.857142857
     }, {
       "label" : "2020-05-05",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "05MAY2020",
-      "POSITIVES" : 177,
+      "POSITIVES" : 268,
       "deathcnt" : 17,
-      "POSITIVES_CUM" : 31571,
-      "death_cum" : 1340,
-      "moving_avg" : 383.142857143
+      "POSITIVES_CUM" : 31799,
+      "death_cum" : 1342,
+      "moving_avg" : 411.571428571
     }, {
       "label" : "2020-05-06",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "06MAY2020",
-      "POSITIVES" : 65,
+      "POSITIVES" : 148,
       "deathcnt" : 10,
-      "POSITIVES_CUM" : 31636,
-      "death_cum" : 1350,
-      "moving_avg" : 303.142857143
+      "POSITIVES_CUM" : 31947,
+      "death_cum" : 1352,
+      "moving_avg" : 341.142857143
     }, {
       "label" : "2020-05-07",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "07MAY2020",
-      "POSITIVES" : 20,
+      "POSITIVES" : 38,
       "deathcnt" : 3,
-      "POSITIVES_CUM" : 31656,
-      "death_cum" : 1353,
-      "moving_avg" : 228.428571429
+      "POSITIVES_CUM" : 31985,
+      "death_cum" : 1355,
+      "moving_avg" : 268
     }, {
       "label" : "2020-05-08",
-      "source" : "2020-05-08T10:25:03",
+      "source" : "2020-05-08T12:25:03",
       "test_date" : "08MAY2020",
-      "POSITIVES" : 1,
-      "deathcnt" : 0,
-      "POSITIVES_CUM" : 31657,
-      "death_cum" : 1353,
-      "moving_avg" : 149.857142857
+      "POSITIVES" : 9,
+      "deathcnt" : 2,
+      "POSITIVES_CUM" : 31994,
+      "death_cum" : 1357,
+      "moving_avg" : 188.714285714
     } ]
   },
   "totalTests" : 227477,
-  "confirmedCases" : 31679,
-  "hospitalized" : 5878,
-  "deaths" : 1353,
-  "icu" : 1387,
+  "confirmedCases" : 32016,
+  "hospitalized" : 5901,
+  "deaths" : 1357,
+  "icu" : 1391,
   "countyCaseMap" : null,
   "countyDeathMap" : null
 } ]
