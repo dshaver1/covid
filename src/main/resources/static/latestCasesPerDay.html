@@ -372,7 +372,7 @@
         parent.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
+            .call(xAxis.tickValues(createXAxisTickValues()))
             .selectAll("text")
             .style("text-anchor", "end")
             .attr("dx", "-.8em")
@@ -388,6 +388,17 @@
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text("Cases Per Day");
+    }
+
+    function createXAxisTickValues() {
+        let epicurve = theData[theData.length - 1].epicurve.epicurvePoints;
+        let xAxisTickValues = [];
+
+        for (let i = 0; i > -1 * epicurve.length; i -= 2) {
+            xAxisTickValues.push(getReverseIdxValue(epicurve, i).label);
+        }
+
+        return xAxisTickValues;
     }
 
     function createLegend() {
