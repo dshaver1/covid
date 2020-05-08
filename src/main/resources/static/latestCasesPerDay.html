@@ -242,15 +242,16 @@
 
         // Create DPH graph!
         theData = data;
-        // Axis should be set to the latest data.
-        var casesPerDay = data[data.length - 1].casesPerDay;
 
+        let epicurve = data[data.length - 1].epicurve.epicurvePoints;
+
+        // Axis should be set to the latest data.
         // scale the range of the data
-        dphxScale.domain(casesPerDay.map(function (d) {
+        dphxScale.domain(epicurve.map(function (d) {
             return d.label;
         }));
-        dphyScale.domain([0, d3.max(casesPerDay, function (d) {
-            return d.y;
+        dphyScale.domain([0, d3.max(epicurve, function (d) {
+            return d.POSITIVES;
         })]);
 
         // add the Y gridlines
@@ -322,8 +323,8 @@
 
         // Add bar chart
         var idx = getReportForDate(theData, getReverseIdxValue(dataTime, sliderTime.value()))
-        updateDiffChart(theData[idx].casesPerDay, "casebar", colors[0], colors[2]);
-        updateDiffChart(theData[idx].deathsPerDay, "deathbar", colors[1], colors[3]);
+        updateDiffChart(theData[idx], getCases, "casebar", colors[0], colors[2]);
+        updateDiffChart(theData[idx], getDeaths, "deathbar", colors[1], colors[3]);
     });
 
     function createSlider(data) {
@@ -333,7 +334,7 @@
 
         sliderTime = d3
             .sliderBottom()
-            .min(-1 * (dataTime.length - 15)) // We want to stop at 2020-04-13 isnce that's when DPH started reporting this data.
+            .min(-1 * (dataTime.length - 1))
             .max(0)
             .step(1)
             //.ticks(5)
@@ -342,8 +343,8 @@
             .on('onchange', val => {
                 d3.select('p#value-time').text(getReverseIdxValue(dataTime, val));
                 var idx = getReportForDate(theData, getReverseIdxValue(dataTime, sliderTime.value()))
-                updateDiffChart(theData[idx].casesPerDay, "casebar", colors[0], colors[2]);
-                updateDiffChart(theData[idx].deathsPerDay, "deathbar", colors[1], colors[3]);
+                updateDiffChart(theData[idx], getCases, "casebar", colors[0], colors[2]);
+                updateDiffChart(theData[idx], getDeaths, "deathbar", colors[1], colors[3]);
             });
 
         var gTime = d3
@@ -427,13 +428,14 @@
             .style("alignment-baseline", "middle")
     }
 
-    function createTooltips(data) {
+    function createTooltips(value) {
         tip = d3.tip().attr('class', 'd3-tip').direction('e').offset([0, 5])
             .html(function (d) {
                 var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
                 content += `
                     <table style="margin-top: 2.5px;">
-                            <tr><td>Value: </td><td style="text-align: right">` + d.y + `</td></tr>
+                            <tr><td>Cases: </td><td style="text-align: right">` + d.POSITIVES + `</td></tr>
+                            <tr><td>Deaths: </td><td style="text-align: right">` + d.deathcnt + `</td></tr>
                     </table>
                     `;
                 return content;
@@ -451,8 +453,16 @@
         return data.length - 1;
     }
 
-    function updateDiffChart(data, clazz, color, highlightColor) {
-        var selectedData = dphSvg.selectAll("." + clazz).data(data);
+    function getDeaths(data) {
+        return data.deathcnt;
+    }
+
+    function getCases(data) {
+        return data.POSITIVES;
+    }
+
+    function updateDiffChart(data, dataCallback, clazz, color, highlightColor) {
+        var selectedData = dphSvg.selectAll("." + clazz).data(data.epicurve.epicurvePoints);
         var enterData = selectedData.enter();
 
         enterData.append("rect")
@@ -461,10 +471,10 @@
                 return dphxScale(d.label);
             })
             .attr("y", function (d) {
-                return dphyScale(d.y);
+                return dphyScale(dataCallback(d));
             })
             .attr("height", function (d) {
-                return height - dphyScale(d.y);
+                return height - dphyScale(dataCallback(d));
             })
             .attr("width", dphxScale.bandwidth())
             .style("fill", color)
@@ -477,10 +487,10 @@
 
         selectedData.transition().duration(100)
             .attr("y", function (d) {
-                return dphyScale(d.y);
+                return dphyScale(dataCallback(d));
             })
             .attr("height", function (d) {
-                return height - dphyScale(d.y);
+                return height - dphyScale(dataCallback(d));
             });
 
         selectedData.exit().remove();
