@@ -18964,4 +18964,793 @@
   "icu" : 1422,
   "countyCaseMap" : null,
   "countyDeathMap" : null
+}, {
+  "id" : "2020-05-12T09:54:47",
+  "createTime" : "2020-05-12T10:00:00.466",
+  "reportDate" : "2020-05-12",
+  "epicurve" : {
+    "SASJSONExport" : "1.0 PRETTY",
+    "epicurvePoints" : [ {
+      "label" : "2020-02-17",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "17FEB2020",
+      "POSITIVES" : 2,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 18,
+      "death_cum" : 0,
+      "moving_avg" : 1.42857142857
+    }, {
+      "label" : "2020-02-18",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "18FEB2020",
+      "POSITIVES" : 3,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 21,
+      "death_cum" : 0,
+      "moving_avg" : 1.71428571429
+    }, {
+      "label" : "2020-02-19",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "19FEB2020",
+      "POSITIVES" : 3,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 24,
+      "death_cum" : 0,
+      "moving_avg" : 2
+    }, {
+      "label" : "2020-02-20",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "20FEB2020",
+      "POSITIVES" : 3,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 27,
+      "death_cum" : 0,
+      "moving_avg" : 2.28571428571
+    }, {
+      "label" : "2020-02-21",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "21FEB2020",
+      "POSITIVES" : 2,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 29,
+      "death_cum" : 0,
+      "moving_avg" : 2.28571428571
+    }, {
+      "label" : "2020-02-22",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "22FEB2020",
+      "POSITIVES" : 3,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 32,
+      "death_cum" : 0,
+      "moving_avg" : 2.57142857143
+    }, {
+      "label" : "2020-02-23",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "23FEB2020",
+      "POSITIVES" : 8,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 40,
+      "death_cum" : 0,
+      "moving_avg" : 3.42857142857
+    }, {
+      "label" : "2020-02-24",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "24FEB2020",
+      "POSITIVES" : 7,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 47,
+      "death_cum" : 0,
+      "moving_avg" : 4.14285714286
+    }, {
+      "label" : "2020-02-25",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "25FEB2020",
+      "POSITIVES" : 8,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 55,
+      "death_cum" : 0,
+      "moving_avg" : 4.85714285714
+    }, {
+      "label" : "2020-02-26",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "26FEB2020",
+      "POSITIVES" : 9,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 64,
+      "death_cum" : 0,
+      "moving_avg" : 5.71428571429
+    }, {
+      "label" : "2020-02-27",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "27FEB2020",
+      "POSITIVES" : 11,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 75,
+      "death_cum" : 0,
+      "moving_avg" : 6.85714285714
+    }, {
+      "label" : "2020-02-28",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "28FEB2020",
+      "POSITIVES" : 13,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 88,
+      "death_cum" : 0,
+      "moving_avg" : 8.42857142857
+    }, {
+      "label" : "2020-02-29",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "29FEB2020",
+      "POSITIVES" : 13,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 101,
+      "death_cum" : 0,
+      "moving_avg" : 9.85714285714
+    }, {
+      "label" : "2020-03-01",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "01MAR2020",
+      "POSITIVES" : 67,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 168,
+      "death_cum" : 0,
+      "moving_avg" : 18.2857142857
+    }, {
+      "label" : "2020-03-02",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "02MAR2020",
+      "POSITIVES" : 40,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 208,
+      "death_cum" : 0,
+      "moving_avg" : 23
+    }, {
+      "label" : "2020-03-03",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "03MAR2020",
+      "POSITIVES" : 40,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 248,
+      "death_cum" : 0,
+      "moving_avg" : 27.5714285714
+    }, {
+      "label" : "2020-03-04",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "04MAR2020",
+      "POSITIVES" : 48,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 296,
+      "death_cum" : 0,
+      "moving_avg" : 33.1428571429
+    }, {
+      "label" : "2020-03-05",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "05MAR2020",
+      "POSITIVES" : 42,
+      "deathcnt" : 1,
+      "POSITIVES_CUM" : 338,
+      "death_cum" : 1,
+      "moving_avg" : 37.5714285714
+    }, {
+      "label" : "2020-03-06",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "06MAR2020",
+      "POSITIVES" : 56,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 394,
+      "death_cum" : 1,
+      "moving_avg" : 43.7142857143
+    }, {
+      "label" : "2020-03-07",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "07MAR2020",
+      "POSITIVES" : 60,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 454,
+      "death_cum" : 1,
+      "moving_avg" : 50.4285714286
+    }, {
+      "label" : "2020-03-08",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "08MAR2020",
+      "POSITIVES" : 75,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 529,
+      "death_cum" : 1,
+      "moving_avg" : 51.5714285714
+    }, {
+      "label" : "2020-03-09",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "09MAR2020",
+      "POSITIVES" : 119,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 648,
+      "death_cum" : 1,
+      "moving_avg" : 62.8571428571
+    }, {
+      "label" : "2020-03-10",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "10MAR2020",
+      "POSITIVES" : 142,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 790,
+      "death_cum" : 1,
+      "moving_avg" : 77.4285714286
+    }, {
+      "label" : "2020-03-11",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "11MAR2020",
+      "POSITIVES" : 154,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 944,
+      "death_cum" : 1,
+      "moving_avg" : 92.5714285714
+    }, {
+      "label" : "2020-03-12",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "12MAR2020",
+      "POSITIVES" : 177,
+      "deathcnt" : 1,
+      "POSITIVES_CUM" : 1121,
+      "death_cum" : 2,
+      "moving_avg" : 111.857142857
+    }, {
+      "label" : "2020-03-13",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "13MAR2020",
+      "POSITIVES" : 257,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 1378,
+      "death_cum" : 2,
+      "moving_avg" : 140.571428571
+    }, {
+      "label" : "2020-03-14",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "14MAR2020",
+      "POSITIVES" : 216,
+      "deathcnt" : 2,
+      "POSITIVES_CUM" : 1594,
+      "death_cum" : 4,
+      "moving_avg" : 162.857142857
+    }, {
+      "label" : "2020-03-15",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "15MAR2020",
+      "POSITIVES" : 263,
+      "deathcnt" : 4,
+      "POSITIVES_CUM" : 1857,
+      "death_cum" : 8,
+      "moving_avg" : 189.714285714
+    }, {
+      "label" : "2020-03-16",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "16MAR2020",
+      "POSITIVES" : 399,
+      "deathcnt" : 2,
+      "POSITIVES_CUM" : 2256,
+      "death_cum" : 10,
+      "moving_avg" : 229.714285714
+    }, {
+      "label" : "2020-03-17",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "17MAR2020",
+      "POSITIVES" : 390,
+      "deathcnt" : 2,
+      "POSITIVES_CUM" : 2646,
+      "death_cum" : 12,
+      "moving_avg" : 265.142857143
+    }, {
+      "label" : "2020-03-18",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "18MAR2020",
+      "POSITIVES" : 425,
+      "deathcnt" : 9,
+      "POSITIVES_CUM" : 3071,
+      "death_cum" : 21,
+      "moving_avg" : 303.857142857
+    }, {
+      "label" : "2020-03-19",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "19MAR2020",
+      "POSITIVES" : 401,
+      "deathcnt" : 5,
+      "POSITIVES_CUM" : 3472,
+      "death_cum" : 26,
+      "moving_avg" : 335.857142857
+    }, {
+      "label" : "2020-03-20",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "20MAR2020",
+      "POSITIVES" : 474,
+      "deathcnt" : 5,
+      "POSITIVES_CUM" : 3946,
+      "death_cum" : 31,
+      "moving_avg" : 366.857142857
+    }, {
+      "label" : "2020-03-21",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "21MAR2020",
+      "POSITIVES" : 306,
+      "deathcnt" : 18,
+      "POSITIVES_CUM" : 4252,
+      "death_cum" : 49,
+      "moving_avg" : 379.714285714
+    }, {
+      "label" : "2020-03-22",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "22MAR2020",
+      "POSITIVES" : 332,
+      "deathcnt" : 9,
+      "POSITIVES_CUM" : 4584,
+      "death_cum" : 58,
+      "moving_avg" : 389.571428571
+    }, {
+      "label" : "2020-03-23",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "23MAR2020",
+      "POSITIVES" : 564,
+      "deathcnt" : 10,
+      "POSITIVES_CUM" : 5148,
+      "death_cum" : 68,
+      "moving_avg" : 413.142857143
+    }, {
+      "label" : "2020-03-24",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "24MAR2020",
+      "POSITIVES" : 519,
+      "deathcnt" : 15,
+      "POSITIVES_CUM" : 5667,
+      "death_cum" : 83,
+      "moving_avg" : 431.571428571
+    }, {
+      "label" : "2020-03-25",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "25MAR2020",
+      "POSITIVES" : 565,
+      "deathcnt" : 19,
+      "POSITIVES_CUM" : 6232,
+      "death_cum" : 102,
+      "moving_avg" : 451.571428571
+    }, {
+      "label" : "2020-03-26",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "26MAR2020",
+      "POSITIVES" : 504,
+      "deathcnt" : 14,
+      "POSITIVES_CUM" : 6736,
+      "death_cum" : 116,
+      "moving_avg" : 466.285714286
+    }, {
+      "label" : "2020-03-27",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "27MAR2020",
+      "POSITIVES" : 524,
+      "deathcnt" : 13,
+      "POSITIVES_CUM" : 7260,
+      "death_cum" : 129,
+      "moving_avg" : 473.428571429
+    }, {
+      "label" : "2020-03-28",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "28MAR2020",
+      "POSITIVES" : 431,
+      "deathcnt" : 21,
+      "POSITIVES_CUM" : 7691,
+      "death_cum" : 150,
+      "moving_avg" : 491.285714286
+    }, {
+      "label" : "2020-03-29",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "29MAR2020",
+      "POSITIVES" : 373,
+      "deathcnt" : 27,
+      "POSITIVES_CUM" : 8064,
+      "death_cum" : 177,
+      "moving_avg" : 497.142857143
+    }, {
+      "label" : "2020-03-30",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "30MAR2020",
+      "POSITIVES" : 718,
+      "deathcnt" : 23,
+      "POSITIVES_CUM" : 8782,
+      "death_cum" : 200,
+      "moving_avg" : 519.142857143
+    }, {
+      "label" : "2020-03-31",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "31MAR2020",
+      "POSITIVES" : 532,
+      "deathcnt" : 27,
+      "POSITIVES_CUM" : 9314,
+      "death_cum" : 227,
+      "moving_avg" : 521
+    }, {
+      "label" : "2020-04-01",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "01APR2020",
+      "POSITIVES" : 733,
+      "deathcnt" : 28,
+      "POSITIVES_CUM" : 10047,
+      "death_cum" : 255,
+      "moving_avg" : 545
+    }, {
+      "label" : "2020-04-02",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "02APR2020",
+      "POSITIVES" : 631,
+      "deathcnt" : 35,
+      "POSITIVES_CUM" : 10678,
+      "death_cum" : 290,
+      "moving_avg" : 563.142857143
+    }, {
+      "label" : "2020-04-03",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "03APR2020",
+      "POSITIVES" : 685,
+      "deathcnt" : 43,
+      "POSITIVES_CUM" : 11363,
+      "death_cum" : 333,
+      "moving_avg" : 586.142857143
+    }, {
+      "label" : "2020-04-04",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "04APR2020",
+      "POSITIVES" : 460,
+      "deathcnt" : 41,
+      "POSITIVES_CUM" : 11823,
+      "death_cum" : 374,
+      "moving_avg" : 590.285714286
+    }, {
+      "label" : "2020-04-05",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "05APR2020",
+      "POSITIVES" : 412,
+      "deathcnt" : 30,
+      "POSITIVES_CUM" : 12235,
+      "death_cum" : 404,
+      "moving_avg" : 595.857142857
+    }, {
+      "label" : "2020-04-06",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "06APR2020",
+      "POSITIVES" : 891,
+      "deathcnt" : 40,
+      "POSITIVES_CUM" : 13126,
+      "death_cum" : 444,
+      "moving_avg" : 620.571428571
+    }, {
+      "label" : "2020-04-07",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "07APR2020",
+      "POSITIVES" : 701,
+      "deathcnt" : 31,
+      "POSITIVES_CUM" : 13827,
+      "death_cum" : 475,
+      "moving_avg" : 644.714285714
+    }, {
+      "label" : "2020-04-08",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "08APR2020",
+      "POSITIVES" : 764,
+      "deathcnt" : 33,
+      "POSITIVES_CUM" : 14591,
+      "death_cum" : 508,
+      "moving_avg" : 649.142857143
+    }, {
+      "label" : "2020-04-09",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "09APR2020",
+      "POSITIVES" : 844,
+      "deathcnt" : 33,
+      "POSITIVES_CUM" : 15435,
+      "death_cum" : 541,
+      "moving_avg" : 679.571428571
+    }, {
+      "label" : "2020-04-10",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "10APR2020",
+      "POSITIVES" : 885,
+      "deathcnt" : 36,
+      "POSITIVES_CUM" : 16320,
+      "death_cum" : 577,
+      "moving_avg" : 708.142857143
+    }, {
+      "label" : "2020-04-11",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "11APR2020",
+      "POSITIVES" : 541,
+      "deathcnt" : 29,
+      "POSITIVES_CUM" : 16861,
+      "death_cum" : 606,
+      "moving_avg" : 719.714285714
+    }, {
+      "label" : "2020-04-12",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "12APR2020",
+      "POSITIVES" : 400,
+      "deathcnt" : 30,
+      "POSITIVES_CUM" : 17261,
+      "death_cum" : 636,
+      "moving_avg" : 718
+    }, {
+      "label" : "2020-04-13",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "13APR2020",
+      "POSITIVES" : 863,
+      "deathcnt" : 30,
+      "POSITIVES_CUM" : 18124,
+      "death_cum" : 666,
+      "moving_avg" : 714
+    }, {
+      "label" : "2020-04-14",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "14APR2020",
+      "POSITIVES" : 860,
+      "deathcnt" : 45,
+      "POSITIVES_CUM" : 18984,
+      "death_cum" : 711,
+      "moving_avg" : 736.714285714
+    }, {
+      "label" : "2020-04-15",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "15APR2020",
+      "POSITIVES" : 762,
+      "deathcnt" : 30,
+      "POSITIVES_CUM" : 19746,
+      "death_cum" : 741,
+      "moving_avg" : 736.428571429
+    }, {
+      "label" : "2020-04-16",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "16APR2020",
+      "POSITIVES" : 813,
+      "deathcnt" : 52,
+      "POSITIVES_CUM" : 20559,
+      "death_cum" : 793,
+      "moving_avg" : 732
+    }, {
+      "label" : "2020-04-17",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "17APR2020",
+      "POSITIVES" : 874,
+      "deathcnt" : 35,
+      "POSITIVES_CUM" : 21433,
+      "death_cum" : 828,
+      "moving_avg" : 730.428571429
+    }, {
+      "label" : "2020-04-18",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "18APR2020",
+      "POSITIVES" : 476,
+      "deathcnt" : 30,
+      "POSITIVES_CUM" : 21909,
+      "death_cum" : 858,
+      "moving_avg" : 721.142857143
+    }, {
+      "label" : "2020-04-19",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "19APR2020",
+      "POSITIVES" : 581,
+      "deathcnt" : 37,
+      "POSITIVES_CUM" : 22490,
+      "death_cum" : 895,
+      "moving_avg" : 747
+    }, {
+      "label" : "2020-04-20",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "20APR2020",
+      "POSITIVES" : 931,
+      "deathcnt" : 38,
+      "POSITIVES_CUM" : 23421,
+      "death_cum" : 933,
+      "moving_avg" : 756.714285714
+    }, {
+      "label" : "2020-04-21",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "21APR2020",
+      "POSITIVES" : 886,
+      "deathcnt" : 33,
+      "POSITIVES_CUM" : 24307,
+      "death_cum" : 966,
+      "moving_avg" : 760.428571429
+    }, {
+      "label" : "2020-04-22",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "22APR2020",
+      "POSITIVES" : 863,
+      "deathcnt" : 40,
+      "POSITIVES_CUM" : 25170,
+      "death_cum" : 1006,
+      "moving_avg" : 774.857142857
+    }, {
+      "label" : "2020-04-23",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "23APR2020",
+      "POSITIVES" : 707,
+      "deathcnt" : 30,
+      "POSITIVES_CUM" : 25877,
+      "death_cum" : 1036,
+      "moving_avg" : 759.714285714
+    }, {
+      "label" : "2020-04-24",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "24APR2020",
+      "POSITIVES" : 822,
+      "deathcnt" : 36,
+      "POSITIVES_CUM" : 26699,
+      "death_cum" : 1072,
+      "moving_avg" : 752.285714286
+    }, {
+      "label" : "2020-04-25",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "25APR2020",
+      "POSITIVES" : 425,
+      "deathcnt" : 31,
+      "POSITIVES_CUM" : 27124,
+      "death_cum" : 1103,
+      "moving_avg" : 745
+    }, {
+      "label" : "2020-04-26",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "26APR2020",
+      "POSITIVES" : 323,
+      "deathcnt" : 32,
+      "POSITIVES_CUM" : 27447,
+      "death_cum" : 1135,
+      "moving_avg" : 708.142857143
+    }, {
+      "label" : "2020-04-27",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "27APR2020",
+      "POSITIVES" : 919,
+      "deathcnt" : 37,
+      "POSITIVES_CUM" : 28366,
+      "death_cum" : 1172,
+      "moving_avg" : 706.428571429
+    }, {
+      "label" : "2020-04-28",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "28APR2020",
+      "POSITIVES" : 867,
+      "deathcnt" : 37,
+      "POSITIVES_CUM" : 29233,
+      "death_cum" : 1209,
+      "moving_avg" : 703.714285714
+    }, {
+      "label" : "2020-04-29",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "29APR2020",
+      "POSITIVES" : 685,
+      "deathcnt" : 37,
+      "POSITIVES_CUM" : 29918,
+      "death_cum" : 1246,
+      "moving_avg" : 678.285714286
+    }, {
+      "label" : "2020-04-30",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "30APR2020",
+      "POSITIVES" : 644,
+      "deathcnt" : 27,
+      "POSITIVES_CUM" : 30562,
+      "death_cum" : 1273,
+      "moving_avg" : 669.285714286
+    }, {
+      "label" : "2020-05-01",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "01MAY2020",
+      "POSITIVES" : 644,
+      "deathcnt" : 29,
+      "POSITIVES_CUM" : 31206,
+      "death_cum" : 1302,
+      "moving_avg" : 643.857142857
+    }, {
+      "label" : "2020-05-02",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "02MAY2020",
+      "POSITIVES" : 329,
+      "deathcnt" : 26,
+      "POSITIVES_CUM" : 31535,
+      "death_cum" : 1328,
+      "moving_avg" : 630.142857143
+    }, {
+      "label" : "2020-05-03",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "03MAY2020",
+      "POSITIVES" : 214,
+      "deathcnt" : 23,
+      "POSITIVES_CUM" : 31749,
+      "death_cum" : 1351,
+      "moving_avg" : 614.571428571
+    }, {
+      "label" : "2020-05-04",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "04MAY2020",
+      "POSITIVES" : 729,
+      "deathcnt" : 26,
+      "POSITIVES_CUM" : 32478,
+      "death_cum" : 1377,
+      "moving_avg" : 587.428571429
+    }, {
+      "label" : "2020-05-05",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "05MAY2020",
+      "POSITIVES" : 460,
+      "deathcnt" : 21,
+      "POSITIVES_CUM" : 32938,
+      "death_cum" : 1398,
+      "moving_avg" : 529.285714286
+    }, {
+      "label" : "2020-05-06",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "06MAY2020",
+      "POSITIVES" : 493,
+      "deathcnt" : 19,
+      "POSITIVES_CUM" : 33431,
+      "death_cum" : 1417,
+      "moving_avg" : 501.857142857
+    }, {
+      "label" : "2020-05-07",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "07MAY2020",
+      "POSITIVES" : 486,
+      "deathcnt" : 8,
+      "POSITIVES_CUM" : 33917,
+      "death_cum" : 1425,
+      "moving_avg" : 479.285714286
+    }, {
+      "label" : "2020-05-08",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "08MAY2020",
+      "POSITIVES" : 395,
+      "deathcnt" : 15,
+      "POSITIVES_CUM" : 34312,
+      "death_cum" : 1440,
+      "moving_avg" : 443.714285714
+    }, {
+      "label" : "2020-05-09",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "09MAY2020",
+      "POSITIVES" : 121,
+      "deathcnt" : 6,
+      "POSITIVES_CUM" : 34433,
+      "death_cum" : 1446,
+      "moving_avg" : 414
+    }, {
+      "label" : "2020-05-10",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "10MAY2020",
+      "POSITIVES" : 139,
+      "deathcnt" : 10,
+      "POSITIVES_CUM" : 34572,
+      "death_cum" : 1456,
+      "moving_avg" : 403.285714286
+    }, {
+      "label" : "2020-05-11",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "11MAY2020",
+      "POSITIVES" : 52,
+      "deathcnt" : 5,
+      "POSITIVES_CUM" : 34624,
+      "death_cum" : 1461,
+      "moving_avg" : 306.571428571
+    }, {
+      "label" : "2020-05-12",
+      "source" : "2020-05-12T09:54:47",
+      "test_date" : "12MAY2020",
+      "POSITIVES" : 5,
+      "deathcnt" : 0,
+      "POSITIVES_CUM" : 34629,
+      "death_cum" : 1461,
+      "moving_avg" : 241.571428571
+    } ]
+  },
+  "totalTests" : 262179,
+  "confirmedCases" : 34635,
+  "hospitalized" : 6130,
+  "deaths" : 1461,
+  "icu" : 1443,
+  "countyCaseMap" : null,
+  "countyDeathMap" : null
 } ]
