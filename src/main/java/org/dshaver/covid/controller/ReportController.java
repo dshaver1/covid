@@ -1,6 +1,8 @@
 package org.dshaver.covid.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.dshaver.covid.dao.RawDataRepository;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.AggregateReport;
@@ -15,6 +17,8 @@ import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,6 +28,7 @@ import java.util.stream.Collectors;
 @RestController
 public class ReportController {
     private static final String REPORT_TGT_DIR = "H:\\dev\\covid\\src\\main\\resources\\static\\reports\\";
+    private static final int DEFAULT_TARGET_HOUR = 18;
     private final ReportRepository reportRepository;
     private final RawDataRepository rawDataRepository;
     private final ReportService reportService;
@@ -42,20 +47,24 @@ public class ReportController {
 
     @GetMapping("/reports/daily")
     public Collection<Report> getReports(@RequestParam(name = "startDate", required = false)
-                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                                     LocalDate startDate,
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                          @RequestParam(name = "endDate", required = false)
-                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
-        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020,1,1) : startDate.minusDays(1);
-        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030,1,1) : endDate.plusDays(1);
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                         @RequestParam(name = "targetHour", required = false) Integer targetHour) throws Exception {
+        int defaultedTargetHour = targetHour == null ? DEFAULT_TARGET_HOUR : targetHour;
+        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
+        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
 
         List<Report> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate);
 
-        Map<LocalDate, Report> reportMap = new HashMap<>();
+        Multimap<LocalDate, Report> reportMap = ArrayListMultimap.create();
         reportList.forEach(report -> reportMap.put(report.getReportDate(), report));
 
         TreeSet<Report> sorted = new TreeSet<>(Comparator.comparing(Report::getId));
-        sorted.addAll(reportMap.values());
+
+        for (LocalDate date : reportMap.keySet()) {
+            sorted.add(getClosestReport(reportMap.get(date), defaultedTargetHour));
+        }
 
         File file = Paths.get(REPORT_TGT_DIR, "daily").toFile();
         objectMapper.writeValue(file, sorted);
@@ -63,14 +72,30 @@ public class ReportController {
         return sorted;
     }
 
+    private Report getClosestReport(Collection<Report> reports, int targetHour) {
+        Report selected = reports.stream().findFirst().get();
+        int bestDiff = Math.abs(LocalDateTime.parse(selected.getId(), DateTimeFormatter.ISO_LOCAL_DATE_TIME).getHour() - targetHour);
+
+        for (Report report : reports) {
+            int currentDiff = Math.abs(LocalDateTime.parse(report.getId(), DateTimeFormatter.ISO_LOCAL_DATE_TIME).getHour() - targetHour);
+
+            if (currentDiff < bestDiff) {
+                bestDiff = currentDiff;
+                selected = report;
+            }
+        }
+
+        return selected;
+    }
+
     @GetMapping("/reports/aggregate")
     public AggregateReport aggregateReport(@RequestParam(name = "startDate", required = false)
                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                           LocalDate startDate,
+                                                   LocalDate startDate,
                                            @RequestParam(name = "endDate", required = false)
                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020,1,1) : startDate.minusDays(1);
-        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030,1,1) : endDate.plusDays(1);
+        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
+        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
         List<Report> reports = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate);
 
         return new AggregateReport(reports);
