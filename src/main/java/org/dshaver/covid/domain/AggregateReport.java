@@ -25,7 +25,7 @@ public class AggregateReport {
     private LocalDate minDate;
     private LocalDate maxDate;
 
-    public AggregateReport(List<Report> reportList) {
+    public AggregateReport(Collection<Report> reportList) {
         Map<String, DataPoint> tempTotalDeathMap = new HashMap<>();
         Map<String, DataPoint> tempTotalCaseMap = new HashMap<>();
         Map<String, DataPoint> tempTotalTestMap = new HashMap<>();
@@ -35,8 +35,8 @@ public class AggregateReport {
         newDeaths = new TreeSet<>(Comparator.comparing(DataPoint::getSource));
         newCases = new TreeSet<>(Comparator.comparing(DataPoint::getSource));
         newTests = new TreeSet<>(Comparator.comparing(DataPoint::getSource));
-        minDate = reportList.get(0).getReportDate();
-        maxDate = reportList.get(reportList.size() - 1).getReportDate();
+        minDate = reportList.stream().findFirst().get().getReportDate();
+        maxDate = reportList.stream().skip(reportList.size() - 1).findFirst().get().getReportDate();
 
         // populate map from 2020-02-01 to match backfilled data
         LocalDate start = LocalDate.of(2020,2,1);

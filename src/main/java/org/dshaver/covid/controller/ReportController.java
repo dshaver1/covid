@@ -3,19 +3,20 @@ package org.dshaver.covid.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.opencsv.CSVWriter;
 import org.dshaver.covid.dao.RawDataRepository;
 import org.dshaver.covid.dao.ReportRepository;
-import org.dshaver.covid.domain.AggregateReport;
-import org.dshaver.covid.domain.DownloadRequest;
-import org.dshaver.covid.domain.DownloadResponse;
-import org.dshaver.covid.domain.Report;
+import org.dshaver.covid.domain.*;
 import org.dshaver.covid.service.ReportService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +44,45 @@ public class ReportController {
         this.rawDataRepository = rawDataRepository;
         this.reportService = reportService;
         this.objectMapper = objectMapper;
+    }
+
+    // TODO finish csv
+    @GetMapping("/reports/dailyCsv")
+    public void getCsvReports() throws Exception {
+        Collection<Report> reports = getReports(null, null, null);
+
+        String[] header = reports.stream()
+                .reduce((first, second) -> second)
+                .get().getEpicurve().getEpicurvePoints()
+                .stream()
+                .map(EpicurvePoint::getLabel)
+                .collect(Collectors.toList())
+                .toArray(new String[]{});
+
+        Path path = Paths.get(REPORT_TGT_DIR);
+        CSVWriter writer =
+                new CSVWriter(Files.newBufferedWriter(path.resolve("daily.csv"), StandardOpenOption.CREATE_NEW));
+
+        writer.writeNext(header);
+
+        for (Report report : reports) {
+
+        }
+
+        writer.close();
+    }
+
+    @GetMapping("/reports/histogram")
+    public HistogramReport getHistogramReport(@RequestParam(name = "startDate", required = false)
+                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                          LocalDate startDate,
+                                              @RequestParam(name = "endDate", required = false)
+                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
+        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
+        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
+        Collection<Report> reports = getReports(defaultedStartDate, defaultedEndDate, 18);
+
+        return new HistogramReport(reports);
     }
 
     @GetMapping("/reports/daily")
@@ -93,10 +133,10 @@ public class ReportController {
                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                                    LocalDate startDate,
                                            @RequestParam(name = "endDate", required = false)
-                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
-        List<Report> reports = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate);
+        Collection<Report> reports = getReports(defaultedStartDate, defaultedEndDate, 18);
 
         return new AggregateReport(reports);
     }
