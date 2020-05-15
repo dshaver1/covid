@@ -3,8 +3,14 @@ package org.dshaver.covid.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.dshaver.covid.domain.*;
+import org.dshaver.covid.domain.epicurve.Epicurve;
+import org.dshaver.covid.domain.epicurve.EpicurveImpl1;
+import org.dshaver.covid.domain.epicurve.EpicurvePointImpl1;
+import org.dshaver.covid.domain.overview.ReportOverview;
+import org.dshaver.covid.service.extractor.Extractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -27,16 +33,13 @@ import java.util.stream.Collectors;
 public class ReportFactory {
     private static final Logger logger = LoggerFactory.getLogger(ReportFactory.class);
     private static final DateTimeFormatter SOURCE_LABEL_FORMAT = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MMM-yy").toFormatter();
-    private static final DateTimeFormatter SOURCE_LABEL_FORMAT_V2 = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("ddMMMyyyy").toFormatter();
-    private static final DateTimeFormatter TARGET_LABEL_FORMAT = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("MMM-dd").toFormatter();
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
-    private static final Pattern epicurvePattern = Pattern.compile(".*JSON.parse\\('(\\{\"SASJSONExport\":\"\\d\\.\\d.+?\",\"SASTableData\\+EPICURVE\".+?}]}).*");
-    private static final Pattern countyPattern = Pattern.compile(".*JSON.parse\\('(\\{\"SASJSONExport\":\"\\d\\.\\d.+?\",\"SASTableData\\+COUNTYCASES\".+?}]}).*");
-    private static final Pattern overviewPattern = Pattern.compile(".*JSON.parse\\('(\\{\"SASJSONExport\":\"\\d\\.\\d.+?\",\"SASTableData\\+GA_COVID19_OVERALL\".+?}]}).*");
     private final Pattern onlyNumbersPattern = Pattern.compile("(\\d+).*");
     private final List<String> whiteList = new ArrayList<>();
     private final String filter = "\"dataPoints\" : ";
     private final ObjectMapper objectMapper;
+    private final Extractor<String, ReportOverview> reportOverviewExtractor;
+    private final Extractor<String, Epicurve> epicurveExtractor;
 
     {
         whiteList.add("VAR ");
@@ -50,36 +53,29 @@ public class ReportFactory {
     }
 
     @Inject
-    public ReportFactory(ObjectMapper objectMapper) {
+    public ReportFactory(ObjectMapper objectMapper,
+                         @Qualifier("reportOverviewExtractorDelegator") Extractor<String, ReportOverview> reportOverviewExtractor,
+                         @Qualifier("epicurveExtractorDelegator") Extractor<String, Epicurve> epicurveExtractor) {
         this.objectMapper = objectMapper;
+        this.reportOverviewExtractor = reportOverviewExtractor;
+        this.epicurveExtractor = epicurveExtractor;
     }
 
     public Report createReport(RawDataV2 rawData) throws Exception {
-        Optional<String> epicurveString = getVarFromRegex(rawData, epicurvePattern);
-        Epicurve epicurve = null;
-        if (epicurveString.isPresent()) {
-            List<EpicurvePoint> filteredDataPoints = new ArrayList<>();
-            epicurve = objectMapper.readValue(epicurveString.get(), Epicurve.class);
-            for (EpicurvePoint current : epicurve.getEpicurvePoints()) {
-                LocalDate labelDate = LocalDate.parse(current.getTestDate(), SOURCE_LABEL_FORMAT_V2);
-                if (labelDate.isAfter(EARLIEST_DATE)) {
-                    current.setSource(rawData.getId());
-                    current.setLabel(labelDate.format(DateTimeFormatter.ISO_DATE).toUpperCase());
-                    filteredDataPoints.add(current);
-                }
-            }
-            epicurve.setEpicurvePoints(filteredDataPoints);
+        Optional<Epicurve> maybeEpicurve = epicurveExtractor.extract(rawData.getPayload(), rawData.getId());
+
+        if (!maybeEpicurve.isPresent()) {
+            throw new IllegalStateException("Could not find Epicurve within raw data!");
         }
 
-        Optional<String> overviewString = getVarFromRegex(rawData, overviewPattern);
-        ReportOverviewContainer reportOverviewContainer = null;
-        if (overviewString.isPresent()) {
-            reportOverviewContainer = objectMapper.readValue(overviewString.get(), ReportOverviewContainer.class);
+        Optional<ReportOverview> maybeOverview = reportOverviewExtractor.extract(rawData.getPayload(), rawData.getId());
+
+        if (!maybeOverview.isPresent()) {
+            throw new IllegalStateException("Could not find ReportOverview within raw data!");
         }
 
-        // Just assuming there's only going to be one here... because why would there be more?
-        ReportOverview overview = reportOverviewContainer.getReportOverviewList().get(0);
-
+        Epicurve epicurve = maybeEpicurve.get();
+        ReportOverview overview = maybeOverview.get();
         Report report = new Report(LocalDateTime.now(),
                 rawData.getId(),
                 rawData.getReportDate(),
@@ -89,6 +85,8 @@ public class ReportFactory {
                 overview.getHospitalization(),
                 overview.getDeaths(),
                 overview.getIcu());
+
+        logger.info("Done parsing report for " + report.getId());
 
         return report;
     }
@@ -118,7 +116,7 @@ public class ReportFactory {
         int hospitalized = getTableValue(filteredStrings, "COVID-19 Confirmed Cases:", "Hospitalized");
         int deaths = getTableValue(filteredStrings, "COVID-19 Confirmed Cases:", "Deaths");
 
-        Epicurve epicurve = createEpicurveFromSeries(ccasedaySeries, ccasecumSeries, cdeathdaySeries, cdeathcumSeries);
+        EpicurveImpl1 epicurve = createEpicurveFromSeries(ccasedaySeries, ccasecumSeries, cdeathdaySeries, cdeathcumSeries);
 
         Report report = new Report(LocalDateTime.now(),
                 rawData.getId(),
@@ -134,19 +132,8 @@ public class ReportFactory {
         return report;
     }
 
-    private Optional<String> getVarFromRegex(RawDataV2 rawDataV2, Pattern pattern) {
-        for (String s : rawDataV2.getPayload()) {
-            Matcher epicurveMatcher = pattern.matcher(s);
-            if (epicurveMatcher.matches()) {
-                return Optional.of(epicurveMatcher.group(1));
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    private Epicurve createEpicurveFromSeries(Series caseDaySeries, Series caseCumSeries, Series deathDaySeries, Series deathCumSeries) {
-        Epicurve epicurve = new Epicurve();
+    private EpicurveImpl1 createEpicurveFromSeries(Series caseDaySeries, Series caseCumSeries, Series deathDaySeries, Series deathCumSeries) {
+        EpicurveImpl1 epicurve = new EpicurveImpl1();
         epicurve.setExportFormat("Sourced from old DPH site");
         int minLength = caseDaySeries.getDataPoints().size();
         if (caseCumSeries.getDataPoints().size() < minLength) minLength = caseCumSeries.getDataPoints().size();
@@ -156,7 +143,7 @@ public class ReportFactory {
         // Only build the epicurve out to the point where we have all 4 series. Basically, we can't build the epicurve
         // if we don't have all 4 series for the date.
         for (int i = 0; i < minLength; i++) {
-            EpicurvePoint epicurvePoint = new EpicurvePoint();
+            EpicurvePointImpl1 epicurvePoint = new EpicurvePointImpl1();
             StringBuilder labelBuilder = new StringBuilder();
             getReverseDatapoint(caseDaySeries, i).ifPresent(dataPoint -> {
                 labelBuilder.append(dataPoint.getLabel());

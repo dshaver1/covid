@@ -243,7 +243,7 @@
         // Create DPH graph!
         theData = data;
 
-        let epicurve = data[data.length - 1].epicurve.epicurvePoints;
+        let epicurve = data[data.length - 1].epicurve;
 
         // Axis should be set to the latest data.
         // scale the range of the data
@@ -251,7 +251,7 @@
             return d.label;
         }));
         dphyScale.domain([0, d3.max(epicurve, function (d) {
-            return d.POSITIVES;
+            return d.positives;
         })]);
 
         // add the Y gridlines
@@ -391,7 +391,7 @@
     }
 
     function createXAxisTickValues() {
-        let epicurve = theData[theData.length - 1].epicurve.epicurvePoints;
+        let epicurve = theData[theData.length - 1].epicurve;
         let xAxisTickValues = [];
 
         for (let i = 0; i > -1 * epicurve.length; i -= 2) {
@@ -445,7 +445,7 @@
                 var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
                 content += `
                     <table style="margin-top: 2.5px;">
-                            <tr><td>Cases: </td><td style="text-align: right">` + d.POSITIVES + `</td></tr>
+                            <tr><td>Cases: </td><td style="text-align: right">` + d.positives + `</td></tr>
                             <tr><td>Deaths: </td><td style="text-align: right">` + d.deathcnt + `</td></tr>
                     </table>
                     `;
@@ -469,11 +469,11 @@
     }
 
     function getCases(data) {
-        return data.POSITIVES;
+        return data.positives;
     }
 
     function updateDiffChart(data, dataCallback, clazz, color, highlightColor) {
-        var selectedData = dphSvg.selectAll("." + clazz).data(data.epicurve.epicurvePoints);
+        var selectedData = dphSvg.selectAll("." + clazz).data(data.epicurve);
         var enterData = selectedData.enter();
 
         enterData.append("rect")

@@ -1,4 +1,4 @@
-package org.dshaver.covid.domain;
+package org.dshaver.covid.domain.overview;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,15 +11,15 @@ public class ReportOverviewContainer {
     @JsonProperty("SASJSONExport")
     String exportFormat;
 
-    List<ReportOverview> reportOverviewList;
+    List<ReportOverviewImpl1> reportOverviewList;
 
     @JsonProperty("reportOverviewList")
-    public List<ReportOverview> getReportOverviewList() {
+    public List<ReportOverviewImpl1> getReportOverviewList() {
         return reportOverviewList;
     }
 
     @JsonProperty("SASTableData+GA_COVID19_OVERALL")
-    public void setReportOverviewList(List<ReportOverview> reportOverviewList) {
+    public void setReportOverviewList(List<ReportOverviewImpl1> reportOverviewList) {
         this.reportOverviewList = reportOverviewList;
     }
 }

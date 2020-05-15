@@ -1,13 +1,17 @@
 package org.dshaver.covid.domain;
 
 import lombok.Data;
+import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -37,12 +41,12 @@ public class HistogramReport {
             Report prevReport = reportArray[index - 1];
             Map<LocalDate, Integer> casesVm = getVm(currentReport, prevReport, EpicurvePoint::getPositiveCount);
             casesVm.forEach((date, value) -> {
-                Integer dayDiff = ((Long)ChronoUnit.DAYS.between(currentReport.getReportDate(), date)).intValue();
+                Integer dayDiff = ((Long) ChronoUnit.DAYS.between(currentReport.getReportDate(), date)).intValue();
                 casesHist.merge(dayDiff, value, Integer::sum);
             });
             Map<LocalDate, Integer> deathsVm = getVm(currentReport, prevReport, EpicurvePoint::getDeathCount);
             deathsVm.forEach((date, value) -> {
-                Integer dayDiff = ((Long)ChronoUnit.DAYS.between(currentReport.getReportDate(), date)).intValue();
+                Integer dayDiff = ((Long) ChronoUnit.DAYS.between(currentReport.getReportDate(), date)).intValue();
                 deathsHist.merge(dayDiff, value, Integer::sum);
             });
         }
@@ -51,8 +55,8 @@ public class HistogramReport {
         int casesSum = casesHist.values().stream().mapToInt(i -> i).sum();
         int deathsSum = deathsHist.values().stream().mapToInt(i -> i).sum();
 
-        casesHist.forEach((key, value) -> casesPercentageHist.put(key, BigDecimal.valueOf(((0D + value)/casesSum)*100).round(DECIMALS_4)));
-        deathsHist.forEach((key, value) -> deathsPercentageHist.put(key, BigDecimal.valueOf(((0D + value)/deathsSum)*100).round(DECIMALS_4)));
+        casesHist.forEach((key, value) -> casesPercentageHist.put(key, BigDecimal.valueOf(((0D + value) / casesSum) * 100).round(DECIMALS_4)));
+        deathsHist.forEach((key, value) -> deathsPercentageHist.put(key, BigDecimal.valueOf(((0D + value) / deathsSum) * 100).round(DECIMALS_4)));
 
         BigDecimal accumulator = BigDecimal.ZERO;
         for (Map.Entry<Integer, BigDecimal> entry : casesPercentageHist.entrySet()) {
@@ -73,10 +77,10 @@ public class HistogramReport {
 
     private Map<LocalDate, Integer> getVm(Report currentReport, Report previousReport, Function<EpicurvePoint, Integer> valueFunction) {
         Map<LocalDate, Integer> vm = new HashMap<>();
-        for (EpicurvePoint epicurvePoint : currentReport.getEpicurve().getEpicurvePoints()) {
+        for (EpicurvePoint epicurvePoint : currentReport.getEpicurve()) {
             LocalDate currentDate = LocalDate.parse(epicurvePoint.getLabel(), DateTimeFormatter.ISO_LOCAL_DATE);
             Integer currentValue = valueFunction.apply(epicurvePoint);
-            Optional<Integer> previousValue = previousReport.getEpicurve().getEpicurvePoints()
+            Optional<Integer> previousValue = previousReport.getEpicurve()
                     .stream()
                     .filter(point -> LocalDate.parse(point.getLabel(), DateTimeFormatter.ISO_LOCAL_DATE).equals(currentDate))
                     .map(valueFunction)

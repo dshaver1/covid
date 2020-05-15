@@ -7,6 +7,7 @@ import com.opencsv.CSVWriter;
 import org.dshaver.covid.dao.RawDataRepository;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.*;
+import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.dshaver.covid.service.ReportService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,7 @@ public class ReportController {
 
         String[] header = reports.stream()
                 .reduce((first, second) -> second)
-                .get().getEpicurve().getEpicurvePoints()
+                .get().getEpicurve()
                 .stream()
                 .map(EpicurvePoint::getLabel)
                 .collect(Collectors.toList())
@@ -180,6 +181,8 @@ public class ReportController {
 
     @PostMapping("/reports/reprocess")
     public void reprocessAll() {
-        reportService.bulkProcess(true);
+        reportService.bulkProcessV1Data(true);
+        // Don't delete data a second time because then we would never have any V1 reports
+        reportService.bulkProcessV2Data(false);
     }
 }

@@ -123,7 +123,7 @@ public class ReportService {
     /**
      * Wrote this to do the one-time download from internet archives.
      */
-    public void bulkProcess(boolean deleteFirst) {
+    public void bulkProcessV1Data(boolean deleteFirst) {
         List<RawDataV1> allData = rawDataRepository.findAll();
 
         if (deleteFirst) {
@@ -132,6 +132,26 @@ public class ReportService {
         }
 
         for (RawDataV1 rawData : allData) {
+            try {
+                Report report = reportFactory.createReport(rawData);
+                reportRepository.insert(report);
+            } catch (DuplicateKeyException e) {
+                logger.info("Already saved this report. Skipping...");
+            } catch (Exception e) {
+                logger.error("Could not create report! " + rawData, e);
+            }
+        }
+    }
+
+    public void bulkProcessV2Data(boolean deleteFirst) {
+        List<RawDataV2> allData = rawDataRepository2.findAll();
+
+        if (deleteFirst) {
+            logger.info("Deleting all reports!");
+            reportRepository.deleteAll();
+        }
+
+        for (RawDataV2 rawData : allData) {
             try {
                 Report report = reportFactory.createReport(rawData);
                 reportRepository.insert(report);
@@ -185,9 +205,9 @@ public class ReportService {
 
             response.setFoundNew(true);
         } catch (DuplicateKeyException e) {
-            logger.info("Already saved this report. Skipping...");
+            logger.info("Already saved this report. Skipping... ");
         } catch (Exception e) {
-            logger.info("Could not create report from rawData! {}", rawData);
+            logger.info("Could not create report from rawData! " + rawData, e);
         }
 
         return response;
