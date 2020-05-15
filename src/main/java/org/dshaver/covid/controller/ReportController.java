@@ -54,7 +54,7 @@ public class ReportController {
 
         String[] header = reports.stream()
                 .reduce((first, second) -> second)
-                .get().getEpicurve()
+                .get().getGeorgiaEpicurve().getData()
                 .stream()
                 .map(EpicurvePoint::getLabel)
                 .collect(Collectors.toList())

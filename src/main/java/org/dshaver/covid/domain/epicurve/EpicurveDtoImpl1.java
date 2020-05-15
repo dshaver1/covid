@@ -3,7 +3,6 @@ package org.dshaver.covid.domain.epicurve;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -12,7 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
-public class EpicurveImpl1 implements Epicurve {
+public class EpicurveDtoImpl1 implements EpicurveDto {
     @JsonProperty("SASJSONExport")
     String exportFormat;
 

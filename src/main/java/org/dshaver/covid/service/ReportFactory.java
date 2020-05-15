@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.Epicurve;
-import org.dshaver.covid.domain.epicurve.EpicurveImpl1;
+import org.dshaver.covid.domain.epicurve.EpicurveDto;
+import org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1;
 import org.dshaver.covid.domain.epicurve.EpicurvePointImpl1;
 import org.dshaver.covid.domain.overview.ReportOverview;
 import org.dshaver.covid.service.extractor.Extractor;
@@ -19,9 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -39,7 +38,7 @@ public class ReportFactory {
     private final String filter = "\"dataPoints\" : ";
     private final ObjectMapper objectMapper;
     private final Extractor<String, ReportOverview> reportOverviewExtractor;
-    private final Extractor<String, Epicurve> epicurveExtractor;
+    private final Extractor<String, Map<String, Epicurve>> epicurveExtractor;
 
     {
         whiteList.add("VAR ");
@@ -55,14 +54,14 @@ public class ReportFactory {
     @Inject
     public ReportFactory(ObjectMapper objectMapper,
                          @Qualifier("reportOverviewExtractorDelegator") Extractor<String, ReportOverview> reportOverviewExtractor,
-                         @Qualifier("epicurveExtractorDelegator") Extractor<String, Epicurve> epicurveExtractor) {
+                         @Qualifier("epicurveExtractorDelegator") Extractor<String, Map<String, Epicurve>> epicurveExtractor) {
         this.objectMapper = objectMapper;
         this.reportOverviewExtractor = reportOverviewExtractor;
         this.epicurveExtractor = epicurveExtractor;
     }
 
     public Report createReport(RawDataV2 rawData) throws Exception {
-        Optional<Epicurve> maybeEpicurve = epicurveExtractor.extract(rawData.getPayload(), rawData.getId());
+        Optional<Map<String, Epicurve>> maybeEpicurve = epicurveExtractor.extract(rawData.getPayload(), rawData.getId());
 
         if (!maybeEpicurve.isPresent()) {
             throw new IllegalStateException("Could not find Epicurve within raw data!");
@@ -74,12 +73,12 @@ public class ReportFactory {
             throw new IllegalStateException("Could not find ReportOverview within raw data!");
         }
 
-        Epicurve epicurve = maybeEpicurve.get();
+        Map<String, Epicurve> epicurves = maybeEpicurve.get();
         ReportOverview overview = maybeOverview.get();
         Report report = new Report(LocalDateTime.now(),
                 rawData.getId(),
                 rawData.getReportDate(),
-                epicurve,
+                epicurves,
                 overview.getTotalTests(),
                 overview.getConfirmedCovid(),
                 overview.getHospitalization(),
@@ -116,12 +115,20 @@ public class ReportFactory {
         int hospitalized = getTableValue(filteredStrings, "COVID-19 Confirmed Cases:", "Hospitalized");
         int deaths = getTableValue(filteredStrings, "COVID-19 Confirmed Cases:", "Deaths");
 
-        EpicurveImpl1 epicurve = createEpicurveFromSeries(ccasedaySeries, ccasecumSeries, cdeathdaySeries, cdeathcumSeries);
+        // Get DTO
+        EpicurveDtoImpl1 epicurveDto = createEpicurveFromSeries(ccasedaySeries, ccasecumSeries, cdeathdaySeries, cdeathcumSeries);
+
+        // Convert to target epicurve object
+        Map<String, Epicurve> epicurves = new HashMap<>();
+        epicurveDto.getAllEpicurves().asMap().forEach((county, points) -> {
+            Epicurve countyEpicurve = epicurves.computeIfAbsent(county, k -> new Epicurve(county));
+            countyEpicurve.setData(points);
+        });
 
         Report report = new Report(LocalDateTime.now(),
                 rawData.getId(),
                 rawData.getReportDate(),
-                epicurve,
+                epicurves,
                 totalTestsPerformed,
                 confirmedCases,
                 hospitalized,
@@ -132,8 +139,8 @@ public class ReportFactory {
         return report;
     }
 
-    private EpicurveImpl1 createEpicurveFromSeries(Series caseDaySeries, Series caseCumSeries, Series deathDaySeries, Series deathCumSeries) {
-        EpicurveImpl1 epicurve = new EpicurveImpl1();
+    private EpicurveDtoImpl1 createEpicurveFromSeries(Series caseDaySeries, Series caseCumSeries, Series deathDaySeries, Series deathCumSeries) {
+        EpicurveDtoImpl1 epicurve = new EpicurveDtoImpl1();
         epicurve.setExportFormat("Sourced from old DPH site");
         int minLength = caseDaySeries.getDataPoints().size();
         if (caseCumSeries.getDataPoints().size() < minLength) minLength = caseCumSeries.getDataPoints().size();

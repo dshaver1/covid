@@ -1,13 +1,18 @@
 package org.dshaver.covid.domain.epicurve;
 
-import com.google.common.collect.Multimap;
+import lombok.*;
 
 import java.util.Collection;
 
-public interface Epicurve {
-    Multimap<String, EpicurvePoint> getAllEpicurves();
-
-    Collection<EpicurvePoint> getEpicurveForCounty(String county);
-
-    Collection<EpicurvePoint> getStateEpicurve();
+/**
+ * Target internal representation of a single epicurve
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@RequiredArgsConstructor
+public class Epicurve {
+    @NonNull
+    String county;
+    Collection<EpicurvePoint> data;
 }

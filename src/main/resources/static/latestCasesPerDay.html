@@ -243,7 +243,7 @@
         // Create DPH graph!
         theData = data;
 
-        let epicurve = data[data.length - 1].epicurve;
+        let epicurve = data[data.length - 1].georgiaEpicurve.data;
 
         // Axis should be set to the latest data.
         // scale the range of the data
@@ -391,7 +391,7 @@
     }
 
     function createXAxisTickValues() {
-        let epicurve = theData[theData.length - 1].epicurve;
+        let epicurve = theData[theData.length - 1].georgiaEpicurve.data;
         let xAxisTickValues = [];
 
         for (let i = 0; i > -1 * epicurve.length; i -= 2) {
@@ -473,7 +473,7 @@
     }
 
     function updateDiffChart(data, dataCallback, clazz, color, highlightColor) {
-        var selectedData = dphSvg.selectAll("." + clazz).data(data.epicurve);
+        var selectedData = dphSvg.selectAll("." + clazz).data(data.georgiaEpicurve.data);
         var enterData = selectedData.enter();
 
         enterData.append("rect")

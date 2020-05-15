@@ -77,10 +77,10 @@ public class HistogramReport {
 
     private Map<LocalDate, Integer> getVm(Report currentReport, Report previousReport, Function<EpicurvePoint, Integer> valueFunction) {
         Map<LocalDate, Integer> vm = new HashMap<>();
-        for (EpicurvePoint epicurvePoint : currentReport.getEpicurve()) {
+        for (EpicurvePoint epicurvePoint : currentReport.getGeorgiaEpicurve().getData()) {
             LocalDate currentDate = LocalDate.parse(epicurvePoint.getLabel(), DateTimeFormatter.ISO_LOCAL_DATE);
             Integer currentValue = valueFunction.apply(epicurvePoint);
-            Optional<Integer> previousValue = previousReport.getEpicurve()
+            Optional<Integer> previousValue = previousReport.getGeorgiaEpicurve().getData()
                     .stream()
                     .filter(point -> LocalDate.parse(point.getLabel(), DateTimeFormatter.ISO_LOCAL_DATE).equals(currentDate))
                     .map(valueFunction)
