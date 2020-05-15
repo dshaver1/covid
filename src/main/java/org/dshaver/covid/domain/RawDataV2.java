@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @ToString(exclude = {"payload"})
 @Document("rawdatav2")
-public class RawDataV2 {
+public class RawDataV2 implements RawData {
     @Id
     private String id;
 
@@ -25,8 +25,4 @@ public class RawDataV2 {
     private LocalDate reportDate;
 
     private List<String> payload;
-
-    private Integer epicurveStartIndex;
-
-    private Integer epicurveEndIndex;
 }

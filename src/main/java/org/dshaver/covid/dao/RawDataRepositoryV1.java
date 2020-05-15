@@ -1,5 +1,6 @@
 package org.dshaver.covid.dao;
 
+import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
 import org.dshaver.covid.domain.Report;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -10,8 +11,8 @@ import java.util.List;
 /**
  * Created by xpdf64 on 2020-04-27.
  */
-public interface RawDataRepository extends MongoRepository<RawDataV1, String> {
+public interface RawDataRepositoryV1 extends MongoRepository<RawDataV1, String> {
 
-    List<RawDataV1> findByReportDateBetweenOrderByIdAsc(LocalDate startDate, LocalDate endDate);
+    List<RawData> findByReportDateBetweenOrderByIdAsc(LocalDate startDate, LocalDate endDate);
 
 }

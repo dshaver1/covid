@@ -1,6 +1,6 @@
 [ {
   "id" : "2020-04-13T11:56:13",
-  "createTime" : "2020-05-15T12:07:15.073",
+  "createTime" : "2020-05-15T13:51:19.552",
   "reportDate" : "2020-04-13",
   "totalTests" : 57021,
   "totalTestsVm" : 0,
@@ -645,7 +645,7 @@
   }
 }, {
   "id" : "2020-04-14T18:28:05",
-  "createTime" : "2020-05-15T12:07:15.152",
+  "createTime" : "2020-05-15T13:51:19.612",
   "reportDate" : "2020-04-14",
   "totalTests" : 61795,
   "totalTestsVm" : 4774,
@@ -1301,7 +1301,7 @@
   }
 }, {
   "id" : "2020-04-15T18:28:13",
-  "createTime" : "2020-05-15T12:07:15.228",
+  "createTime" : "2020-05-15T13:51:19.668",
   "reportDate" : "2020-04-15",
   "totalTests" : 64099,
   "totalTestsVm" : 2304,
@@ -1968,7 +1968,7 @@
   }
 }, {
   "id" : "2020-04-16T18:28:21",
-  "createTime" : "2020-05-15T12:07:15.286",
+  "createTime" : "2020-05-15T13:51:19.724",
   "reportDate" : "2020-04-16",
   "totalTests" : 67939,
   "totalTestsVm" : 3840,
@@ -2646,7 +2646,7 @@
   }
 }, {
   "id" : "2020-04-17T18:28:28",
-  "createTime" : "2020-05-15T12:07:15.344",
+  "createTime" : "2020-05-15T13:51:19.782",
   "reportDate" : "2020-04-17",
   "totalTests" : 71693,
   "totalTestsVm" : 3754,
@@ -3335,7 +3335,7 @@
   }
 }, {
   "id" : "2020-04-18T18:28:36",
-  "createTime" : "2020-05-15T12:07:15.402",
+  "createTime" : "2020-05-15T13:51:19.84",
   "reportDate" : "2020-04-18",
   "totalTests" : 74208,
   "totalTestsVm" : 2515,
@@ -4035,7 +4035,7 @@
   }
 }, {
   "id" : "2020-04-20T18:27:52",
-  "createTime" : "2020-05-15T12:07:15.463",
+  "createTime" : "2020-05-15T13:51:19.9",
   "reportDate" : "2020-04-20",
   "totalTests" : 84328,
   "totalTestsVm" : 10120,
@@ -4757,7 +4757,7 @@
   }
 }, {
   "id" : "2020-04-21T18:28:00",
-  "createTime" : "2020-05-15T12:07:15.524",
+  "createTime" : "2020-05-15T13:51:19.961",
   "reportDate" : "2020-04-21",
   "totalTests" : 88140,
   "totalTestsVm" : 3812,
@@ -5490,7 +5490,7 @@
   }
 }, {
   "id" : "2020-04-22T18:28:07",
-  "createTime" : "2020-05-15T12:07:15.585",
+  "createTime" : "2020-05-15T13:51:20.022",
   "reportDate" : "2020-04-22",
   "totalTests" : 94072,
   "totalTestsVm" : 5932,
@@ -6234,7 +6234,7 @@
   }
 }, {
   "id" : "2020-04-23T18:28:15",
-  "createTime" : "2020-05-15T12:07:15.647",
+  "createTime" : "2020-05-15T13:51:20.085",
   "reportDate" : "2020-04-23",
   "totalTests" : 101062,
   "totalTestsVm" : 6990,
@@ -6989,7 +6989,7 @@
   }
 }, {
   "id" : "2020-04-24T18:28:23",
-  "createTime" : "2020-05-15T12:07:15.709",
+  "createTime" : "2020-05-15T13:51:20.149",
   "reportDate" : "2020-04-24",
   "totalTests" : 107176,
   "totalTestsVm" : 6114,
@@ -7755,7 +7755,7 @@
   }
 }, {
   "id" : "2020-04-25T18:28:30",
-  "createTime" : "2020-05-15T12:07:15.773",
+  "createTime" : "2020-05-15T13:51:20.214",
   "reportDate" : "2020-04-25",
   "totalTests" : 119014,
   "totalTestsVm" : 11838,
@@ -8532,7 +8532,7 @@
   }
 }, {
   "id" : "2020-04-26T18:27:37",
-  "createTime" : "2020-05-15T12:07:15.836",
+  "createTime" : "2020-05-15T13:51:20.28",
   "reportDate" : "2020-04-26",
   "totalTests" : 122604,
   "totalTestsVm" : 3590,
@@ -9320,7 +9320,7 @@
   }
 }, {
   "id" : "2020-04-27T18:27:45",
-  "createTime" : "2020-05-15T12:07:15.901",
+  "createTime" : "2020-05-15T13:51:20.348",
   "reportDate" : "2020-04-27",
   "totalTests" : 127169,
   "totalTestsVm" : 4565,
@@ -10119,7 +10119,7 @@
   }
 }, {
   "id" : "2020-04-28T18:27:53",
-  "createTime" : "2020-05-15T12:07:15.967",
+  "createTime" : "2020-05-15T13:51:20.414",
   "reportDate" : "2020-04-28",
   "totalTests" : 140223,
   "totalTestsVm" : 13054,
@@ -10929,7 +10929,7 @@
   }
 }, {
   "id" : "2020-04-29T18:28:01",
-  "createTime" : "2020-05-15T12:07:16.048",
+  "createTime" : "2020-05-15T13:51:20.485",
   "reportDate" : "2020-04-29",
   "totalTests" : 143790,
   "totalTestsVm" : 3567,
@@ -11750,7 +11750,7 @@
   }
 }, {
   "id" : "2020-04-30T18:28:09",
-  "createTime" : "2020-05-15T12:07:16.118",
+  "createTime" : "2020-05-15T13:51:20.553",
   "reportDate" : "2020-04-30",
   "totalTests" : 164465,
   "totalTestsVm" : 20675,
@@ -12582,7 +12582,7 @@
   }
 }, {
   "id" : "2020-05-01T18:28:17",
-  "createTime" : "2020-05-15T12:07:16.185",
+  "createTime" : "2020-05-15T13:51:20.621",
   "reportDate" : "2020-05-01",
   "totalTests" : 168367,
   "totalTestsVm" : 3902,
@@ -13425,7 +13425,7 @@
   }
 }, {
   "id" : "2020-05-02T18:28:25",
-  "createTime" : "2020-05-15T12:07:16.254",
+  "createTime" : "2020-05-15T13:51:20.69",
   "reportDate" : "2020-05-02",
   "totalTests" : 174800,
   "totalTestsVm" : 6433,
@@ -14279,7 +14279,7 @@
   }
 }, {
   "id" : "2020-05-03T18:28:32",
-  "createTime" : "2020-05-15T12:07:16.322",
+  "createTime" : "2020-05-15T13:51:20.76",
   "reportDate" : "2020-05-03",
   "totalTests" : 183002,
   "totalTestsVm" : 8202,
@@ -15144,7 +15144,7 @@
   }
 }, {
   "id" : "2020-05-04T18:27:41",
-  "createTime" : "2020-05-15T12:07:16.391",
+  "createTime" : "2020-05-15T13:51:20.83",
   "reportDate" : "2020-05-04",
   "totalTests" : 183012,
   "totalTestsVm" : 10,
@@ -16020,7 +16020,7 @@
   }
 }, {
   "id" : "2020-05-05T18:27:48",
-  "createTime" : "2020-05-15T12:07:16.463",
+  "createTime" : "2020-05-15T13:51:20.901",
   "reportDate" : "2020-05-05",
   "totalTests" : 200814,
   "totalTestsVm" : 17802,
@@ -16907,7 +16907,7 @@
   }
 }, {
   "id" : "2020-05-06T18:27:58",
-  "createTime" : "2020-05-15T12:07:16.535",
+  "createTime" : "2020-05-15T13:51:20.974",
   "reportDate" : "2020-05-06",
   "totalTests" : 204137,
   "totalTestsVm" : 3323,
@@ -17805,7 +17805,7 @@
   }
 }, {
   "id" : "2020-05-07T18:28:04",
-  "createTime" : "2020-05-15T12:07:16.609",
+  "createTime" : "2020-05-15T13:51:21.047",
   "reportDate" : "2020-05-07",
   "totalTests" : 225937,
   "totalTestsVm" : 21800,
@@ -18714,7 +18714,7 @@
   }
 }, {
   "id" : "2020-05-07T21:25:03",
-  "createTime" : "2020-05-15T12:07:17.063",
+  "createTime" : "2020-05-15T13:51:21.494",
   "reportDate" : "2020-05-07",
   "totalTests" : 225937,
   "totalTestsVm" : 0,
@@ -19623,7 +19623,7 @@
   }
 }, {
   "id" : "2020-05-08T18:25:03",
-  "createTime" : "2020-05-15T12:07:17.247",
+  "createTime" : "2020-05-15T13:51:21.677",
   "reportDate" : "2020-05-08",
   "totalTests" : 227477,
   "totalTestsVm" : 1540,
@@ -20543,7 +20543,7 @@
   }
 }, {
   "id" : "2020-05-09T18:25:03",
-  "createTime" : "2020-05-15T12:07:17.43",
+  "createTime" : "2020-05-15T13:51:21.86",
   "reportDate" : "2020-05-09",
   "totalTests" : 235324,
   "totalTestsVm" : 7847,
@@ -21474,7 +21474,7 @@
   }
 }, {
   "id" : "2020-05-10T18:25:04",
-  "createTime" : "2020-05-15T12:07:17.613",
+  "createTime" : "2020-05-15T13:51:22.043",
   "reportDate" : "2020-05-10",
   "totalTests" : 243547,
   "totalTestsVm" : 8223,
@@ -22416,7 +22416,7 @@
   }
 }, {
   "id" : "2020-05-11T19:05:19",
-  "createTime" : "2020-05-15T12:07:17.798",
+  "createTime" : "2020-05-15T13:51:22.228",
   "reportDate" : "2020-05-11",
   "totalTests" : 251288,
   "totalTestsVm" : 7741,
@@ -23369,7 +23369,7 @@
   }
 }, {
   "id" : "2020-05-12T19:00:04",
-  "createTime" : "2020-05-15T12:07:18.16",
+  "createTime" : "2020-05-15T13:51:22.612",
   "reportDate" : "2020-05-12",
   "totalTests" : 262179,
   "totalTestsVm" : 10891,
@@ -24333,7 +24333,7 @@
   }
 }, {
   "id" : "2020-05-13T19:00:03",
-  "createTime" : "2020-05-15T12:07:18.641",
+  "createTime" : "2020-05-15T13:51:23.223",
   "reportDate" : "2020-05-13",
   "totalTests" : 273904,
   "totalTestsVm" : 11725,
@@ -25308,7 +25308,7 @@
   }
 }, {
   "id" : "2020-05-14T19:00:03",
-  "createTime" : "2020-05-15T12:07:19.206",
+  "createTime" : "2020-05-15T13:51:23.726",
   "reportDate" : "2020-05-14",
   "totalTests" : 285881,
   "totalTestsVm" : 11977,
@@ -26293,24 +26293,24 @@
     } ]
   }
 }, {
-  "id" : "2020-05-15T09:00:03",
-  "createTime" : "2020-05-15T12:07:19.702",
+  "id" : "2020-05-15T13:00:03",
+  "createTime" : "2020-05-15T13:51:24.236",
   "reportDate" : "2020-05-15",
   "totalTests" : 301874,
   "totalTestsVm" : 15993,
-  "confirmedCases" : 36544,
-  "confirmedCasesVm" : 567,
-  "hospitalized" : 6381,
-  "hospitalizedVm" : 7,
-  "deaths" : 1548,
-  "deathsVm" : 4,
-  "icu" : 1527,
-  "icuVm" : -1,
+  "confirmedCases" : 36681,
+  "confirmedCasesVm" : 704,
+  "hospitalized" : 6438,
+  "hospitalizedVm" : 64,
+  "deaths" : 1557,
+  "deathsVm" : 13,
+  "icu" : 1534,
+  "icuVm" : 6,
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
       "label" : "2020-02-17",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
@@ -26321,7 +26321,7 @@
       "death_cum" : 0
     }, {
       "label" : "2020-02-18",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
@@ -26332,7 +26332,7 @@
       "death_cum" : 0
     }, {
       "label" : "2020-02-19",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
@@ -26343,7 +26343,7 @@
       "death_cum" : 0
     }, {
       "label" : "2020-02-20",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
@@ -26354,7 +26354,7 @@
       "death_cum" : 0
     }, {
       "label" : "2020-02-21",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
@@ -26365,928 +26365,928 @@
       "death_cum" : 0
     }, {
       "label" : "2020-02-22",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-02-22",
-      "positives" : 3,
+      "positives" : 4,
       "deathcnt" : 0,
-      "positives_cum" : 33,
+      "positives_cum" : 34,
       "death_cum" : 0
     }, {
       "label" : "2020-02-23",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-02-23",
       "positives" : 8,
       "deathcnt" : 0,
-      "positives_cum" : 41,
+      "positives_cum" : 42,
       "death_cum" : 0
     }, {
       "label" : "2020-02-24",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-02-24",
       "positives" : 7,
       "deathcnt" : 0,
-      "positives_cum" : 48,
+      "positives_cum" : 49,
       "death_cum" : 0
     }, {
       "label" : "2020-02-25",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-02-25",
       "positives" : 8,
       "deathcnt" : 0,
-      "positives_cum" : 56,
+      "positives_cum" : 57,
       "death_cum" : 0
     }, {
       "label" : "2020-02-26",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-02-26",
       "positives" : 10,
       "deathcnt" : 0,
-      "positives_cum" : 66,
+      "positives_cum" : 67,
       "death_cum" : 0
     }, {
       "label" : "2020-02-27",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-02-27",
       "positives" : 11,
       "deathcnt" : 0,
-      "positives_cum" : 77,
+      "positives_cum" : 78,
       "death_cum" : 0
     }, {
       "label" : "2020-02-28",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-02-28",
       "positives" : 13,
       "deathcnt" : 0,
-      "positives_cum" : 90,
+      "positives_cum" : 91,
       "death_cum" : 0
     }, {
       "label" : "2020-02-29",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-02-29",
       "positives" : 13,
       "deathcnt" : 0,
-      "positives_cum" : 103,
+      "positives_cum" : 104,
       "death_cum" : 0
     }, {
       "label" : "2020-03-01",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-01",
       "positives" : 73,
       "deathcnt" : 0,
-      "positives_cum" : 176,
+      "positives_cum" : 177,
       "death_cum" : 0
     }, {
       "label" : "2020-03-02",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-02",
       "positives" : 41,
       "deathcnt" : 0,
-      "positives_cum" : 217,
+      "positives_cum" : 218,
       "death_cum" : 0
     }, {
       "label" : "2020-03-03",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-03",
       "positives" : 41,
       "deathcnt" : 0,
-      "positives_cum" : 258,
+      "positives_cum" : 259,
       "death_cum" : 0
     }, {
       "label" : "2020-03-04",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-04",
       "positives" : 50,
       "deathcnt" : 0,
-      "positives_cum" : 308,
+      "positives_cum" : 309,
       "death_cum" : 0
     }, {
       "label" : "2020-03-05",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-05",
       "positives" : 44,
       "deathcnt" : 1,
-      "positives_cum" : 352,
+      "positives_cum" : 353,
       "death_cum" : 1
     }, {
       "label" : "2020-03-06",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-06",
       "positives" : 58,
       "deathcnt" : 0,
-      "positives_cum" : 410,
+      "positives_cum" : 411,
       "death_cum" : 1
     }, {
       "label" : "2020-03-07",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-07",
       "positives" : 62,
       "deathcnt" : 0,
-      "positives_cum" : 472,
+      "positives_cum" : 473,
       "death_cum" : 1
     }, {
       "label" : "2020-03-08",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-08",
       "positives" : 76,
       "deathcnt" : 0,
-      "positives_cum" : 548,
+      "positives_cum" : 549,
       "death_cum" : 1
     }, {
       "label" : "2020-03-09",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-09",
       "positives" : 121,
       "deathcnt" : 0,
-      "positives_cum" : 669,
+      "positives_cum" : 670,
       "death_cum" : 1
     }, {
       "label" : "2020-03-10",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-10",
-      "positives" : 149,
+      "positives" : 150,
       "deathcnt" : 0,
-      "positives_cum" : 818,
+      "positives_cum" : 820,
       "death_cum" : 1
     }, {
       "label" : "2020-03-11",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-11",
       "positives" : 156,
       "deathcnt" : 0,
-      "positives_cum" : 974,
+      "positives_cum" : 976,
       "death_cum" : 1
     }, {
       "label" : "2020-03-12",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 1,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 2,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-12",
-      "positives" : 180,
+      "positives" : 181,
       "deathcnt" : 1,
-      "positives_cum" : 1154,
+      "positives_cum" : 1157,
       "death_cum" : 2
     }, {
       "label" : "2020-03-13",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-13",
-      "positives" : 258,
+      "positives" : 259,
       "deathcnt" : 0,
-      "positives_cum" : 1412,
+      "positives_cum" : 1416,
       "death_cum" : 2
     }, {
       "label" : "2020-03-14",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-14",
       "positives" : 215,
       "deathcnt" : 2,
-      "positives_cum" : 1627,
+      "positives_cum" : 1631,
       "death_cum" : 4
     }, {
       "label" : "2020-03-15",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-15",
-      "positives" : 272,
+      "positives" : 273,
       "deathcnt" : 4,
-      "positives_cum" : 1899,
+      "positives_cum" : 1904,
       "death_cum" : 8
     }, {
       "label" : "2020-03-16",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-16",
       "positives" : 404,
       "deathcnt" : 2,
-      "positives_cum" : 2303,
+      "positives_cum" : 2308,
       "death_cum" : 10
     }, {
       "label" : "2020-03-17",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 1,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 3,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-17",
-      "positives" : 394,
+      "positives" : 396,
       "deathcnt" : 2,
-      "positives_cum" : 2697,
+      "positives_cum" : 2704,
       "death_cum" : 12
     }, {
       "label" : "2020-03-18",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 2,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-18",
-      "positives" : 434,
+      "positives" : 436,
       "deathcnt" : 9,
-      "positives_cum" : 3131,
+      "positives_cum" : 3140,
       "death_cum" : 21
     }, {
       "label" : "2020-03-19",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : -1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-19",
       "positives" : 407,
       "deathcnt" : 5,
-      "positives_cum" : 3538,
+      "positives_cum" : 3547,
       "death_cum" : 26
     }, {
       "label" : "2020-03-20",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 2,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-20",
-      "positives" : 478,
+      "positives" : 480,
       "deathcnt" : 5,
-      "positives_cum" : 4016,
+      "positives_cum" : 4027,
       "death_cum" : 31
     }, {
       "label" : "2020-03-21",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : -1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-21",
       "positives" : 306,
       "deathcnt" : 18,
-      "positives_cum" : 4322,
+      "positives_cum" : 4333,
       "death_cum" : 49
     }, {
       "label" : "2020-03-22",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-22",
       "positives" : 336,
       "deathcnt" : 9,
-      "positives_cum" : 4658,
+      "positives_cum" : 4669,
       "death_cum" : 58
     }, {
       "label" : "2020-03-23",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : -2,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-23",
       "positives" : 574,
       "deathcnt" : 10,
-      "positives_cum" : 5232,
+      "positives_cum" : 5243,
       "death_cum" : 68
     }, {
       "label" : "2020-03-24",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : -3,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-24",
-      "positives" : 511,
+      "positives" : 508,
       "deathcnt" : 15,
-      "positives_cum" : 5743,
+      "positives_cum" : 5751,
       "death_cum" : 83
     }, {
       "label" : "2020-03-25",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-25",
       "positives" : 562,
       "deathcnt" : 19,
-      "positives_cum" : 6305,
+      "positives_cum" : 6313,
       "death_cum" : 102
     }, {
       "label" : "2020-03-26",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-26",
-      "positives" : 499,
+      "positives" : 500,
       "deathcnt" : 14,
-      "positives_cum" : 6804,
+      "positives_cum" : 6813,
       "death_cum" : 116
     }, {
       "label" : "2020-03-27",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-27",
       "positives" : 520,
       "deathcnt" : 13,
-      "positives_cum" : 7324,
+      "positives_cum" : 7333,
       "death_cum" : 129
     }, {
       "label" : "2020-03-28",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-28",
       "positives" : 429,
       "deathcnt" : 21,
-      "positives_cum" : 7753,
+      "positives_cum" : 7762,
       "death_cum" : 150
     }, {
       "label" : "2020-03-29",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-29",
       "positives" : 370,
       "deathcnt" : 27,
-      "positives_cum" : 8123,
+      "positives_cum" : 8132,
       "death_cum" : 177
     }, {
       "label" : "2020-03-30",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 2,
-      "deathsVm" : 1,
+      "deathsVm" : 2,
       "county" : "Georgia",
       "test_date" : "2020-03-30",
       "positives" : 698,
-      "deathcnt" : 26,
-      "positives_cum" : 8821,
-      "death_cum" : 203
+      "deathcnt" : 27,
+      "positives_cum" : 8830,
+      "death_cum" : 204
     }, {
       "label" : "2020-03-31",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-03-31",
-      "positives" : 532,
+      "positives" : 533,
       "deathcnt" : 27,
-      "positives_cum" : 9353,
-      "death_cum" : 230
+      "positives_cum" : 9363,
+      "death_cum" : 231
     }, {
       "label" : "2020-04-01",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-01",
       "positives" : 735,
       "deathcnt" : 28,
-      "positives_cum" : 10088,
-      "death_cum" : 258
+      "positives_cum" : 10098,
+      "death_cum" : 259
     }, {
       "label" : "2020-04-02",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-02",
-      "positives" : 621,
+      "positives" : 622,
       "deathcnt" : 35,
-      "positives_cum" : 10709,
-      "death_cum" : 293
+      "positives_cum" : 10720,
+      "death_cum" : 294
     }, {
       "label" : "2020-04-03",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 17,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-03",
-      "positives" : 679,
+      "positives" : 696,
       "deathcnt" : 43,
-      "positives_cum" : 11388,
-      "death_cum" : 336
+      "positives_cum" : 11416,
+      "death_cum" : 337
     }, {
       "label" : "2020-04-04",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 4,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-04",
-      "positives" : 466,
+      "positives" : 470,
       "deathcnt" : 41,
-      "positives_cum" : 11854,
-      "death_cum" : 377
+      "positives_cum" : 11886,
+      "death_cum" : 378
     }, {
       "label" : "2020-04-05",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-05",
-      "positives" : 418,
+      "positives" : 419,
       "deathcnt" : 30,
-      "positives_cum" : 12272,
-      "death_cum" : 407
+      "positives_cum" : 12305,
+      "death_cum" : 408
     }, {
       "label" : "2020-04-06",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 3,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-06",
       "positives" : 899,
       "deathcnt" : 40,
-      "positives_cum" : 13171,
-      "death_cum" : 447
+      "positives_cum" : 13204,
+      "death_cum" : 448
     }, {
       "label" : "2020-04-07",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 2,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-07",
       "positives" : 695,
       "deathcnt" : 31,
-      "positives_cum" : 13866,
-      "death_cum" : 478
+      "positives_cum" : 13899,
+      "death_cum" : 479
     }, {
       "label" : "2020-04-08",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : -1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-08",
-      "positives" : 768,
+      "positives" : 767,
       "deathcnt" : 33,
-      "positives_cum" : 14634,
-      "death_cum" : 511
+      "positives_cum" : 14666,
+      "death_cum" : 512
     }, {
       "label" : "2020-04-09",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : -3,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : -2,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-09",
-      "positives" : 833,
+      "positives" : 834,
       "deathcnt" : 33,
-      "positives_cum" : 15467,
-      "death_cum" : 544
+      "positives_cum" : 15500,
+      "death_cum" : 545
     }, {
       "label" : "2020-04-10",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : -1,
       "county" : "Georgia",
       "test_date" : "2020-04-10",
-      "positives" : 890,
+      "positives" : 891,
       "deathcnt" : 36,
-      "positives_cum" : 16357,
-      "death_cum" : 580
+      "positives_cum" : 16391,
+      "death_cum" : 581
     }, {
       "label" : "2020-04-11",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : -1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-11",
       "positives" : 532,
       "deathcnt" : 29,
-      "positives_cum" : 16889,
-      "death_cum" : 609
+      "positives_cum" : 16923,
+      "death_cum" : 610
     }, {
       "label" : "2020-04-12",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-12",
       "positives" : 399,
       "deathcnt" : 30,
-      "positives_cum" : 17288,
-      "death_cum" : 639
+      "positives_cum" : 17322,
+      "death_cum" : 640
     }, {
       "label" : "2020-04-13",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-13",
       "positives" : 860,
       "deathcnt" : 31,
-      "positives_cum" : 18148,
-      "death_cum" : 670
+      "positives_cum" : 18182,
+      "death_cum" : 671
     }, {
       "label" : "2020-04-14",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
-      "deathsVm" : 0,
-      "county" : "Georgia",
-      "test_date" : "2020-04-14",
-      "positives" : 861,
-      "deathcnt" : 44,
-      "positives_cum" : 19009,
-      "death_cum" : 714
-    }, {
-      "label" : "2020-04-15",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
+      "test_date" : "2020-04-14",
+      "positives" : 862,
+      "deathcnt" : 44,
+      "positives_cum" : 19044,
+      "death_cum" : 715
+    }, {
+      "label" : "2020-04-15",
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 2,
+      "deathsVm" : 0,
+      "county" : "Georgia",
       "test_date" : "2020-04-15",
-      "positives" : 766,
+      "positives" : 767,
       "deathcnt" : 31,
-      "positives_cum" : 19775,
-      "death_cum" : 745
+      "positives_cum" : 19811,
+      "death_cum" : 746
     }, {
       "label" : "2020-04-16",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : -3,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-16",
       "positives" : 801,
       "deathcnt" : 52,
-      "positives_cum" : 20576,
-      "death_cum" : 797
+      "positives_cum" : 20612,
+      "death_cum" : 798
     }, {
       "label" : "2020-04-17",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-17",
       "positives" : 874,
       "deathcnt" : 36,
-      "positives_cum" : 21450,
-      "death_cum" : 833
+      "positives_cum" : 21486,
+      "death_cum" : 834
     }, {
       "label" : "2020-04-18",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-18",
-      "positives" : 479,
+      "positives" : 480,
       "deathcnt" : 30,
-      "positives_cum" : 21929,
-      "death_cum" : 863
+      "positives_cum" : 21966,
+      "death_cum" : 864
     }, {
       "label" : "2020-04-19",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-19",
       "positives" : 539,
       "deathcnt" : 37,
-      "positives_cum" : 22468,
-      "death_cum" : 900
+      "positives_cum" : 22505,
+      "death_cum" : 901
     }, {
       "label" : "2020-04-20",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : -1,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : -2,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-20",
-      "positives" : 927,
+      "positives" : 926,
       "deathcnt" : 38,
-      "positives_cum" : 23395,
-      "death_cum" : 938
+      "positives_cum" : 23431,
+      "death_cum" : 939
     }, {
       "label" : "2020-04-21",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 2,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 4,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-21",
-      "positives" : 902,
+      "positives" : 904,
       "deathcnt" : 33,
-      "positives_cum" : 24297,
-      "death_cum" : 971
+      "positives_cum" : 24335,
+      "death_cum" : 972
     }, {
       "label" : "2020-04-22",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-22",
       "positives" : 874,
       "deathcnt" : 41,
-      "positives_cum" : 25171,
-      "death_cum" : 1012
+      "positives_cum" : 25209,
+      "death_cum" : 1013
     }, {
       "label" : "2020-04-23",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 0,
-      "deathsVm" : 1,
+      "deathsVm" : 2,
       "county" : "Georgia",
       "test_date" : "2020-04-23",
       "positives" : 698,
-      "deathcnt" : 32,
-      "positives_cum" : 25869,
-      "death_cum" : 1044
+      "deathcnt" : 33,
+      "positives_cum" : 25907,
+      "death_cum" : 1046
     }, {
       "label" : "2020-04-24",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : -1,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : -2,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-24",
-      "positives" : 807,
+      "positives" : 806,
       "deathcnt" : 36,
-      "positives_cum" : 26676,
-      "death_cum" : 1080
+      "positives_cum" : 26713,
+      "death_cum" : 1082
     }, {
       "label" : "2020-04-25",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 1,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 3,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-25",
-      "positives" : 438,
+      "positives" : 440,
       "deathcnt" : 31,
-      "positives_cum" : 27114,
-      "death_cum" : 1111
+      "positives_cum" : 27153,
+      "death_cum" : 1113
     }, {
       "label" : "2020-04-26",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : -1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-26",
-      "positives" : 331,
+      "positives" : 330,
       "deathcnt" : 31,
-      "positives_cum" : 27445,
-      "death_cum" : 1142
+      "positives_cum" : 27483,
+      "death_cum" : 1144
     }, {
       "label" : "2020-04-27",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 2,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 3,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-27",
-      "positives" : 936,
+      "positives" : 937,
       "deathcnt" : 39,
-      "positives_cum" : 28381,
-      "death_cum" : 1181
+      "positives_cum" : 28420,
+      "death_cum" : 1183
     }, {
       "label" : "2020-04-28",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 7,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 6,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-28",
-      "positives" : 927,
+      "positives" : 926,
       "deathcnt" : 35,
-      "positives_cum" : 29308,
-      "death_cum" : 1216
+      "positives_cum" : 29346,
+      "death_cum" : 1218
     }, {
       "label" : "2020-04-29",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 7,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 4,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-29",
-      "positives" : 762,
+      "positives" : 759,
       "deathcnt" : 36,
-      "positives_cum" : 30070,
-      "death_cum" : 1252
+      "positives_cum" : 30105,
+      "death_cum" : 1254
     }, {
       "label" : "2020-04-30",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 16,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 10,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-04-30",
-      "positives" : 696,
+      "positives" : 690,
       "deathcnt" : 31,
-      "positives_cum" : 30766,
-      "death_cum" : 1283
+      "positives_cum" : 30795,
+      "death_cum" : 1285
     }, {
       "label" : "2020-05-01",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 17,
-      "deathsVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 14,
+      "deathsVm" : 1,
       "county" : "Georgia",
       "test_date" : "2020-05-01",
-      "positives" : 723,
-      "deathcnt" : 30,
-      "positives_cum" : 31489,
-      "death_cum" : 1313
+      "positives" : 720,
+      "deathcnt" : 31,
+      "positives_cum" : 31515,
+      "death_cum" : 1316
     }, {
       "label" : "2020-05-02",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : -6,
-      "deathsVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : -3,
+      "deathsVm" : 1,
       "county" : "Georgia",
       "test_date" : "2020-05-02",
-      "positives" : 318,
-      "deathcnt" : 26,
-      "positives_cum" : 31807,
-      "death_cum" : 1339
+      "positives" : 321,
+      "deathcnt" : 27,
+      "positives_cum" : 31836,
+      "death_cum" : 1343
     }, {
       "label" : "2020-05-03",
-      "source" : "2020-05-15T09:00:03",
+      "source" : "2020-05-15T13:00:03",
       "casesVm" : 1,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-03",
       "positives" : 242,
       "deathcnt" : 25,
-      "positives_cum" : 32049,
-      "death_cum" : 1364
+      "positives_cum" : 32078,
+      "death_cum" : 1368
     }, {
       "label" : "2020-05-04",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 16,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 15,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-04",
-      "positives" : 801,
+      "positives" : 800,
       "deathcnt" : 26,
-      "positives_cum" : 32850,
-      "death_cum" : 1390
+      "positives_cum" : 32878,
+      "death_cum" : 1394
     }, {
       "label" : "2020-05-05",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 14,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 11,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-05",
-      "positives" : 510,
+      "positives" : 507,
       "deathcnt" : 23,
-      "positives_cum" : 33360,
-      "death_cum" : 1413
+      "positives_cum" : 33385,
+      "death_cum" : 1417
     }, {
       "label" : "2020-05-06",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 23,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 24,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-06",
-      "positives" : 561,
+      "positives" : 562,
       "deathcnt" : 20,
-      "positives_cum" : 33921,
-      "death_cum" : 1433
+      "positives_cum" : 33947,
+      "death_cum" : 1437
     }, {
       "label" : "2020-05-07",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 25,
-      "deathsVm" : 0,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 24,
+      "deathsVm" : 1,
       "county" : "Georgia",
       "test_date" : "2020-05-07",
-      "positives" : 507,
-      "deathcnt" : 14,
-      "positives_cum" : 34428,
-      "death_cum" : 1447
+      "positives" : 506,
+      "deathcnt" : 15,
+      "positives_cum" : 34453,
+      "death_cum" : 1452
     }, {
       "label" : "2020-05-08",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 23,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 29,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-08",
-      "positives" : 477,
+      "positives" : 483,
       "deathcnt" : 22,
-      "positives_cum" : 34905,
-      "death_cum" : 1469
+      "positives_cum" : 34936,
+      "death_cum" : 1474
     }, {
       "label" : "2020-05-09",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 5,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 11,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-09",
-      "positives" : 239,
+      "positives" : 245,
       "deathcnt" : 16,
-      "positives_cum" : 35144,
-      "death_cum" : 1485
+      "positives_cum" : 35181,
+      "death_cum" : 1490
     }, {
       "label" : "2020-05-10",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 5,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 11,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-10",
-      "positives" : 192,
+      "positives" : 198,
       "deathcnt" : 18,
-      "positives_cum" : 35336,
-      "death_cum" : 1503
+      "positives_cum" : 35379,
+      "death_cum" : 1508
     }, {
       "label" : "2020-05-11",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 102,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 118,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-11",
-      "positives" : 562,
+      "positives" : 578,
       "deathcnt" : 14,
-      "positives_cum" : 35898,
-      "death_cum" : 1517
+      "positives_cum" : 35957,
+      "death_cum" : 1522
     }, {
       "label" : "2020-05-12",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 171,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 179,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-12",
-      "positives" : 391,
+      "positives" : 399,
       "deathcnt" : 15,
-      "positives_cum" : 36289,
-      "death_cum" : 1532
+      "positives_cum" : 36356,
+      "death_cum" : 1537
     }, {
       "label" : "2020-05-13",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 109,
-      "deathsVm" : 2,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 137,
+      "deathsVm" : 3,
       "county" : "Georgia",
       "test_date" : "2020-05-13",
-      "positives" : 171,
-      "deathcnt" : 12,
-      "positives_cum" : 36460,
-      "death_cum" : 1544
+      "positives" : 199,
+      "deathcnt" : 13,
+      "positives_cum" : 36555,
+      "death_cum" : 1550
     }, {
       "label" : "2020-05-14",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 18,
-      "deathsVm" : 1,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 45,
+      "deathsVm" : 4,
       "county" : "Georgia",
       "test_date" : "2020-05-14",
-      "positives" : 41,
-      "deathcnt" : 4,
-      "positives_cum" : 36501,
-      "death_cum" : 1548
+      "positives" : 68,
+      "deathcnt" : 7,
+      "positives_cum" : 36623,
+      "death_cum" : 1557
     }, {
       "label" : "2020-05-15",
-      "source" : "2020-05-15T09:00:03",
-      "casesVm" : 6,
+      "source" : "2020-05-15T13:00:03",
+      "casesVm" : 22,
       "deathsVm" : 0,
       "county" : "Georgia",
       "test_date" : "2020-05-15",
-      "positives" : 6,
+      "positives" : 22,
       "deathcnt" : 0,
-      "positives_cum" : 36507,
-      "death_cum" : 1548
+      "positives_cum" : 36645,
+      "death_cum" : 1557
     } ]
   }
 } ]

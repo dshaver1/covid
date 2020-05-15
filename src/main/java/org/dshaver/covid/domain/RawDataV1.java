@@ -1,5 +1,6 @@
 package org.dshaver.covid.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
@@ -16,7 +17,7 @@ import java.util.List;
 @Data
 @ToString(exclude = "lines")
 @Document("rawdata")
-public class RawDataV1 {
+public class RawDataV1 implements RawData {
     @Id
     private String id;
 
@@ -25,4 +26,10 @@ public class RawDataV1 {
     private LocalDate reportDate;
 
     private List<String> lines;
+
+    @JsonIgnore
+    @Override
+    public List<String> getPayload() {
+        return lines;
+    }
 }

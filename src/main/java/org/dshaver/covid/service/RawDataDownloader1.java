@@ -1,19 +1,15 @@
 package org.dshaver.covid.service;
 
-import org.dshaver.covid.domain.RawDataV2;
+import org.dshaver.covid.domain.RawDataV1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -23,15 +19,15 @@ import java.util.regex.Pattern;
  * Downloads website and minimally parses it to pull out the datetime the report was published.
  */
 @Component
-public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
-    private static final Logger logger = LoggerFactory.getLogger(RawDataDownloader2.class);
-    private final Pattern timePattern = Pattern.compile(".*JSON.parse\\('\\{\"currdate\":\"(\\d{1,2}/\\d{1,2}/\\d{4},\\s\\d{1,2}:\\d{1,2}:\\d{1,2}\\s[AP]M)\"}.*");
-    private final DateTimeFormatter timeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().parseLenient().appendPattern("M/dd/uuuu, hh:mm:ss a").toFormatter();
+public class RawDataDownloader1 implements RawDataDownloader<RawDataV1> {
+    private static final Logger logger = LoggerFactory.getLogger(RawDataDownloader1.class);
+    private final Pattern timePattern = Pattern.compile(".*Public Health as of (\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}).*");
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("MM/dd/uuuu HH:mm:ss");
 
 
-    public RawDataV2 download(String urlString) {
+    public RawDataV1 download(String urlString) {
         logger.info("Downloading report from " + urlString);
-        RawDataV2 rawData = new RawDataV2();
+        RawDataV1 rawData = new RawDataV1();
         rawData.setCreateTime(LocalDateTime.now());
 
         List<String> downloadedStrings = new ArrayList<>();
@@ -46,9 +42,9 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
             br = new BufferedReader(new InputStreamReader(is));
             while ((line = br.readLine()) != null) {
                 downloadedStrings.add(line);
-                Matcher timeMatcher = timePattern.matcher(line);
-                if (timeMatcher.matches()) {
-                    String dateTimeString = timeMatcher.group(1);
+                Matcher matcher = timePattern.matcher(line);
+                if (matcher.matches()) {
+                    String dateTimeString = matcher.group(1);
                     LocalDateTime dateObj = LocalDateTime.from(timeFormatter.parse(dateTimeString));
                     rawData.setId(dateObj.format(DateTimeFormatter.ISO_DATE_TIME));
                     rawData.setReportDate(dateObj.toLocalDate());
@@ -67,7 +63,7 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
             }
         }
 
-        rawData.setPayload(downloadedStrings);
+        rawData.setLines(downloadedStrings);
         return rawData;
     }
 }

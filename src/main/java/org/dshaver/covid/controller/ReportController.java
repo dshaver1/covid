@@ -2,7 +2,7 @@ package org.dshaver.covid.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
-import org.dshaver.covid.dao.RawDataRepository;
+import org.dshaver.covid.dao.RawDataRepositoryV1;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
@@ -28,13 +28,13 @@ public class ReportController {
     private static final String REPORT_TGT_DIR = "H:\\dev\\covid\\src\\main\\resources\\static\\reports\\";
     private static final int DEFAULT_TARGET_HOUR = 18;
     private final ReportRepository reportRepository;
-    private final RawDataRepository rawDataRepository;
+    private final RawDataRepositoryV1 rawDataRepository;
     private final ReportService reportService;
     private final ObjectMapper objectMapper;
 
     @Inject
     public ReportController(ReportRepository reportRepository,
-                            RawDataRepository rawDataRepository,
+                            RawDataRepositoryV1 rawDataRepository,
                             ReportService reportService,
                             ObjectMapper objectMapper) {
         this.reportRepository = reportRepository;
@@ -111,13 +111,8 @@ public class ReportController {
         return new AggregateReport(reports);
     }
 
-    @PostMapping("/reports/download")
-    public List<DownloadResponse> download(@RequestBody DownloadRequest request) {
-        return request.getUrls().stream().map(reportService::downloadDataV1).collect(Collectors.toList());
-    }
-
     @PostMapping("/reports/downloadLatest")
-    public List<DownloadResponse> downloadLatest() {
+    public DownloadResponse downloadLatest() {
         return reportService.checkForData();
     }
 
@@ -152,8 +147,8 @@ public class ReportController {
     public void reprocessAll() {
         LocalDate defaultStartDate = LocalDate.of(2020, 1, 1);
         LocalDate defaultEndDate = LocalDate.of(2030, 1, 1);
-        reportService.bulkProcessV1Data(defaultStartDate, defaultEndDate, true);
+        reportService.bulkProcess(defaultStartDate, defaultEndDate, true, RawDataV1.class);
         // Don't delete data a second time because then we would never have any V1 reports
-        reportService.bulkProcessV2Data(defaultStartDate, defaultEndDate, false);
+        reportService.bulkProcess(defaultStartDate, defaultEndDate, false, RawDataV2.class);
     }
 }

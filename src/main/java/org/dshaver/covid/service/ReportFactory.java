@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.Epicurve;
-import org.dshaver.covid.domain.epicurve.EpicurveDto;
 import org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1;
 import org.dshaver.covid.domain.epicurve.EpicurvePointImpl1;
 import org.dshaver.covid.domain.overview.ReportOverview;
@@ -58,6 +57,18 @@ public class ReportFactory {
         this.objectMapper = objectMapper;
         this.reportOverviewExtractor = reportOverviewExtractor;
         this.epicurveExtractor = epicurveExtractor;
+    }
+
+    public Report createReport(RawData rawData, Report previousReport) throws Exception {
+        if (rawData instanceof RawDataV2) {
+            return createReport((RawDataV2) rawData, previousReport);
+        }
+
+        if (rawData instanceof RawDataV1) {
+            return createReport((RawDataV1) rawData, previousReport);
+        }
+
+        return null;
     }
 
     public Report createReport(RawDataV2 rawData, Report previousReport) throws Exception {
