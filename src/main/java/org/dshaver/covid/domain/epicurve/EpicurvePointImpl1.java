@@ -1,12 +1,15 @@
 package org.dshaver.covid.domain.epicurve;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Data
 public class EpicurvePointImpl1 implements EpicurvePoint {
+    LocalDate labelDate;
     String label;
     String source;
     @JsonProperty("test_date")
@@ -17,6 +20,8 @@ public class EpicurvePointImpl1 implements EpicurvePoint {
     Integer positivesCumulative;
     @JsonProperty("death_cum")
     Integer deathsCumulative;
+    Integer casesVm;
+    Integer deathsVm;
 
     @Override
     public int compareTo(EpicurvePoint o) {
@@ -51,5 +56,25 @@ public class EpicurvePointImpl1 implements EpicurvePoint {
     @JsonProperty("POSITIVES_CUM")
     public void setPositivesCumulative(Integer positivesCumulative) {
         this.positivesCumulative = positivesCumulative;
+    }
+
+    @JsonIgnore
+    public LocalDate getLabelDate() {
+        return labelDate;
+    }
+
+    public void setLabelDate(LocalDate labelDate) {
+        this.labelDate = labelDate;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+        if (labelDate == null) {
+            this.labelDate = LocalDate.parse(getLabel(), DateTimeFormatter.ISO_LOCAL_DATE);
+        }
     }
 }

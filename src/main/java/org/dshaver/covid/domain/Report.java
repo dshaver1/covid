@@ -17,7 +17,7 @@ import java.util.Map;
  * Created by xpdf64 on 2020-04-22.
  */
 @Data
-@ToString(exclude = {"epicurve"})
+@ToString(exclude = {"epicurves"})
 @Document("reports")
 public class Report {
     public static final String GEORGIA = "Georgia";
@@ -30,16 +30,21 @@ public class Report {
     private LocalDate reportDate;
     private Map<String, Epicurve> epicurves;
     private int totalTests;
+    private int totalTestsVm;
     private int confirmedCases;
+    private int confirmedCasesVm;
     private int hospitalized;
+    private int hospitalizedVm;
     private int deaths;
+    private int deathsVm;
     private int icu;
+    private int icuVm;
 
     public Report() {
     }
 
     public Report(LocalDateTime createTime, String id, LocalDate reportDate, Map<String, Epicurve> epicurves, int totalTests, int confirmedCases, int hospitalized,
-                  int deaths) {
+                  int deaths, int totalTestsVm, int confirmedCasesVm, int hospitalizedVm, int deathsVm) {
         this.createTime = createTime;
         this.id = id;
         this.reportDate = reportDate;
@@ -48,10 +53,14 @@ public class Report {
         this.hospitalized = hospitalized;
         this.deaths = deaths;
         this.epicurves = epicurves;
+        this.totalTestsVm = totalTestsVm;
+        this.confirmedCasesVm = confirmedCasesVm;
+        this.hospitalizedVm = hospitalizedVm;
+        this.deathsVm = deathsVm;
     }
 
     public Report(LocalDateTime createTime, String id, LocalDate reportDate, Map<String, Epicurve> epicurves, int totalTests, int confirmedCases, int hospitalized,
-                  int deaths, int icu) {
+                  int deaths, int icu, int totalTestsVm, int confirmedCasesVm, int hospitalizedVm, int deathsVm, int icuVm) {
         this.createTime = createTime;
         this.id = id;
         this.reportDate = reportDate;
@@ -61,6 +70,11 @@ public class Report {
         this.deaths = deaths;
         this.epicurves = epicurves;
         this.icu = icu;
+        this.totalTestsVm = totalTestsVm;
+        this.confirmedCasesVm = confirmedCasesVm;
+        this.hospitalizedVm = hospitalizedVm;
+        this.deathsVm = deathsVm;
+        this.icuVm = icuVm;
     }
 
     public Epicurve getGeorgiaEpicurve() {

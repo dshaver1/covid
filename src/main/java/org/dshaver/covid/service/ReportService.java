@@ -15,6 +15,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,44 +126,64 @@ public class ReportService {
     /**
      * Wrote this to do the one-time download from internet archives.
      */
-    public void bulkProcessV1Data(boolean deleteFirst) {
-        List<RawDataV1> allData = rawDataRepository.findAll();
+    public void bulkProcessV1Data(LocalDate startDate, LocalDate endDate, boolean deleteFirst) {
+        List<RawDataV1> allData = rawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate);
 
         if (deleteFirst) {
             logger.info("Deleting all reports!");
             reportRepository.deleteAll();
         }
 
+        Report prevReport = null;
+        RawDataV1 mostRecentData = allData.get(allData.size() - 1);
+
         for (RawDataV1 rawData : allData) {
-            try {
-                Report report = reportFactory.createReport(rawData);
-                reportRepository.insert(report);
-            } catch (DuplicateKeyException e) {
-                logger.info("Already saved this report. Skipping...");
-            } catch (Exception e) {
-                logger.error("Could not create report! " + rawData, e);
+            // Always save the first and last report. After that, only save if the day is after the last day, and the hour is equal to or after 1800.
+            if (prevReport == null || rawData.equals(mostRecentData) || (rawData.getReportDate().isAfter(prevReport.getReportDate()) && is1800(rawData.getId()))) {
+                try {
+                    Report report = VmCalculator.populateVm(reportFactory.createReport(rawData, prevReport), prevReport);
+                    reportRepository.save(report);
+                    prevReport = report;
+                } catch (DuplicateKeyException e) {
+                    logger.info("Already saved this report. Skipping...");
+                } catch (Exception e) {
+                    logger.error("Could not create report! " + rawData, e);
+                }
             }
         }
     }
 
-    public void bulkProcessV2Data(boolean deleteFirst) {
-        List<RawDataV2> allData = rawDataRepository2.findAll();
+    public void bulkProcessV2Data(LocalDate startDate, LocalDate endDate, boolean deleteFirst) {
+        List<RawDataV2> allData = rawDataRepository2.findByReportDateBetweenOrderByIdAsc(startDate, endDate);
 
         if (deleteFirst) {
             logger.info("Deleting all reports!");
             reportRepository.deleteAll();
         }
 
+        Report prevReport = null;
+        RawDataV2 mostRecentData = allData.get(allData.size() - 1);
+
         for (RawDataV2 rawData : allData) {
-            try {
-                Report report = reportFactory.createReport(rawData);
-                reportRepository.insert(report);
-            } catch (DuplicateKeyException e) {
-                logger.info("Already saved this report. Skipping...");
-            } catch (Exception e) {
-                logger.error("Could not create report! " + rawData, e);
+            // Always save the first report. After that, only save if the day is after the last day, and the hour is equal to or after 1800.
+            if (prevReport == null || rawData.equals(mostRecentData) || (rawData.getReportDate().isAfter(prevReport.getReportDate()) && is1800(rawData.getId()))) {
+                try {
+                    Report report = VmCalculator.populateVm(reportFactory.createReport(rawData, prevReport), prevReport);
+                    reportRepository.save(report);
+                    prevReport = report;
+                } catch (DuplicateKeyException e) {
+                    logger.info("Already saved this report. Skipping...");
+                } catch (Exception e) {
+                    logger.error("Could not create report! " + rawData, e);
+                }
             }
         }
+    }
+
+    private boolean is1800(String dateString) {
+        int diff = 18 - LocalDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME).getHour();
+
+        return diff <= 0;
     }
 
     /**
@@ -195,7 +218,15 @@ public class ReportService {
         }
 
         try {
-            Report report = reportFactory.createReport(rawData);
+            List<Report> allExistingReports = reportRepository.findAllByOrderByIdAsc();
+            Report prevReport = allExistingReports.get(allExistingReports.size() - 1);
+
+            if (prevReport.getReportDate().equals(rawData.getReportDate()) && !prevReport.getId().equals(rawData.getId())) {
+                reportRepository.delete(prevReport);
+                prevReport = allExistingReports.get(allExistingReports.size() - 2);
+            }
+
+            Report report = VmCalculator.populateVm(reportFactory.createReport(rawData, prevReport), prevReport);
             response.setReport(report);
             logger.info("Done creating Report.");
 
@@ -233,7 +264,15 @@ public class ReportService {
         }
 
         try {
-            Report report = reportFactory.createReport(rawData);
+            List<Report> allExistingReports = reportRepository.findAllByOrderByIdAsc();
+            Report prevReport = allExistingReports.get(allExistingReports.size() - 1);
+
+            if (prevReport.getReportDate().equals(rawData.getReportDate()) && !prevReport.getId().equals(rawData.getId())) {
+                reportRepository.delete(prevReport);
+                prevReport = allExistingReports.get(allExistingReports.size() - 2);
+            }
+
+            Report report = VmCalculator.populateVm(reportFactory.createReport(rawData, prevReport), prevReport);
             response.setReport(report);
             logger.info("Done creating Report.");
 

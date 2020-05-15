@@ -1,6 +1,12 @@
 package org.dshaver.covid.domain.epicurve;
 
+import java.time.LocalDate;
+
 public interface EpicurvePoint extends Comparable<EpicurvePoint> {
+    LocalDate getLabelDate();
+
+    void setLabelDate(LocalDate labelDate);
+
     String getLabel();
 
     void setLabel(String label);
@@ -32,4 +38,12 @@ public interface EpicurvePoint extends Comparable<EpicurvePoint> {
     Integer getDeathsCumulative();
 
     void setDeathsCumulative(Integer deathsCumulative);
+
+    Integer getCasesVm();
+
+    void setCasesVm(Integer casesVm);
+
+    Integer getDeathsVm();
+
+    void setDeathsVm(Integer deathsVm);
 }

@@ -1,8 +1,6 @@
 package org.dshaver.covid.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.opencsv.CSVWriter;
 import org.dshaver.covid.dao.RawDataRepository;
 import org.dshaver.covid.dao.ReportRepository;
@@ -19,8 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,7 +46,7 @@ public class ReportController {
     // TODO finish csv
     @GetMapping("/reports/dailyCsv")
     public void getCsvReports() throws Exception {
-        Collection<Report> reports = getReports(null, null, null);
+        Collection<Report> reports = getReports(null, null);
 
         String[] header = reports.stream()
                 .reduce((first, second) -> second)
@@ -75,13 +71,13 @@ public class ReportController {
 
     @GetMapping("/reports/histogram")
     public HistogramReport getHistogramReport(@RequestParam(name = "startDate", required = false)
-                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                                          LocalDate startDate,
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                      LocalDate startDate,
                                               @RequestParam(name = "endDate", required = false)
-                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
-        Collection<Report> reports = getReports(defaultedStartDate, defaultedEndDate, 18);
+        Collection<Report> reports = getReports(defaultedStartDate, defaultedEndDate);
 
         return new HistogramReport(reports);
     }
@@ -90,43 +86,16 @@ public class ReportController {
     public Collection<Report> getReports(@RequestParam(name = "startDate", required = false)
                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                          @RequestParam(name = "endDate", required = false)
-                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                                         @RequestParam(name = "targetHour", required = false) Integer targetHour) throws Exception {
-        int defaultedTargetHour = targetHour == null ? DEFAULT_TARGET_HOUR : targetHour;
+                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
 
         List<Report> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate);
 
-        Multimap<LocalDate, Report> reportMap = ArrayListMultimap.create();
-        reportList.forEach(report -> reportMap.put(report.getReportDate(), report));
-
-        TreeSet<Report> sorted = new TreeSet<>(Comparator.comparing(Report::getId));
-
-        for (LocalDate date : reportMap.keySet()) {
-            sorted.add(getClosestReport(reportMap.get(date), defaultedTargetHour));
-        }
-
         File file = Paths.get(REPORT_TGT_DIR, "daily").toFile();
-        objectMapper.writeValue(file, sorted);
+        objectMapper.writeValue(file, reportList);
 
-        return sorted;
-    }
-
-    private Report getClosestReport(Collection<Report> reports, int targetHour) {
-        Report selected = reports.stream().findFirst().get();
-        int bestDiff = Math.abs(LocalDateTime.parse(selected.getId(), DateTimeFormatter.ISO_LOCAL_DATE_TIME).getHour() - targetHour);
-
-        for (Report report : reports) {
-            int currentDiff = Math.abs(LocalDateTime.parse(report.getId(), DateTimeFormatter.ISO_LOCAL_DATE_TIME).getHour() - targetHour);
-
-            if (currentDiff < bestDiff) {
-                bestDiff = currentDiff;
-                selected = report;
-            }
-        }
-
-        return selected;
+        return reportList;
     }
 
     @GetMapping("/reports/aggregate")
@@ -137,7 +106,7 @@ public class ReportController {
                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
-        Collection<Report> reports = getReports(defaultedStartDate, defaultedEndDate, 18);
+        Collection<Report> reports = getReports(defaultedStartDate, defaultedEndDate);
 
         return new AggregateReport(reports);
     }
@@ -181,8 +150,10 @@ public class ReportController {
 
     @PostMapping("/reports/reprocess")
     public void reprocessAll() {
-        reportService.bulkProcessV1Data(true);
+        LocalDate defaultStartDate = LocalDate.of(2020, 1, 1);
+        LocalDate defaultEndDate = LocalDate.of(2030, 1, 1);
+        reportService.bulkProcessV1Data(defaultStartDate, defaultEndDate, true);
         // Don't delete data a second time because then we would never have any V1 reports
-        reportService.bulkProcessV2Data(false);
+        reportService.bulkProcessV2Data(defaultStartDate, defaultEndDate, false);
     }
 }

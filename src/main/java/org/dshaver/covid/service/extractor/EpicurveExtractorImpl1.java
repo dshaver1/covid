@@ -43,6 +43,7 @@ public class EpicurveExtractorImpl1 extends AbstractExtractor implements Extract
                     if (labelDate.isAfter(EARLIEST_DATE)) {
                         current.setSource(id);
                         current.setLabel(labelDate.format(DateTimeFormatter.ISO_DATE).toUpperCase());
+                        current.setLabelDate(labelDate);
                         filteredDataPoints.add(current);
                     }
                 }

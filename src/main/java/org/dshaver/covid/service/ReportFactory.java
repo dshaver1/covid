@@ -60,7 +60,7 @@ public class ReportFactory {
         this.epicurveExtractor = epicurveExtractor;
     }
 
-    public Report createReport(RawDataV2 rawData) throws Exception {
+    public Report createReport(RawDataV2 rawData, Report previousReport) throws Exception {
         Optional<Map<String, Epicurve>> maybeEpicurve = epicurveExtractor.extract(rawData.getPayload(), rawData.getId());
 
         if (!maybeEpicurve.isPresent()) {
@@ -83,14 +83,19 @@ public class ReportFactory {
                 overview.getConfirmedCovid(),
                 overview.getHospitalization(),
                 overview.getDeaths(),
-                overview.getIcu());
+                overview.getIcu(),
+                previousReport == null ? 0 : overview.getTotalTests() - previousReport.getTotalTests(),
+                previousReport == null ? 0 : overview.getConfirmedCovid() - previousReport.getConfirmedCases(),
+                previousReport == null ? 0 : overview.getHospitalization() - previousReport.getHospitalized(),
+                previousReport == null ? 0 : overview.getDeaths() - previousReport.getDeaths(),
+                previousReport == null ? 0 : overview.getIcu() - previousReport.getIcu());
 
         logger.info("Done parsing report for " + report.getId());
 
         return report;
     }
 
-    public Report createReport(RawDataV1 rawData) throws Exception {
+    public Report createReport(RawDataV1 rawData, Report previousReport) throws Exception {
         List<String> filteredStrings = rawData.getLines()
                 .stream()
                 .filter(s -> whiteList.stream().anyMatch(white -> s.toUpperCase().contains(white)))
@@ -132,7 +137,11 @@ public class ReportFactory {
                 totalTestsPerformed,
                 confirmedCases,
                 hospitalized,
-                deaths);
+                deaths,
+                previousReport == null ? 0 : totalTestsPerformed - previousReport.getTotalTests(),
+                previousReport == null ? 0 : confirmedCases - previousReport.getConfirmedCases(),
+                previousReport == null ? 0 : hospitalized - previousReport.getHospitalized(),
+                previousReport == null ? 0 : deaths - previousReport.getDeaths());
 
         logger.info("Done parsing report for " + report.getId());
 

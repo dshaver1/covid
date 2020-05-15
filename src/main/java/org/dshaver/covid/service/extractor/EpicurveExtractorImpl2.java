@@ -46,6 +46,7 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
                     if (labelDate.isAfter(EARLIEST_DATE)) {
                         current.setSource(id);
                         current.setLabel(labelDate.format(DateTimeFormatter.ISO_DATE).toUpperCase());
+                        current.setLabelDate(labelDate);
                         Collection<EpicurvePoint> countyPoints = filteredDataPoints.computeIfAbsent(current.getCounty(), k -> new TreeSet<>());
                         countyPoints.add(current);
                     }
