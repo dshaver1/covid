@@ -2,6 +2,7 @@ package org.dshaver.covid.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
+import org.dshaver.covid.dao.HistogramReportRepository;
 import org.dshaver.covid.dao.RawDataRepositoryV1;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.*;
@@ -28,17 +29,17 @@ public class ReportController {
     private static final String REPORT_TGT_DIR = "H:\\dev\\covid\\src\\main\\resources\\static\\reports\\";
     private static final int DEFAULT_TARGET_HOUR = 18;
     private final ReportRepository reportRepository;
-    private final RawDataRepositoryV1 rawDataRepository;
+    private final HistogramReportRepository histogramReportRepository;
     private final ReportService reportService;
     private final ObjectMapper objectMapper;
 
     @Inject
     public ReportController(ReportRepository reportRepository,
-                            RawDataRepositoryV1 rawDataRepository,
+                            HistogramReportRepository histogramReportRepository,
                             ReportService reportService,
                             ObjectMapper objectMapper) {
         this.reportRepository = reportRepository;
-        this.rawDataRepository = rawDataRepository;
+        this.histogramReportRepository = histogramReportRepository;
         this.reportService = reportService;
         this.objectMapper = objectMapper;
     }
@@ -70,16 +71,14 @@ public class ReportController {
     }
 
     @GetMapping("/reports/histogram")
-    public HistogramReport getHistogramReport(@RequestParam(name = "startDate", required = false)
-                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                                      LocalDate startDate,
-                                              @RequestParam(name = "endDate", required = false)
-                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
-        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
-        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
-        Collection<Report> reports = getReports(defaultedStartDate, defaultedEndDate);
+    public HistogramReport getHistogramReport() throws Exception {
+        Collection<HistogramReport> reports = histogramReportRepository.findAll();
 
-        return new HistogramReport(reports);
+        if (reports.size() == 1) {
+            return reports.stream().findFirst().get();
+        }
+
+        return null;
     }
 
     @GetMapping("/reports/daily")

@@ -46,4 +46,8 @@ public interface EpicurvePoint extends Comparable<EpicurvePoint> {
     Integer getDeathsVm();
 
     void setDeathsVm(Integer deathsVm);
+
+    Integer getCasesExtrapolated();
+
+    void setCasesExtrapolated(Integer casesExtrapolated);
 }

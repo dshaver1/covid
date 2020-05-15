@@ -1,11 +1,9 @@
 package org.dshaver.covid.service;
 
+import org.dshaver.covid.dao.HistogramReportRepository;
 import org.dshaver.covid.dao.RawDataRepositoryDelegator;
 import org.dshaver.covid.dao.ReportRepository;
-import org.dshaver.covid.domain.DownloadResponse;
-import org.dshaver.covid.domain.RawData;
-import org.dshaver.covid.domain.RawDataV2;
-import org.dshaver.covid.domain.Report;
+import org.dshaver.covid.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -29,16 +27,19 @@ public class ReportService {
     private final RawDataDownloaderDelegator rawDataDownloader;
     private final ReportFactory reportFactory;
     private final ReportRepository reportRepository;
+    private final HistogramReportRepository histogramReportRepository;
 
     @Inject
     public ReportService(ReportFactory reportFactory,
                          RawDataRepositoryDelegator rawDataRepository,
                          RawDataDownloaderDelegator rawDataDownloader,
-                         ReportRepository reportRepository) {
+                         ReportRepository reportRepository,
+                         HistogramReportRepository histogramReportRepository) {
         this.reportFactory = reportFactory;
         this.rawDataRepository = rawDataRepository;
         this.rawDataDownloader = rawDataDownloader;
         this.reportRepository = reportRepository;
+        this.histogramReportRepository = histogramReportRepository;
     }
 
     /**
@@ -63,11 +64,19 @@ public class ReportService {
         Report prevReport = null;
         RawData mostRecentData = allData.get(allData.size() - 1);
 
+        HistogramReport histogramReport = histogramReportRepository.findAll().get(0);
+
         for (RawData rawData : allData) {
             // Always save the first report. After that, only save if the day is after the last day, and the hour is equal to or after 1800.
             if (prevReport == null || rawData.equals(mostRecentData) || (rawData.getReportDate().isAfter(prevReport.getReportDate()) && is1800(rawData.getId()))) {
                 try {
+                    // Populate VM
                     Report report = VmCalculator.populateVm(reportFactory.createReport(rawData, prevReport), prevReport);
+
+                    // Extrapolate
+                    report = EpicurveExtrapolator.extrapolateCases(report, histogramReport);
+
+                    // Save
                     reportRepository.save(report);
                     prevReport = report;
                 } catch (DuplicateKeyException e) {
@@ -76,6 +85,12 @@ public class ReportService {
                     logger.error("Could not create report! " + rawData, e);
                 }
             }
+        }
+
+        try {
+            histogramReportRepository.save(new HistogramReport(reportRepository.findAllByOrderByIdAsc()));
+        } catch (DuplicateKeyException e) {
+            logger.info("Already saved this histogram report. Skipping... ");
         }
     }
 
@@ -100,17 +115,33 @@ public class ReportService {
                 prevReport = allExistingReports.get(allExistingReports.size() - 2);
             }
 
+            if (prevReport.getId().equals(data.getId())) {
+                prevReport = allExistingReports.get(allExistingReports.size() - 2);
+            } else {
+                response.setFoundNew(true);
+            }
+
             // Populate VM data
             Report report = VmCalculator.populateVm(reportFactory.createReport(data, prevReport), prevReport);
+
+            // Save histogram report object
+            HistogramReport histogramReport = new HistogramReport(reportRepository.findAllByOrderByIdAsc());
+            try {
+                logger.info("Saving histogram report for {}.", report.getId());
+                histogramReportRepository.save(histogramReport);
+            } catch (DuplicateKeyException e) {
+                logger.info("Already saved this histogram report. Skipping... ");
+            }
+
+            // Extrapolate
+            report = EpicurveExtrapolator.extrapolateCases(report, histogramReport);
             response.setReport(report);
             logger.info("Done creating Report.");
 
             // Save report object
-            reportRepository.insert(report);
+            reportRepository.save(report);
 
             logger.info("Done saving report");
-
-            response.setFoundNew(true);
         } catch (DuplicateKeyException e) {
             logger.info("Already saved this report. Skipping... ");
         } catch (Exception e) {
