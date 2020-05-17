@@ -12,7 +12,7 @@ import java.util.Map;
  * Sets the {@link EpicurvePoint#setCasesExtrapolated(Integer)}
  */
 public class EpicurveExtrapolator {
-    private static final BigDecimal HUNDRED = BigDecimal.valueOf(100L);
+    private static final BigDecimal HUNDREDTH = BigDecimal.valueOf(0.01D);
 
     public static Report extrapolateCases(Report report, HistogramReport histogramReport) {
         if (histogramReport == null) {
@@ -24,25 +24,36 @@ public class EpicurveExtrapolator {
         for (int idx = 0; idx < epicurveArray.length; idx++) {
             // What is the percentage of adds that occur on the given date?
             int reverseIdx = reverseIdx(idx, epicurveArray.length);
-            BigDecimal currentHist = casesPercentageCumulative.get(reverseIdx).divide(HUNDRED, RoundingMode.HALF_EVEN);
+            BigDecimal currentHist = getCumulativeCasesPercentage(casesPercentageCumulative, reverseIdx).multiply(HUNDREDTH);
             EpicurvePoint currentPoint = epicurveArray[idx];
             // Multiply the current value by the inverse of the cumulative percentage.
             BigDecimal currentPointPositiveCount = BigDecimal.valueOf(currentPoint.getPositiveCount());
-            BigDecimal divided = currentPointPositiveCount.divide(currentHist, RoundingMode.HALF_DOWN);
+            BigDecimal divided = currentHist.compareTo(BigDecimal.ZERO) == 0 || currentPointPositiveCount.compareTo(BigDecimal.ZERO) == 0 ? currentPointPositiveCount : currentPointPositiveCount.divide(currentHist, RoundingMode.HALF_DOWN);
             currentPoint.setCasesExtrapolated(divided.intValue());
         }
 
         return report;
     }
 
+    public static BigDecimal getCumulativeCasesPercentage(Map<Integer, BigDecimal> map, int reverseIdx) {
+        BigDecimal value = map.get(reverseIdx);
+
+        if (value == null) {
+            value = BigDecimal.ZERO;
+        }
+
+        return value;
+    }
+
     /**
      * Assuming a length of 88
-     *
+     * <p>
      * 0 -> -87
      * 1 -> -86
      * ...
      * 86 -> -1
      * 87 -> 0
+     *
      * @param idx
      * @param length
      * @return

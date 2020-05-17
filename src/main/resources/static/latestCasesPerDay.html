@@ -99,6 +99,12 @@
             <div class="col-sm-2">Selected Snapshot<p id="value-time"></p></div>
             <div class="col-sm">
                 <div id="slider-time"></div>
+                <div id="options">
+                    <form>
+                        <label for="raw">Raw Values&nbsp</label><input type="radio" name="graphType" value="raw" id="raw" checked>
+                        <label for="deltas">Deltas&nbsp</label><input type="radio" name="graphType" value="delta" id="deltas">
+                    </form>
+                </div>
             </div>
             <div class="col-sm2" id="timestamp">Lastest update:&nbsp
                 <div class="col-sm2">
@@ -150,6 +156,14 @@
                     href="https://twitter.com/xionnova/">twitter</a> or <a
                     href="https://www.reddit.com/user/xionnova/">reddit</a>. Source code is on <a
                     href="https://github.com/dshaver1/covid/">github</a>.
+            </p>
+
+            <p>
+                2020-05-17 Update: Due to automated windows update restarting my computer, I wasn't able to download the source data for
+                2020-05-15T18:00:03 or 2020-05-16T18:00:03. Because the update I grabbed for 2020-05-17T09:00:03
+                contained no new confirmed cases or deaths for 2020-05-17, I'm pretending it occurred on 2020-05-16.
+                As such, the jump between my snapshots '2020-05-15' and '2020-05-16' represent a 48 time period rather than the usual 24 hours. <br/>
+                If you happen to have downloaded this data, please let me know. I'd like to fill the gap.
             </p>
 
             <div class="row align-items-left">
@@ -232,6 +246,23 @@
 
     var theData, dataTime, sliderTime, tip;
 
+    // Radio options
+    var deltaEnabled = false;
+    d3.selectAll("input[name='graphType']").on("change", function(){
+        console.log("GraphType option change! New value: " + this.value);
+        if (this.value === "delta") {
+            console.log("Switching to delta graph");
+            deltaEnabled = true;
+        } else {
+            console.log("Switching to raw graph");
+            deltaEnabled = false;
+        }
+
+        dphyScale.domain([0, getYScale(theData)]);
+        dphSvg.selectAll("g.y.axis").transition().duration(100).call(dphyAxis)
+        updateBothCharts();
+    });
+
     // load the DPH data
     d3.json("/reports/daily").then(function (data) {
 
@@ -250,9 +281,7 @@
         dphxScale.domain(epicurve.map(function (d) {
             return d.label;
         }));
-        dphyScale.domain([0, d3.max(epicurve, function (d) {
-            return d.positives;
-        })]);
+        dphyScale.domain([0, getYScale(theData)]);
 
         // add the Y gridlines
         dphSvg.append("g")
@@ -322,10 +351,15 @@
             .style("alignment-baseline", "middle")
 
         // Add bar chart
-        var idx = getReportForDate(theData, getReverseIdxValue(dataTime, sliderTime.value()))
-        updateDiffChart(theData[idx], getCases, "casebar", colors[0], colors[2]);
-        updateDiffChart(theData[idx], getDeaths, "deathbar", colors[1], colors[3]);
+        updateBothCharts();
     });
+
+    function updateBothCharts() {
+        console.log("Updating both charts");
+        var idx = getReportForDate(theData, getReverseIdxValue(dataTime, sliderTime.value()))
+        updateChart(theData[idx], getCases, "casebar", colors[0], colors[2]);
+        updateChart(theData[idx], getDeaths, "deathbar", colors[1], colors[3]);
+    }
 
     function createSlider(data) {
         dataTime = data.map(function (d) {
@@ -342,9 +376,7 @@
             .tickValues([0,-7,-14,-21,-28])
             .on('onchange', val => {
                 d3.select('p#value-time').text(getReverseIdxValue(dataTime, val));
-                var idx = getReportForDate(theData, getReverseIdxValue(dataTime, sliderTime.value()))
-                updateDiffChart(theData[idx], getCases, "casebar", colors[0], colors[2]);
-                updateDiffChart(theData[idx], getDeaths, "deathbar", colors[1], colors[3]);
+                updateBothCharts();
             });
 
         var gTime = d3
@@ -445,8 +477,8 @@
                 var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
                 content += `
                     <table style="margin-top: 2.5px;">
-                            <tr><td>Cases: </td><td style="text-align: right">` + d.positives + `</td></tr>
-                            <tr><td>Deaths: </td><td style="text-align: right">` + d.deathcnt + `</td></tr>
+                            <tr><td>Cases: </td><td style="text-align: right">` + d.casesVm + `</td></tr>
+                            <tr><td>Deaths: </td><td style="text-align: right">` + d.deathsVm + `</td></tr>
                     </table>
                     `;
                 return content;
@@ -465,14 +497,32 @@
     }
 
     function getDeaths(data) {
+        if (deltaEnabled) {
+            return data.deathsVm;
+        }
+
         return data.deathcnt;
     }
 
     function getCases(data) {
+        if (deltaEnabled) {
+            return data.casesVm;
+        }
+
         return data.positives;
     }
 
-    function updateDiffChart(data, dataCallback, clazz, color, highlightColor) {
+    function getYScale(data) {
+        if (deltaEnabled) {
+            return 355;
+        }
+
+        return d3.max(data[data.length - 1].georgiaEpicurve.data, function (d) {
+            return d.positives;
+        })
+    }
+
+    function updateChart(data, dataCallback, clazz, color, highlightColor) {
         var selectedData = dphSvg.selectAll("." + clazz).data(data.georgiaEpicurve.data);
         var enterData = selectedData.enter();
 
