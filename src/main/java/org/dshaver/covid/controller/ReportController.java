@@ -15,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.swing.text.html.Option;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -128,6 +129,18 @@ public class ReportController {
     @PostMapping("/reports/downloadLatest")
     public DownloadResponse downloadLatest() {
         return reportService.checkForData();
+    }
+
+    @PostMapping("/reports/copyRawData")
+    public void downloadLatest(@RequestParam(name = "idToCopy") String idToCopy,
+                                           @RequestParam(name = "targetId") String targetId,
+                                           @RequestParam(name = "reportDate")
+                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
+        Optional<RawDataV2> rawDataV2 = rawDataRepository.findById(idToCopy);
+        rawDataV2.get().setId(targetId);
+        rawDataV2.get().setReportDate(reportDate);
+
+        rawDataRepository.save(rawDataV2.get());
     }
 
     @GetMapping("/reports")

@@ -29,6 +29,25 @@ public class EpicurvePointImpl2 implements EpicurvePoint {
     Integer deathsVm;
     Integer casesExtrapolated;
 
+    public EpicurvePointImpl2() {
+
+    }
+
+    public EpicurvePointImpl2(EpicurvePointImpl2 original) {
+        this.labelDate = original.getLabelDate();
+        this.label = original.getLabel();
+        this.source = original.getSource();
+        this.county = original.getCounty();
+        this.testDate = original.getTestDate();
+        this.positiveCount = original.getPositiveCount();
+        this.deathCount = original.getDeathCount();
+        this.positivesCumulative = original.getPositivesCumulative();
+        this.deathsCumulative = original.getDeathsCumulative();
+        this.casesVm = original.getCasesVm();
+        this.deathsVm = original.getDeathsVm();
+        this.casesExtrapolated = original.getCasesExtrapolated();
+    }
+
     @Override
     public int compareTo(EpicurvePoint o) {
         int compare = 0;

@@ -14,7 +14,10 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by xpdf64 on 2020-04-27.
@@ -61,28 +64,41 @@ public class ReportService {
             reportRepository.deleteAll();
         }
 
-        Report prevReport = null;
-        RawData mostRecentData = allData.get(allData.size() - 1);
+        List<Report> candidatePreviousReports = reportRepository.findByReportDateOrderByIdAsc(allData.get(0).getReportDate().minusDays(1));
 
-        HistogramReport histogramReport = histogramReportRepository.findAll().get(0);
+        Report prevReport = candidatePreviousReports.size() > 0 ? candidatePreviousReports.stream().skip(candidatePreviousReports.size() - 1).findFirst().get() : null;
 
-        for (RawData rawData : allData) {
-            // Always save the first report. After that, only save if the day is after the last day, and the hour is equal to or after 1800.
-            if (prevReport == null || rawData.equals(mostRecentData) || (rawData.getReportDate().isAfter(prevReport.getReportDate()) && is1800(rawData.getId()))) {
-                try {
-                    // Populate VM
-                    Report report = VmCalculator.populateVm(reportFactory.createReport(rawData, prevReport), prevReport);
+        HistogramReport histogramReport = histogramReportRepository.findAllByOrderByIdDesc().get(0);
 
-                    // Extrapolate
-                    report = EpicurveExtrapolator.extrapolateCases(report, histogramReport);
+        Map<LocalDate, List<RawData>> groupedByReportDate = allData.stream().collect(Collectors.groupingBy(RawData::getReportDate));
 
-                    // Save
-                    reportRepository.save(report);
-                    prevReport = report;
-                } catch (DuplicateKeyException e) {
-                    logger.info("Already saved this report. Skipping...");
-                } catch (Exception e) {
-                    logger.error("Could not create report! " + rawData, e);
+        for (LocalDate currentDate : groupedByReportDate.keySet().stream().sorted().collect(Collectors.toList())) {
+            List<RawData> currentDataList = groupedByReportDate.get(currentDate);
+            for (int idx = 0; idx < currentDataList.size(); idx++) {
+                RawData currentData = currentDataList.get(idx);
+                boolean lastElement = idx + 1 >= currentDataList.size();
+
+                // Only save if it's the 6pm update or if there's no more reports after this for the day.
+                if (is1800(currentData.getId()) || lastElement) {
+                    try {
+                        // Create report
+                        Report report = reportFactory.createReport(currentData, prevReport);
+
+                        // Populate VM
+                        report = VmCalculator.populateVm(report, prevReport);
+
+                        // Extrapolate
+                        report = EpicurveExtrapolator.extrapolateCases(report, histogramReport);
+
+                        // Save
+                        reportRepository.save(report);
+                        prevReport = report;
+                        break;
+                    } catch (DuplicateKeyException e) {
+                        logger.info("Already saved this report. Skipping...");
+                    } catch (Exception e) {
+                        logger.error("Could not create report! " + currentData, e);
+                    }
                 }
             }
         }

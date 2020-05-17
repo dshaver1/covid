@@ -60,6 +60,18 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
                     countyEpicurve.setData(points);
                 });
 
+/*                // Copy data forward for 2020-05-16 because I'm a dumbass and didn't make sure app is running all weekend.
+                if (id.equals("2020-05-16T09:00:03")) {
+                    countyToCurveMap.forEach((county, thisEpicurve) -> {
+                        EpicurvePoint point = thisEpicurve.getData().stream().skip(thisEpicurve.getData().size() - 1).findFirst().get();
+                        EpicurvePoint copy = new EpicurvePointImpl2((EpicurvePointImpl2) point);
+                        copy.setLabelDate(LocalDate.of(2020, 5, 16));
+                        copy.setTestDate("2020-05-16");
+                        copy.setLabel("2020-05-16");
+                        thisEpicurve.getData().add(copy);
+                    });
+                }*/
+
                 // And put it in an optional to return.
                 epicurve = Optional.of(countyToCurveMap);
 
