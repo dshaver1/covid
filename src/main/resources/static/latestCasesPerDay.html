@@ -84,6 +84,7 @@
 <script src="https://d3js.org/d3.v5.js"></script>
 <script src="d3-simple-slider.min.js"></script>
 <script src="d3-tip.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
 <link
         rel="stylesheet"
@@ -101,8 +102,17 @@
                 <div id="slider-time"></div>
                 <div id="options">
                     <form>
-                        <label for="raw">Raw Values&nbsp</label><input type="radio" name="graphType" value="raw" id="raw" checked>
-                        <label for="deltas">Deltas&nbsp</label><input type="radio" name="graphType" value="delta" id="deltas">
+                        <div class="row align-items-left">
+                            <div class="col-sm2" data-tippy-content="Raw confirmed values exactly as they are reported by the Georgia Department of Public Health.">
+                                <input type="radio" name="graphType" value="raw" id="raw" checked>
+                                <label for="raw">Raw Values&nbsp</label>
+                            </div>
+                            <div class="col-sm2"
+                                 data-tippy-content="The difference between the selected snapshot vs the previous snapshot. This shows where in the time series the selected snapshot is adding cases.">
+                                <input type="radio" name="graphType" value="delta" id="deltas">
+                                <label for="deltas">Deltas&nbsp</label>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -159,10 +169,12 @@
             </p>
 
             <p>
-                2020-05-17 Update: Due to automated windows update restarting my computer, I wasn't able to download the source data for
+                2020-05-17 Update: Due to automated windows update restarting my computer, I wasn't able to download the
+                source data for
                 2020-05-15T18:00:03 or 2020-05-16T18:00:03. Because the update I grabbed for 2020-05-17T09:00:03
                 contained no new confirmed cases or deaths for 2020-05-17, I'm pretending it occurred on 2020-05-16.
-                As such, the jump between my snapshots '2020-05-15' and '2020-05-16' represent a 48 time period rather than the usual 24 hours. <br/>
+                As such, the jump between my snapshots '2020-05-15' and '2020-05-16' represent a 48 time period rather
+                than the usual 24 hours. <br/>
                 If you happen to have downloaded this data, please let me know. I'd like to fill the gap.
             </p>
 
@@ -181,8 +193,15 @@
         });
     };
 </script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
 
 <script>
+    tippy('[data-tippy-content]', {
+        arrow: true,
+        placement: 'bottom'
+    });
+
     let notableDates = [{
         "date": "2020-03-14",
         "label": "Public Health State of Emergency Declared"
@@ -248,7 +267,7 @@
 
     // Radio options
     var deltaEnabled = false;
-    d3.selectAll("input[name='graphType']").on("change", function(){
+    d3.selectAll("input[name='graphType']").on("change", function () {
         console.log("GraphType option change! New value: " + this.value);
         if (this.value === "delta") {
             console.log("Switching to delta graph");
@@ -373,7 +392,7 @@
             .step(1)
             //.ticks(5)
             .width(350)
-            .tickValues([0,-7,-14,-21,-28])
+            .tickValues([0, -7, -14, -21, -28])
             .on('onchange', val => {
                 d3.select('p#value-time').text(getReverseIdxValue(dataTime, val));
                 updateBothCharts();
