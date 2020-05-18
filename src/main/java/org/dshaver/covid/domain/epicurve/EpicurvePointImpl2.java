@@ -28,6 +28,7 @@ public class EpicurvePointImpl2 implements EpicurvePoint {
     Integer casesVm;
     Integer deathsVm;
     Integer casesExtrapolated;
+    Integer rollingCases;
 
     public EpicurvePointImpl2() {
 

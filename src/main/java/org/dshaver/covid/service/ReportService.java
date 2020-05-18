@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,18 +30,21 @@ public class ReportService {
     private final ReportFactory reportFactory;
     private final ReportRepository reportRepository;
     private final HistogramReportRepository histogramReportRepository;
+    private final EpicurveAggregatorTools epicurveAggregatorTools;
 
     @Inject
     public ReportService(ReportFactory reportFactory,
                          RawDataRepositoryDelegator rawDataRepository,
                          RawDataDownloaderDelegator rawDataDownloader,
                          ReportRepository reportRepository,
-                         HistogramReportRepository histogramReportRepository) {
+                         HistogramReportRepository histogramReportRepository,
+                         EpicurveAggregatorTools epicurveAggregatorTools) {
         this.reportFactory = reportFactory;
         this.rawDataRepository = rawDataRepository;
         this.rawDataDownloader = rawDataDownloader;
         this.reportRepository = reportRepository;
         this.histogramReportRepository = histogramReportRepository;
+        this.epicurveAggregatorTools = epicurveAggregatorTools;
     }
 
     /**
@@ -91,6 +93,9 @@ public class ReportService {
 
                         // Extrapolate
                         report = EpicurveExtrapolator.extrapolateCases(report, histogramReport);
+
+                        // Populate 7 day rolling sum
+                        report = epicurveAggregatorTools.populateRollingSum(report);
 
                         // Save
                         reportRepository.save(report);

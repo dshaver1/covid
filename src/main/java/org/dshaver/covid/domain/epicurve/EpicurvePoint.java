@@ -50,4 +50,8 @@ public interface EpicurvePoint extends Comparable<EpicurvePoint> {
     Integer getCasesExtrapolated();
 
     void setCasesExtrapolated(Integer casesExtrapolated);
+
+    Integer getRollingCases();
+
+    void setRollingCases(Integer rollingCases);
 }

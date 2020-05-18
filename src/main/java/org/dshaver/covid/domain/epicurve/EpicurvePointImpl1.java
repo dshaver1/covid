@@ -23,6 +23,7 @@ public class EpicurvePointImpl1 implements EpicurvePoint {
     Integer casesVm;
     Integer deathsVm;
     Integer casesExtrapolated;
+    Integer rollingCases;
 
     @Override
     public int compareTo(EpicurvePoint o) {

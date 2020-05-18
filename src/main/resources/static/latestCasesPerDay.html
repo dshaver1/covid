@@ -113,6 +113,11 @@
                                 <input type="radio" name="graphType" value="delta" id="deltas">
                                 <label for="deltas">Deltas&nbsp</label>
                             </div>
+                            <div class="col-sm2"
+                                 data-tippy-content="A trailing 7 day sum of cases">
+                                <input type="radio" name="graphType" value="caseSum" id="caseSum">
+                                <label for="caseSum">Trailing 7 day sum&nbsp</label>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -260,7 +265,12 @@
 
     // gridlines in y axis function
     function make_y_gridlines() {
-        return d3.axisLeft(dphyScale).tickValues([0,100,200,300,400,500,600,700,800,900])
+        let tickValues = [0,100,200,300,400,500,600,700,800,900];
+        if (caseSumEnabled) {
+            tickValues = [0,1000,2000,3000,4000,5000];
+        }
+
+        return d3.axisLeft(dphyScale).tickValues(tickValues)
     }
 
     function drawAxisLines() {
@@ -277,25 +287,35 @@
 
     // Radio options
     var deltaEnabled = false;
+    var caseSumEnabled = false;
     d3.selectAll("input[name='graphType']").on("change", function () {
         console.log("GraphType option change! New value: " + this.value);
         if (this.value === "delta") {
             console.log("Switching to delta graph");
 
             deltaEnabled = true;
+            caseSumEnabled = false;
             dphyScale.domain([-50, getYScale(theData)]);
+            drawAxisLines();
+        } else if (this.value === "caseSum") {
+            console.log("Switching to trailing case sum graph");
+
+            deltaEnabled = false;
+            caseSumEnabled = true;
+            dphyScale.domain([0, getYScale(theData)]);
             drawAxisLines();
         } else {
             console.log("Switching to raw graph");
 
             deltaEnabled = false;
+            caseSumEnabled = false;
             dphyScale.domain([0, getYScale(theData)]);
             drawAxisLines();
         }
 
         dphSvg.selectAll("g.y.axis").transition().duration(100).call(dphyAxis)
         updateBothCharts();
-        createTooltips(data);
+        createTooltips();
     });
 
     // load the DPH data
@@ -542,6 +562,8 @@
     function getCases(data) {
         if (deltaEnabled) {
             return data.casesVm;
+        } else if (caseSumEnabled) {
+            return data.rollingCases;
         }
 
         return data.positives;
@@ -550,6 +572,10 @@
     function getYScale(data) {
         if (deltaEnabled) {
             return 300;
+        } else if (caseSumEnabled) {
+            return d3.max(data[data.length - 1].georgiaEpicurve.data, function (d) {
+                return d.rollingCases;
+            })
         }
 
         return d3.max(data[data.length - 1].georgiaEpicurve.data, function (d) {
