@@ -407,7 +407,7 @@
             .step(1)
             //.ticks(5)
             .width(350)
-            .tickValues([0, -7, -14, -21, -28])
+            .tickValues([0, -7, -14, -21, -28, -35])
             .on('onchange', val => {
                 d3.select('p#value-time').text(getReverseIdxValue(dataTime, val));
                 updateBothCharts();
