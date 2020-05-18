@@ -295,6 +295,7 @@
 
         dphSvg.selectAll("g.y.axis").transition().duration(100).call(dphyAxis)
         updateBothCharts();
+        createTooltips(data);
     });
 
     // load the DPH data
@@ -511,8 +512,8 @@
                 var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
                 content += `
                     <table style="margin-top: 2.5px;">
-                            <tr><td>Cases: </td><td style="text-align: right">` + d.casesVm + `</td></tr>
-                            <tr><td>Deaths: </td><td style="text-align: right">` + d.deathsVm + `</td></tr>
+                            <tr><td>Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
+                            <tr><td>Deaths: </td><td style="text-align: right">` + getDeaths(d) + `</td></tr>
                     </table>
                     `;
                 return content;
