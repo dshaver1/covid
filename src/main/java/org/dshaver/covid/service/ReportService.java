@@ -56,8 +56,10 @@ public class ReportService {
         return saveReportFromRawData(data);
     }
 
-    public void bulkProcess(LocalDate startDate, LocalDate endDate, boolean deleteFirst, Class<? extends RawData> rawDataClass) {
-        List<RawData> allData = rawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate, rawDataClass);
+    public void bulkProcess(LocalDate startDate, LocalDate endDate, boolean deleteFirst) {
+        List<RawData> allData = rawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate, RawDataV1.class);
+        allData.addAll(rawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate, RawDataV2.class));
+        allData.addAll(rawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate, ManualRawData.class));
 
         if (deleteFirst) {
             logger.info("Deleting all reports!");

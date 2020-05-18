@@ -103,7 +103,8 @@
                 <div id="options">
                     <form>
                         <div class="row align-items-left">
-                            <div class="col-sm2" data-tippy-content="Raw confirmed values exactly as they are reported by the Georgia Department of Public Health.">
+                            <div class="col-sm2"
+                                 data-tippy-content="Raw confirmed values exactly as they are reported by the Georgia Department of Public Health.">
                                 <input type="radio" name="graphType" value="raw" id="raw" checked>
                                 <label for="raw">Raw Values&nbsp</label>
                             </div>
@@ -259,8 +260,17 @@
 
     // gridlines in y axis function
     function make_y_gridlines() {
-        return d3.axisLeft(dphyScale)
-            .ticks(5)
+        return d3.axisLeft(dphyScale).tickValues([0,100,200,300,400,500,600,700,800,900])
+    }
+
+    function drawAxisLines() {
+        dphSvg.selectAll(".grid").remove();
+        dphSvg.append("g")
+            .attr("class", "grid")
+            .call(make_y_gridlines()
+                .tickSize(-width)
+                .tickFormat("")
+            );
     }
 
     var theData, dataTime, sliderTime, tip;
@@ -271,13 +281,18 @@
         console.log("GraphType option change! New value: " + this.value);
         if (this.value === "delta") {
             console.log("Switching to delta graph");
+
             deltaEnabled = true;
+            dphyScale.domain([-50, getYScale(theData)]);
+            drawAxisLines();
         } else {
             console.log("Switching to raw graph");
+
             deltaEnabled = false;
+            dphyScale.domain([0, getYScale(theData)]);
+            drawAxisLines();
         }
 
-        dphyScale.domain([0, getYScale(theData)]);
         dphSvg.selectAll("g.y.axis").transition().duration(100).call(dphyAxis)
         updateBothCharts();
     });
@@ -533,7 +548,7 @@
 
     function getYScale(data) {
         if (deltaEnabled) {
-            return 355;
+            return 300;
         }
 
         return d3.max(data[data.length - 1].georgiaEpicurve.data, function (d) {
@@ -551,10 +566,14 @@
                 return dphxScale(d.label);
             })
             .attr("y", function (d) {
-                return dphyScale(dataCallback(d));
+                if (dataCallback(d) > 0) {
+                    return dphyScale(dataCallback(d));
+                } else {
+                    return dphyScale(0);
+                }
             })
             .attr("height", function (d) {
-                return height - dphyScale(dataCallback(d));
+                return Math.abs(dphyScale(dataCallback(d)) - dphyScale(0));
             })
             .attr("width", dphxScale.bandwidth())
             .style("fill", color)
@@ -567,15 +586,20 @@
 
         selectedData.transition().duration(100)
             .attr("y", function (d) {
-                return dphyScale(dataCallback(d));
+                if (dataCallback(d) > 0) {
+                    return dphyScale(dataCallback(d));
+                } else {
+                    return dphyScale(0);
+                }
             })
             .attr("height", function (d) {
-                return height - dphyScale(dataCallback(d));
+                return Math.abs(dphyScale(dataCallback(d)) - dphyScale(0));
             });
 
         selectedData.exit().remove();
 
         // Ensure notable dates lines are on top!
+        dphSvg.selectAll("." + clazz).moveToFront();
         dphSvg.selectAll("line").moveToFront();
     }
 

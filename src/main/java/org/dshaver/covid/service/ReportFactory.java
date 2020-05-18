@@ -1,11 +1,10 @@
 package org.dshaver.covid.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.dshaver.covid.domain.*;
-import org.dshaver.covid.domain.epicurve.Epicurve;
-import org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1;
-import org.dshaver.covid.domain.epicurve.EpicurvePointImpl1;
+import org.dshaver.covid.domain.epicurve.*;
 import org.dshaver.covid.domain.overview.ReportOverview;
 import org.dshaver.covid.service.extractor.Extractor;
 import org.slf4j.Logger;
@@ -68,7 +67,41 @@ public class ReportFactory {
             return createReport((RawDataV1) rawData, previousReport);
         }
 
+        if (rawData instanceof ManualRawData) {
+            return createReport((ManualRawData) rawData, previousReport);
+        }
+
         return null;
+    }
+
+    public Report createReport(ManualRawData rawData, Report previousReport) throws Exception {
+        List<EpicurvePoint> epicurvePoints =
+                objectMapper.readValue(rawData.getPayload().get(0), new TypeReference<List<EpicurvePointImpl2>>() {
+                });
+        Epicurve epicurve = new Epicurve("Georgia");
+        epicurve.setData(epicurvePoints);
+
+        Map<String, Epicurve> epicurves = new HashMap<>();
+        epicurves.put("Georgia", epicurve);
+
+        Report report = new Report(LocalDateTime.now(),
+                rawData.getId(),
+                rawData.getReportDate(),
+                epicurves,
+                rawData.getTotalTests(),
+                rawData.getConfirmedCases(),
+                rawData.getHospitalizations(),
+                rawData.getDeaths(),
+                rawData.getIcu(),
+                previousReport == null ? 0 : rawData.getTotalTests() - previousReport.getTotalTests(),
+                previousReport == null ? 0 : rawData.getConfirmedCases() - previousReport.getConfirmedCases(),
+                previousReport == null ? 0 : rawData.getHospitalizations() - previousReport.getHospitalized(),
+                previousReport == null ? 0 : rawData.getDeaths() - previousReport.getDeaths(),
+                previousReport == null ? 0 : rawData.getIcu() - previousReport.getIcu());
+
+        logger.info("Done parsing report for " + report.getId());
+
+        return report;
     }
 
     public Report createReport(RawDataV2 rawData, Report previousReport) throws Exception {

@@ -3,6 +3,7 @@ package org.dshaver.covid.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
 import org.dshaver.covid.dao.HistogramReportRepository;
+import org.dshaver.covid.dao.ManualRawDataRepository;
 import org.dshaver.covid.dao.RawDataRepositoryV2;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.*;
@@ -15,13 +16,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.swing.text.html.Option;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,17 +37,21 @@ public class ReportController {
     private static final int DEFAULT_TARGET_HOUR = 18;
     private final ReportRepository reportRepository;
     private final RawDataRepositoryV2 rawDataRepository;
+    private final ManualRawDataRepository manualRawDataRepository;
     private final HistogramReportRepository histogramReportRepository;
     private final ReportService reportService;
     private final ObjectMapper objectMapper;
 
     @Inject
     public ReportController(ReportRepository reportRepository,
-                            RawDataRepositoryV2 rawDataRepository, HistogramReportRepository histogramReportRepository,
+                            RawDataRepositoryV2 rawDataRepository,
+                            ManualRawDataRepository manualRawDataRepository,
+                            HistogramReportRepository histogramReportRepository,
                             ReportService reportService,
                             ObjectMapper objectMapper) {
         this.reportRepository = reportRepository;
         this.rawDataRepository = rawDataRepository;
+        this.manualRawDataRepository = manualRawDataRepository;
         this.histogramReportRepository = histogramReportRepository;
         this.reportService = reportService;
         this.objectMapper = objectMapper;
@@ -174,8 +180,41 @@ public class ReportController {
     public void reprocessAll() {
         LocalDate defaultStartDate = LocalDate.of(2020, 1, 1);
         LocalDate defaultEndDate = LocalDate.of(2030, 1, 1);
-        reportService.bulkProcess(defaultStartDate, defaultEndDate, true, RawDataV1.class);
+        reportService.bulkProcess(defaultStartDate, defaultEndDate, true);
         // Don't delete data a second time because then we would never have any V1 reports
-        reportService.bulkProcess(defaultStartDate, defaultEndDate, false, RawDataV2.class);
+        //reportService.bulkProcess(defaultStartDate, defaultEndDate, false, RawDataV2.class);
+    }
+
+    @PostMapping("/reports/insertManualData")
+    public void insertManualData(@RequestBody ManualReportRequest request) throws Exception {
+        LocalDate defaultStartDate = LocalDate.of(2020, 1, 1);
+        LocalDate defaultEndDate = LocalDate.of(2030, 1, 1);
+
+        // Populate epicurve points with top-level reportDate
+        for (EpicurvePoint epicurvePoint : request.getGeorgiaEpicurve()) {
+            epicurvePoint.setLabelDate(LocalDate.parse(epicurvePoint.getTestDate(), DateTimeFormatter.ISO_DATE));
+            epicurvePoint.setLabel(epicurvePoint.getTestDate());
+        }
+
+        // Convert to string
+        String epicurveString = objectMapper.writeValueAsString(request.getGeorgiaEpicurve());
+
+        // Create ManualRawData
+        ManualRawData manualRawData = new ManualRawData();
+        manualRawData.setId(request.getId());
+        manualRawData.setReportDate(request.getReportDate());
+        manualRawData.setCreateTime(LocalDateTime.now());
+        manualRawData.setPayload(Collections.singletonList(epicurveString));
+        manualRawData.setConfirmedCases(request.getConfirmedCases());
+        manualRawData.setTotalTests(request.getTotalTests());
+        manualRawData.setIcu(request.getIcu());
+        manualRawData.setHospitalizations(request.getHospitalizations());
+        manualRawData.setDeaths(request.getDeaths());
+
+        // Save the raw data
+        manualRawDataRepository.save(manualRawData);
+
+        // Reprocess all data into reports
+        reportService.bulkProcess(defaultStartDate, defaultEndDate, true);
     }
 }
