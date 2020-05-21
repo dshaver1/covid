@@ -48,7 +48,7 @@ public class ReportService {
     /**
      * Main entrypoint to check for new reports.
      */
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 15 * * * *")
     public DownloadResponse checkForData() {
         // Download
         RawData data = rawDataDownloader.download(RawDataV2.class);
