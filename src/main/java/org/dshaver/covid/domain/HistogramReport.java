@@ -10,11 +10,9 @@ import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Histogram of how many days prior to topday new cases or deaths are added.
@@ -70,7 +68,7 @@ public class HistogramReport {
         deathsHist.forEach((key, value) -> deathsPercentageHist.put(key, BigDecimal.valueOf(((0D + value) / deathsSum) * 100).round(DECIMALS_4)));
 
         BigDecimal accumulator = BigDecimal.ZERO;
-        for (Map.Entry<Integer, BigDecimal> entry : casesPercentageHist.entrySet()) {
+        for (Map.Entry<Integer, BigDecimal> entry : casesPercentageHist.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList())) {
             Integer currentKey = entry.getKey();
             BigDecimal currentValue = entry.getValue();
             accumulator = accumulator.add(currentValue);
@@ -78,7 +76,7 @@ public class HistogramReport {
         }
 
         accumulator = BigDecimal.ZERO;
-        for (Map.Entry<Integer, BigDecimal> entry : deathsPercentageHist.entrySet()) {
+        for (Map.Entry<Integer, BigDecimal> entry : casesPercentageHist.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList())) {
             Integer currentKey = entry.getKey();
             BigDecimal currentValue = entry.getValue();
             accumulator = accumulator.add(currentValue);
