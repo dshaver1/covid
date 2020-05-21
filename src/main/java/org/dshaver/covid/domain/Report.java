@@ -1,9 +1,11 @@
 package org.dshaver.covid.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 import lombok.ToString;
 import org.dshaver.covid.domain.epicurve.Epicurve;
+import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
@@ -11,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -18,6 +21,7 @@ import java.util.Map;
  */
 @Data
 @ToString(exclude = {"epicurves"})
+@JsonPropertyOrder(value = {"id", "createTime", "reportDate", "totalTests", "totalTestsVm", "confirmedCases", "confirmedCasesVm", "deaths", "deathsVm", "hospitalized", "hospitalizedVm", "icu", "icuVm", "top5CaseDeltas", "georgiaEpicurve"})
 @Document("reports")
 public class Report {
     public static final String GEORGIA = "Georgia";
@@ -29,6 +33,7 @@ public class Report {
     private LocalDateTime createTime;
     private LocalDate reportDate;
     private Map<String, Epicurve> epicurves;
+    private Collection<EpicurvePoint> top5CaseDeltas;
     private int totalTests;
     private int totalTestsVm;
     private int confirmedCases;

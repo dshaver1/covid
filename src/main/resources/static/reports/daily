@@ -1,17 +1,18 @@
 [ {
   "id" : "2020-04-13T18:27:58",
-  "createTime" : "2020-05-21T09:25:39.965",
+  "createTime" : "2020-05-21T11:05:02.935",
   "reportDate" : "2020-04-13",
   "totalTests" : 57038,
   "totalTestsVm" : 0,
   "confirmedCases" : 13621,
   "confirmedCasesVm" : 0,
-  "hospitalized" : 2702,
-  "hospitalizedVm" : 0,
   "deaths" : 480,
   "deathsVm" : 0,
+  "hospitalized" : 2702,
+  "hospitalizedVm" : 0,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -702,18 +703,19 @@
   }
 }, {
   "id" : "2020-04-14T18:28:05",
-  "createTime" : "2020-05-21T09:28:18.906",
+  "createTime" : "2020-05-21T11:05:03.026",
   "reportDate" : "2020-04-14",
   "totalTests" : 61795,
   "totalTestsVm" : 4757,
   "confirmedCases" : 14578,
   "confirmedCasesVm" : 957,
-  "hospitalized" : 2858,
-  "hospitalizedVm" : 156,
   "deaths" : 524,
   "deathsVm" : 44,
+  "hospitalized" : 2858,
+  "hospitalizedVm" : 156,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -1416,18 +1418,19 @@
   }
 }, {
   "id" : "2020-04-15T18:28:13",
-  "createTime" : "2020-05-21T09:28:19.615",
+  "createTime" : "2020-05-21T11:05:03.092",
   "reportDate" : "2020-04-15",
   "totalTests" : 64099,
   "totalTestsVm" : 2304,
   "confirmedCases" : 15260,
   "confirmedCasesVm" : 682,
-  "hospitalized" : 3006,
-  "hospitalizedVm" : 148,
   "deaths" : 576,
   "deathsVm" : 52,
+  "hospitalized" : 3006,
+  "hospitalizedVm" : 148,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -2142,18 +2145,19 @@
   }
 }, {
   "id" : "2020-04-16T18:28:21",
-  "createTime" : "2020-05-21T09:28:21.886",
+  "createTime" : "2020-05-21T11:05:03.151",
   "reportDate" : "2020-04-16",
   "totalTests" : 67939,
   "totalTestsVm" : 3840,
   "confirmedCases" : 16368,
   "confirmedCasesVm" : 1108,
-  "hospitalized" : 3260,
-  "hospitalizedVm" : 254,
   "deaths" : 617,
   "deathsVm" : 41,
+  "hospitalized" : 3260,
+  "hospitalizedVm" : 254,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -2880,18 +2884,19 @@
   }
 }, {
   "id" : "2020-04-17T18:28:28",
-  "createTime" : "2020-05-21T09:28:22.727",
+  "createTime" : "2020-05-21T11:05:03.211",
   "reportDate" : "2020-04-17",
   "totalTests" : 71693,
   "totalTestsVm" : 3754,
   "confirmedCases" : 17432,
   "confirmedCasesVm" : 1064,
-  "hospitalized" : 3395,
-  "hospitalizedVm" : 135,
   "deaths" : 668,
   "deathsVm" : 51,
+  "hospitalized" : 3395,
+  "hospitalizedVm" : 135,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -3630,18 +3635,19 @@
   }
 }, {
   "id" : "2020-04-18T18:28:36",
-  "createTime" : "2020-05-21T09:28:24.491",
+  "createTime" : "2020-05-21T11:05:03.27",
   "reportDate" : "2020-04-18",
   "totalTests" : 74208,
   "totalTestsVm" : 2515,
   "confirmedCases" : 17841,
   "confirmedCasesVm" : 409,
-  "hospitalized" : 3447,
-  "hospitalizedVm" : 52,
   "deaths" : 677,
   "deathsVm" : 9,
+  "hospitalized" : 3447,
+  "hospitalizedVm" : 52,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -4392,18 +4398,19 @@
   }
 }, {
   "id" : "2020-04-19T11:27:41",
-  "createTime" : "2020-05-21T09:28:25.18",
+  "createTime" : "2020-05-21T11:05:03.342",
   "reportDate" : "2020-04-19",
   "totalTests" : 79933,
   "totalTestsVm" : 5725,
   "confirmedCases" : 18301,
   "confirmedCasesVm" : 460,
-  "hospitalized" : 3464,
-  "hospitalizedVm" : 17,
   "deaths" : 687,
   "deathsVm" : 10,
+  "hospitalized" : 3464,
+  "hospitalizedVm" : 17,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -5166,18 +5173,19 @@
   }
 }, {
   "id" : "2020-04-20T18:27:52",
-  "createTime" : "2020-05-21T09:28:25.851",
+  "createTime" : "2020-05-21T11:05:03.402",
   "reportDate" : "2020-04-20",
   "totalTests" : 84328,
   "totalTestsVm" : 4395,
   "confirmedCases" : 19399,
   "confirmedCasesVm" : 1098,
-  "hospitalized" : 3703,
-  "hospitalizedVm" : 239,
   "deaths" : 775,
   "deathsVm" : 88,
+  "hospitalized" : 3703,
+  "hospitalizedVm" : 239,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -5952,18 +5960,19 @@
   }
 }, {
   "id" : "2020-04-21T18:28:00",
-  "createTime" : "2020-05-21T09:28:27.925",
+  "createTime" : "2020-05-21T11:05:03.463",
   "reportDate" : "2020-04-21",
   "totalTests" : 88140,
   "totalTestsVm" : 3812,
   "confirmedCases" : 20166,
   "confirmedCasesVm" : 767,
-  "hospitalized" : 3885,
-  "hospitalizedVm" : 182,
   "deaths" : 818,
   "deathsVm" : 43,
+  "hospitalized" : 3885,
+  "hospitalizedVm" : 182,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -6750,18 +6759,19 @@
   }
 }, {
   "id" : "2020-04-22T18:28:07",
-  "createTime" : "2020-05-21T09:28:28.91",
+  "createTime" : "2020-05-21T11:05:03.525",
   "reportDate" : "2020-04-22",
   "totalTests" : 94072,
   "totalTestsVm" : 5932,
   "confirmedCases" : 21102,
   "confirmedCasesVm" : 936,
-  "hospitalized" : 4018,
-  "hospitalizedVm" : 133,
   "deaths" : 846,
   "deathsVm" : 28,
+  "hospitalized" : 4018,
+  "hospitalizedVm" : 133,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -7560,18 +7570,19 @@
   }
 }, {
   "id" : "2020-04-23T18:28:15",
-  "createTime" : "2020-05-21T09:28:29.677",
+  "createTime" : "2020-05-21T11:05:03.588",
   "reportDate" : "2020-04-23",
   "totalTests" : 101062,
   "totalTestsVm" : 6990,
   "confirmedCases" : 21883,
   "confirmedCasesVm" : 781,
-  "hospitalized" : 4154,
-  "hospitalizedVm" : 136,
   "deaths" : 881,
   "deathsVm" : 35,
+  "hospitalized" : 4154,
+  "hospitalizedVm" : 136,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -8382,18 +8393,19 @@
   }
 }, {
   "id" : "2020-04-24T18:28:23",
-  "createTime" : "2020-05-21T09:28:30.386",
+  "createTime" : "2020-05-21T11:05:03.652",
   "reportDate" : "2020-04-24",
   "totalTests" : 107176,
   "totalTestsVm" : 6114,
   "confirmedCases" : 22491,
   "confirmedCasesVm" : 608,
-  "hospitalized" : 4322,
-  "hospitalizedVm" : 168,
   "deaths" : 899,
   "deathsVm" : 18,
+  "hospitalized" : 4322,
+  "hospitalizedVm" : 168,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -9216,18 +9228,19 @@
   }
 }, {
   "id" : "2020-04-25T18:28:30",
-  "createTime" : "2020-05-21T09:28:30.987",
+  "createTime" : "2020-05-21T11:05:03.716",
   "reportDate" : "2020-04-25",
   "totalTests" : 119014,
   "totalTestsVm" : 11838,
   "confirmedCases" : 23216,
   "confirmedCasesVm" : 725,
-  "hospitalized" : 4353,
-  "hospitalizedVm" : 31,
   "deaths" : 907,
   "deathsVm" : 8,
+  "hospitalized" : 4353,
+  "hospitalizedVm" : 31,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -10062,18 +10075,19 @@
   }
 }, {
   "id" : "2020-04-26T18:27:37",
-  "createTime" : "2020-05-21T09:28:32.418",
+  "createTime" : "2020-05-21T11:05:03.781",
   "reportDate" : "2020-04-26",
   "totalTests" : 122604,
   "totalTestsVm" : 3590,
   "confirmedCases" : 23481,
   "confirmedCasesVm" : 265,
-  "hospitalized" : 4377,
-  "hospitalizedVm" : 24,
   "deaths" : 916,
   "deathsVm" : 9,
+  "hospitalized" : 4377,
+  "hospitalizedVm" : 24,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -10920,18 +10934,19 @@
   }
 }, {
   "id" : "2020-04-27T18:27:45",
-  "createTime" : "2020-05-21T09:28:32.924",
+  "createTime" : "2020-05-21T11:05:03.848",
   "reportDate" : "2020-04-27",
   "totalTests" : 127169,
   "totalTestsVm" : 4565,
   "confirmedCases" : 24219,
   "confirmedCasesVm" : 738,
-  "hospitalized" : 4566,
-  "hospitalizedVm" : 189,
   "deaths" : 994,
   "deathsVm" : 78,
+  "hospitalized" : 4566,
+  "hospitalizedVm" : 189,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -11790,18 +11805,19 @@
   }
 }, {
   "id" : "2020-04-28T18:27:53",
-  "createTime" : "2020-05-21T09:28:36.773",
+  "createTime" : "2020-05-21T11:05:03.915",
   "reportDate" : "2020-04-28",
   "totalTests" : 140223,
   "totalTestsVm" : 13054,
   "confirmedCases" : 24854,
   "confirmedCasesVm" : 635,
-  "hospitalized" : 4738,
-  "hospitalizedVm" : 172,
   "deaths" : 1036,
   "deathsVm" : 42,
+  "hospitalized" : 4738,
+  "hospitalizedVm" : 172,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -12672,18 +12688,19 @@
   }
 }, {
   "id" : "2020-04-29T18:28:01",
-  "createTime" : "2020-05-21T09:28:36.839",
+  "createTime" : "2020-05-21T11:05:03.987",
   "reportDate" : "2020-04-29",
   "totalTests" : 143790,
   "totalTestsVm" : 3567,
   "confirmedCases" : 25644,
   "confirmedCasesVm" : 790,
-  "hospitalized" : 4926,
-  "hospitalizedVm" : 188,
   "deaths" : 1095,
   "deathsVm" : 59,
+  "hospitalized" : 4926,
+  "hospitalizedVm" : 188,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -13566,18 +13583,19 @@
   }
 }, {
   "id" : "2020-04-30T18:28:09",
-  "createTime" : "2020-05-21T09:28:36.906",
+  "createTime" : "2020-05-21T11:05:04.056",
   "reportDate" : "2020-04-30",
   "totalTests" : 164465,
   "totalTestsVm" : 20675,
   "confirmedCases" : 26261,
   "confirmedCasesVm" : 617,
-  "hospitalized" : 5048,
-  "hospitalizedVm" : 122,
   "deaths" : 1132,
   "deathsVm" : 37,
+  "hospitalized" : 5048,
+  "hospitalizedVm" : 122,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -14472,18 +14490,19 @@
   }
 }, {
   "id" : "2020-05-01T18:28:17",
-  "createTime" : "2020-05-21T09:28:36.974",
+  "createTime" : "2020-05-21T11:05:04.125",
   "reportDate" : "2020-05-01",
   "totalTests" : 168367,
   "totalTestsVm" : 3902,
   "confirmedCases" : 27496,
   "confirmedCasesVm" : 1235,
-  "hospitalized" : 5181,
-  "hospitalizedVm" : 133,
   "deaths" : 1165,
   "deathsVm" : 33,
+  "hospitalized" : 5181,
+  "hospitalizedVm" : 133,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -15390,18 +15409,19 @@
   }
 }, {
   "id" : "2020-05-02T18:28:25",
-  "createTime" : "2020-05-21T09:28:37.042",
+  "createTime" : "2020-05-21T11:05:04.197",
   "reportDate" : "2020-05-02",
   "totalTests" : 174800,
   "totalTestsVm" : 6433,
   "confirmedCases" : 28330,
   "confirmedCasesVm" : 834,
-  "hospitalized" : 5261,
-  "hospitalizedVm" : 80,
   "deaths" : 1174,
   "deathsVm" : 9,
+  "hospitalized" : 5261,
+  "hospitalizedVm" : 80,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -16320,18 +16340,19 @@
   }
 }, {
   "id" : "2020-05-03T18:28:32",
-  "createTime" : "2020-05-21T09:28:37.11",
+  "createTime" : "2020-05-21T11:05:04.273",
   "reportDate" : "2020-05-03",
   "totalTests" : 183002,
   "totalTestsVm" : 8202,
   "confirmedCases" : 28665,
   "confirmedCasesVm" : 335,
-  "hospitalized" : 5282,
-  "hospitalizedVm" : 21,
   "deaths" : 1179,
   "deathsVm" : 5,
+  "hospitalized" : 5282,
+  "hospitalizedVm" : 21,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -17262,18 +17283,19 @@
   }
 }, {
   "id" : "2020-05-04T18:27:41",
-  "createTime" : "2020-05-21T09:28:37.179",
+  "createTime" : "2020-05-21T11:05:04.344",
   "reportDate" : "2020-05-04",
   "totalTests" : 183012,
   "totalTestsVm" : 10,
   "confirmedCases" : 29438,
   "confirmedCasesVm" : 773,
-  "hospitalized" : 5419,
-  "hospitalizedVm" : 137,
   "deaths" : 1244,
   "deathsVm" : 65,
+  "hospitalized" : 5419,
+  "hospitalizedVm" : 137,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -18216,18 +18238,19 @@
   }
 }, {
   "id" : "2020-05-05T18:27:48",
-  "createTime" : "2020-05-21T09:28:37.249",
+  "createTime" : "2020-05-21T11:05:04.416",
   "reportDate" : "2020-05-05",
   "totalTests" : 200814,
   "totalTestsVm" : 17802,
   "confirmedCases" : 29852,
   "confirmedCasesVm" : 414,
-  "hospitalized" : 5542,
-  "hospitalizedVm" : 123,
   "deaths" : 1294,
   "deathsVm" : 50,
+  "hospitalized" : 5542,
+  "hospitalizedVm" : 123,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -19182,18 +19205,19 @@
   }
 }, {
   "id" : "2020-05-06T18:27:58",
-  "createTime" : "2020-05-21T09:28:37.321",
+  "createTime" : "2020-05-21T11:05:04.491",
   "reportDate" : "2020-05-06",
   "totalTests" : 204137,
   "totalTestsVm" : 3323,
   "confirmedCases" : 30739,
   "confirmedCasesVm" : 887,
-  "hospitalized" : 5678,
-  "hospitalizedVm" : 136,
   "deaths" : 1326,
   "deathsVm" : 32,
+  "hospitalized" : 5678,
+  "hospitalizedVm" : 136,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -20160,18 +20184,19 @@
   }
 }, {
   "id" : "2020-05-07T18:28:04",
-  "createTime" : "2020-05-21T09:28:37.4",
+  "createTime" : "2020-05-21T11:05:04.564",
   "reportDate" : "2020-05-07",
   "totalTests" : 225937,
   "totalTestsVm" : 21800,
   "confirmedCases" : 31584,
   "confirmedCasesVm" : 845,
-  "hospitalized" : 5762,
-  "hospitalizedVm" : 84,
   "deaths" : 1352,
   "deathsVm" : 26,
+  "hospitalized" : 5762,
+  "hospitalizedVm" : 84,
   "icu" : 0,
   "icuVm" : 0,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -21150,18 +21175,19 @@
   }
 }, {
   "id" : "2020-05-08T18:25:03",
-  "createTime" : "2020-05-21T09:28:37.586",
+  "createTime" : "2020-05-21T11:05:04.768",
   "reportDate" : "2020-05-08",
   "totalTests" : 227477,
   "totalTestsVm" : 1540,
   "confirmedCases" : 32171,
   "confirmedCasesVm" : 587,
-  "hospitalized" : 5974,
-  "hospitalizedVm" : 212,
   "deaths" : 1399,
   "deathsVm" : 47,
+  "hospitalized" : 5974,
+  "hospitalizedVm" : 212,
   "icu" : 1405,
   "icuVm" : 1405,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -22152,18 +22178,19 @@
   }
 }, {
   "id" : "2020-05-09T18:25:03",
-  "createTime" : "2020-05-21T09:28:37.771",
+  "createTime" : "2020-05-21T11:05:04.953",
   "reportDate" : "2020-05-09",
   "totalTests" : 235324,
   "totalTestsVm" : 7847,
   "confirmedCases" : 32568,
   "confirmedCasesVm" : 397,
-  "hospitalized" : 5988,
-  "hospitalizedVm" : 14,
   "deaths" : 1401,
   "deathsVm" : 2,
+  "hospitalized" : 5988,
+  "hospitalizedVm" : 14,
   "icu" : 1409,
   "icuVm" : 4,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -23166,18 +23193,19 @@
   }
 }, {
   "id" : "2020-05-10T18:25:04",
-  "createTime" : "2020-05-21T09:28:37.956",
+  "createTime" : "2020-05-21T11:05:05.138",
   "reportDate" : "2020-05-10",
   "totalTests" : 243547,
   "totalTestsVm" : 8223,
   "confirmedCases" : 33476,
   "confirmedCasesVm" : 908,
-  "hospitalized" : 5999,
-  "hospitalizedVm" : 11,
   "deaths" : 1405,
   "deathsVm" : 4,
+  "hospitalized" : 5999,
+  "hospitalizedVm" : 11,
   "icu" : 1412,
   "icuVm" : 3,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -24192,18 +24220,19 @@
   }
 }, {
   "id" : "2020-05-11T19:05:19",
-  "createTime" : "2020-05-21T09:28:38.143",
+  "createTime" : "2020-05-21T11:05:05.323",
   "reportDate" : "2020-05-11",
   "totalTests" : 251288,
   "totalTestsVm" : 7741,
   "confirmedCases" : 34002,
   "confirmedCasesVm" : 526,
-  "hospitalized" : 6036,
-  "hospitalizedVm" : 37,
   "deaths" : 1444,
   "deathsVm" : 39,
+  "hospitalized" : 6036,
+  "hospitalizedVm" : 37,
   "icu" : 1422,
   "icuVm" : 10,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -25230,18 +25259,79 @@
   }
 }, {
   "id" : "2020-05-12T19:00:04",
-  "createTime" : "2020-05-21T09:28:38.496",
+  "createTime" : "2020-05-21T11:05:05.699",
   "reportDate" : "2020-05-12",
   "totalTests" : 262179,
   "totalTestsVm" : 10891,
   "confirmedCases" : 34848,
   "confirmedCasesVm" : 846,
-  "hospitalized" : 6227,
-  "hospitalizedVm" : 191,
   "deaths" : 1494,
   "deathsVm" : 50,
+  "hospitalized" : 6227,
+  "hospitalizedVm" : 191,
   "icu" : 1479,
   "icuVm" : 57,
+  "top5CaseDeltas" : [ {
+    "label" : "2020-05-08",
+    "source" : "2020-05-12T19:00:04",
+    "casesVm" : 175,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-08",
+    "positives" : 175,
+    "deathcnt" : 0,
+    "positives_cum" : 972,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-04-19",
+    "source" : "2020-05-12T19:00:04",
+    "casesVm" : 169,
+    "deathsVm" : 1,
+    "casesExtrapolated" : null,
+    "county" : "Hall",
+    "test_date" : "2020-04-19",
+    "positives" : 169,
+    "deathcnt" : 1,
+    "positives_cum" : 1263,
+    "death_cum" : 8
+  }, {
+    "label" : "2020-04-28",
+    "source" : "2020-05-12T19:00:04",
+    "casesVm" : 168,
+    "deathsVm" : 3,
+    "casesExtrapolated" : null,
+    "county" : "Hall",
+    "test_date" : "2020-04-28",
+    "positives" : 168,
+    "deathcnt" : 3,
+    "positives_cum" : 1854,
+    "death_cum" : 23
+  }, {
+    "label" : "2020-05-04",
+    "source" : "2020-05-12T19:00:04",
+    "casesVm" : 162,
+    "deathsVm" : 1,
+    "casesExtrapolated" : null,
+    "county" : "Non-Georgia Resident",
+    "test_date" : "2020-05-04",
+    "positives" : 162,
+    "deathcnt" : 1,
+    "positives_cum" : 1370,
+    "death_cum" : 21
+  }, {
+    "label" : "2020-05-07",
+    "source" : "2020-05-12T19:00:04",
+    "casesVm" : 135,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-07",
+    "positives" : 135,
+    "deathcnt" : 0,
+    "positives_cum" : 797,
+    "death_cum" : 0
+  } ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -26280,18 +26370,79 @@
   }
 }, {
   "id" : "2020-05-13T19:00:03",
-  "createTime" : "2020-05-21T09:28:38.976",
+  "createTime" : "2020-05-21T11:05:06.244",
   "reportDate" : "2020-05-13",
   "totalTests" : 273904,
   "totalTestsVm" : 11725,
   "confirmedCases" : 35427,
   "confirmedCasesVm" : 579,
-  "hospitalized" : 6308,
-  "hospitalizedVm" : 81,
   "deaths" : 1517,
   "deathsVm" : 23,
+  "hospitalized" : 6308,
+  "hospitalizedVm" : 81,
   "icu" : 1511,
   "icuVm" : 32,
+  "top5CaseDeltas" : [ {
+    "label" : "2020-05-11",
+    "source" : "2020-05-13T19:00:03",
+    "casesVm" : 119,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-11",
+    "positives" : 132,
+    "deathcnt" : 0,
+    "positives_cum" : 1271,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-09",
+    "source" : "2020-05-13T19:00:03",
+    "casesVm" : 59,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-09",
+    "positives" : 120,
+    "deathcnt" : 0,
+    "positives_cum" : 1049,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-11",
+    "source" : "2020-05-13T19:00:03",
+    "casesVm" : 50,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Non-Georgia Resident",
+    "test_date" : "2020-05-11",
+    "positives" : 58,
+    "deathcnt" : 0,
+    "positives_cum" : 1544,
+    "death_cum" : 23
+  }, {
+    "label" : "2020-04-28",
+    "source" : "2020-05-13T19:00:03",
+    "casesVm" : 37,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Hall",
+    "test_date" : "2020-04-28",
+    "positives" : 205,
+    "deathcnt" : 3,
+    "positives_cum" : 1893,
+    "death_cum" : 23
+  }, {
+    "label" : "2020-05-01",
+    "source" : "2020-05-13T19:00:03",
+    "casesVm" : 21,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Mitchell",
+    "test_date" : "2020-05-01",
+    "positives" : 23,
+    "deathcnt" : 0,
+    "positives_cum" : 368,
+    "death_cum" : 30
+  } ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -27342,18 +27493,79 @@
   }
 }, {
   "id" : "2020-05-14T19:00:03",
-  "createTime" : "2020-05-21T09:28:39.464",
+  "createTime" : "2020-05-21T11:05:06.822",
   "reportDate" : "2020-05-14",
   "totalTests" : 285881,
   "totalTestsVm" : 11977,
   "confirmedCases" : 35977,
   "confirmedCasesVm" : 550,
-  "hospitalized" : 6374,
-  "hospitalizedVm" : 66,
   "deaths" : 1544,
   "deathsVm" : 27,
+  "hospitalized" : 6374,
+  "hospitalizedVm" : 66,
   "icu" : 1528,
   "icuVm" : 17,
+  "top5CaseDeltas" : [ {
+    "label" : "2020-05-12",
+    "source" : "2020-05-14T19:00:03",
+    "casesVm" : 122,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-12",
+    "positives" : 133,
+    "deathcnt" : 0,
+    "positives_cum" : 1354,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-11",
+    "source" : "2020-05-14T19:00:03",
+    "casesVm" : 87,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-11",
+    "positives" : 219,
+    "deathcnt" : 0,
+    "positives_cum" : 1221,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-04-21",
+    "source" : "2020-05-14T19:00:03",
+    "casesVm" : 27,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Cobb",
+    "test_date" : "2020-04-21",
+    "positives" : 88,
+    "deathcnt" : 2,
+    "positives_cum" : 1564,
+    "death_cum" : 73
+  }, {
+    "label" : "2020-04-22",
+    "source" : "2020-05-14T19:00:03",
+    "casesVm" : 12,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Cobb",
+    "test_date" : "2020-04-22",
+    "positives" : 55,
+    "deathcnt" : 1,
+    "positives_cum" : 1619,
+    "death_cum" : 74
+  }, {
+    "label" : "2020-05-12",
+    "source" : "2020-05-14T19:00:03",
+    "casesVm" : 10,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Non-Georgia Resident",
+    "test_date" : "2020-05-12",
+    "positives" : 21,
+    "deathcnt" : 0,
+    "positives_cum" : 1545,
+    "death_cum" : 23
+  } ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -28416,18 +28628,19 @@
   }
 }, {
   "id" : "2020-05-15T18:00:03",
-  "createTime" : "2020-05-21T09:28:39.622",
+  "createTime" : "2020-05-21T11:05:07.038",
   "reportDate" : "2020-05-15",
   "totalTests" : 301874,
   "totalTestsVm" : 15993,
   "confirmedCases" : 36772,
   "confirmedCasesVm" : 795,
-  "hospitalized" : 6518,
-  "hospitalizedVm" : 144,
   "deaths" : 1588,
   "deathsVm" : 44,
+  "hospitalized" : 6518,
+  "hospitalizedVm" : 144,
   "icu" : 1549,
   "icuVm" : 21,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -29502,18 +29715,19 @@
   }
 }, {
   "id" : "2020-05-16T18:00:03",
-  "createTime" : "2020-05-21T09:28:39.626",
+  "createTime" : "2020-05-21T11:05:07.043",
   "reportDate" : "2020-05-16",
   "totalTests" : 321069,
   "totalTestsVm" : 19195,
   "confirmedCases" : 37212,
   "confirmedCasesVm" : 440,
-  "hospitalized" : 6767,
-  "hospitalizedVm" : 249,
   "deaths" : 1598,
   "deathsVm" : 10,
+  "hospitalized" : 6767,
+  "hospitalizedVm" : 249,
   "icu" : 1556,
   "icuVm" : 7,
+  "top5CaseDeltas" : [ ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -30600,18 +30814,67 @@
   }
 }, {
   "id" : "2020-05-17T19:49:17",
-  "createTime" : "2020-05-21T09:28:39.993",
+  "createTime" : "2020-05-21T11:05:07.424",
   "reportDate" : "2020-05-17",
   "totalTests" : 351175,
   "totalTestsVm" : 30106,
   "confirmedCases" : 37552,
   "confirmedCasesVm" : 340,
-  "hospitalized" : 6835,
-  "hospitalizedVm" : 68,
   "deaths" : 1609,
   "deathsVm" : 11,
+  "hospitalized" : 6835,
+  "hospitalizedVm" : 68,
   "icu" : 1557,
   "icuVm" : 1,
+  "top5CaseDeltas" : [ {
+    "label" : "2020-05-12",
+    "source" : "2020-05-17T19:49:17",
+    "casesVm" : 283,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-12",
+    "positives" : 283,
+    "deathcnt" : 0,
+    "positives_cum" : 1452,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-11",
+    "source" : "2020-05-17T19:49:17",
+    "casesVm" : 227,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-11",
+    "positives" : 227,
+    "deathcnt" : 0,
+    "positives_cum" : 1169,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-04-28",
+    "source" : "2020-05-17T19:49:17",
+    "casesVm" : 204,
+    "deathsVm" : 3,
+    "casesExtrapolated" : null,
+    "county" : "Hall",
+    "test_date" : "2020-04-28",
+    "positives" : 204,
+    "deathcnt" : 3,
+    "positives_cum" : 1885,
+    "death_cum" : 23
+  }, {
+    "label" : "2020-05-14",
+    "source" : "2020-05-17T19:49:17",
+    "casesVm" : 201,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-14",
+    "positives" : 201,
+    "deathcnt" : 0,
+    "positives_cum" : 1880,
+    "death_cum" : 0
+  } ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -31698,18 +31961,79 @@
   }
 }, {
   "id" : "2020-05-18T19:00:03",
-  "createTime" : "2020-05-21T09:28:40.494",
+  "createTime" : "2020-05-21T11:05:07.988",
   "reportDate" : "2020-05-18",
   "totalTests" : 364289,
   "totalTestsVm" : 13114,
   "confirmedCases" : 38283,
   "confirmedCasesVm" : 731,
-  "hospitalized" : 6992,
-  "hospitalizedVm" : 157,
   "deaths" : 1649,
   "deathsVm" : 40,
+  "hospitalized" : 6992,
+  "hospitalizedVm" : 157,
   "icu" : 1581,
   "icuVm" : 24,
+  "top5CaseDeltas" : [ {
+    "label" : "2020-05-14",
+    "source" : "2020-05-18T19:00:03",
+    "casesVm" : 71,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-14",
+    "positives" : 272,
+    "deathcnt" : 0,
+    "positives_cum" : 1925,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-15",
+    "source" : "2020-05-18T19:00:03",
+    "casesVm" : 63,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-15",
+    "positives" : 212,
+    "deathcnt" : 0,
+    "positives_cum" : 2137,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-16",
+    "source" : "2020-05-18T19:00:03",
+    "casesVm" : 56,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-16",
+    "positives" : 61,
+    "deathcnt" : 0,
+    "positives_cum" : 2198,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-13",
+    "source" : "2020-05-18T19:00:03",
+    "casesVm" : 46,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-13",
+    "positives" : 273,
+    "deathcnt" : 0,
+    "positives_cum" : 1653,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-13",
+    "source" : "2020-05-18T19:00:03",
+    "casesVm" : 34,
+    "deathsVm" : -1,
+    "casesExtrapolated" : null,
+    "county" : "Habersham",
+    "test_date" : "2020-05-13",
+    "positives" : 41,
+    "deathcnt" : 0,
+    "positives_cum" : 451,
+    "death_cum" : 14
+  } ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -32820,18 +33144,79 @@
   }
 }, {
   "id" : "2020-05-19T19:00:03",
-  "createTime" : "2020-05-21T09:28:41.003",
+  "createTime" : "2020-05-21T11:05:08.603",
   "reportDate" : "2020-05-19",
   "totalTests" : 378156,
   "totalTestsVm" : 13867,
   "confirmedCases" : 38855,
   "confirmedCasesVm" : 572,
-  "hospitalized" : 7076,
-  "hospitalizedVm" : 84,
   "deaths" : 1675,
   "deathsVm" : 26,
+  "hospitalized" : 7076,
+  "hospitalizedVm" : 84,
   "icu" : 1607,
   "icuVm" : 26,
+  "top5CaseDeltas" : [ {
+    "label" : "2020-05-17",
+    "source" : "2020-05-19T19:00:03",
+    "casesVm" : 90,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-17",
+    "positives" : 100,
+    "deathcnt" : 0,
+    "positives_cum" : 2116,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-15",
+    "source" : "2020-05-19T19:00:03",
+    "casesVm" : 54,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-15",
+    "positives" : 266,
+    "deathcnt" : 0,
+    "positives_cum" : 1939,
+    "death_cum" : 0
+  }, {
+    "label" : "2020-05-11",
+    "source" : "2020-05-19T19:00:03",
+    "casesVm" : 21,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Fulton",
+    "test_date" : "2020-05-11",
+    "positives" : 58,
+    "deathcnt" : 1,
+    "positives_cum" : 3672,
+    "death_cum" : 166
+  }, {
+    "label" : "2020-05-12",
+    "source" : "2020-05-19T19:00:03",
+    "casesVm" : 20,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "DeKalb",
+    "test_date" : "2020-05-12",
+    "positives" : 37,
+    "deathcnt" : 2,
+    "positives_cum" : 2820,
+    "death_cum" : 86
+  }, {
+    "label" : "2020-04-30",
+    "source" : "2020-05-19T19:00:03",
+    "casesVm" : 19,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-04-30",
+    "positives" : 43,
+    "deathcnt" : 0,
+    "positives_cum" : 487,
+    "death_cum" : 0
+  } ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -33954,18 +34339,79 @@
   }
 }, {
   "id" : "2020-05-20T19:00:03",
-  "createTime" : "2020-05-21T09:28:41.526",
+  "createTime" : "2020-05-21T11:05:09.235",
   "reportDate" : "2020-05-20",
   "totalTests" : 402940,
   "totalTestsVm" : 24784,
   "confirmedCases" : 39801,
   "confirmedCasesVm" : 946,
-  "hospitalized" : 7171,
-  "hospitalizedVm" : 95,
   "deaths" : 1697,
   "deathsVm" : 22,
+  "hospitalized" : 7171,
+  "hospitalizedVm" : 95,
   "icu" : 1630,
   "icuVm" : 23,
+  "top5CaseDeltas" : [ {
+    "label" : "2020-05-18",
+    "source" : "2020-05-20T19:00:03",
+    "casesVm" : 313,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-18",
+    "positives" : 327,
+    "deathcnt" : 0,
+    "positives_cum" : 2413,
+    "death_cum" : 1
+  }, {
+    "label" : "2020-05-15",
+    "source" : "2020-05-20T19:00:03",
+    "casesVm" : 75,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-15",
+    "positives" : 341,
+    "deathcnt" : 0,
+    "positives_cum" : 1809,
+    "death_cum" : 1
+  }, {
+    "label" : "2020-05-16",
+    "source" : "2020-05-20T19:00:03",
+    "casesVm" : 61,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-16",
+    "positives" : 138,
+    "deathcnt" : 0,
+    "positives_cum" : 1947,
+    "death_cum" : 1
+  }, {
+    "label" : "2020-05-14",
+    "source" : "2020-05-20T19:00:03",
+    "casesVm" : 41,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-14",
+    "positives" : 311,
+    "deathcnt" : 0,
+    "positives_cum" : 1468,
+    "death_cum" : 1
+  }, {
+    "label" : "2020-05-17",
+    "source" : "2020-05-20T19:00:03",
+    "casesVm" : 39,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-17",
+    "positives" : 139,
+    "deathcnt" : 0,
+    "positives_cum" : 2086,
+    "death_cum" : 1
+  } ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {
@@ -35100,18 +35546,79 @@
   }
 }, {
   "id" : "2020-05-21T09:00:03",
-  "createTime" : "2020-05-21T09:28:42.048",
+  "createTime" : "2020-05-21T11:05:09.868",
   "reportDate" : "2020-05-21",
   "totalTests" : 404207,
   "totalTestsVm" : 1267,
   "confirmedCases" : 40157,
   "confirmedCasesVm" : 356,
-  "hospitalized" : 7194,
-  "hospitalizedVm" : 23,
   "deaths" : 1724,
   "deathsVm" : 27,
+  "hospitalized" : 7194,
+  "hospitalizedVm" : 23,
   "icu" : 1632,
   "icuVm" : 2,
+  "top5CaseDeltas" : [ {
+    "label" : "2020-05-19",
+    "source" : "2020-05-21T09:00:03",
+    "casesVm" : 134,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-19",
+    "positives" : 152,
+    "deathcnt" : 0,
+    "positives_cum" : 2609,
+    "death_cum" : 2
+  }, {
+    "label" : "2020-05-18",
+    "source" : "2020-05-21T09:00:03",
+    "casesVm" : 40,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-18",
+    "positives" : 367,
+    "deathcnt" : 0,
+    "positives_cum" : 2457,
+    "death_cum" : 2
+  }, {
+    "label" : "2020-05-16",
+    "source" : "2020-05-21T09:00:03",
+    "casesVm" : 17,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Unknown",
+    "test_date" : "2020-05-16",
+    "positives" : 155,
+    "deathcnt" : 0,
+    "positives_cum" : 1944,
+    "death_cum" : 2
+  }, {
+    "label" : "2020-05-19",
+    "source" : "2020-05-21T09:00:03",
+    "casesVm" : 16,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Non-Georgia Resident",
+    "test_date" : "2020-05-19",
+    "positives" : 21,
+    "deathcnt" : 0,
+    "positives_cum" : 1677,
+    "death_cum" : 25
+  }, {
+    "label" : "2020-05-15",
+    "source" : "2020-05-21T09:00:03",
+    "casesVm" : 15,
+    "deathsVm" : 0,
+    "casesExtrapolated" : null,
+    "county" : "Dougherty",
+    "test_date" : "2020-05-15",
+    "positives" : 18,
+    "deathcnt" : 0,
+    "positives_cum" : 1696,
+    "death_cum" : 138
+  } ],
   "georgiaEpicurve" : {
     "county" : "Georgia",
     "data" : [ {

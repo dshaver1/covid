@@ -99,6 +99,12 @@ public class ReportFactory {
                 previousReport == null ? 0 : rawData.getDeaths() - previousReport.getDeaths(),
                 previousReport == null ? 0 : rawData.getIcu() - previousReport.getIcu());
 
+        // Calculate VM
+        VmCalculator.populateVm(report, previousReport);
+
+        // Calculate biggest deltas
+        VmCalculator.populateBiggestCaseDeltas(report);
+
         logger.info("Done parsing report for " + report.getId());
 
         return report;
@@ -133,6 +139,12 @@ public class ReportFactory {
                 previousReport == null ? 0 : overview.getHospitalization() - previousReport.getHospitalized(),
                 previousReport == null ? 0 : overview.getDeaths() - previousReport.getDeaths(),
                 previousReport == null ? 0 : overview.getIcu() - previousReport.getIcu());
+
+        // Calculate VM
+        VmCalculator.populateVm(report, previousReport);
+
+        // Calculate biggest deltas
+        VmCalculator.populateBiggestCaseDeltas(report);
 
         logger.info("Done parsing report for " + report.getId());
 
@@ -186,6 +198,12 @@ public class ReportFactory {
                 previousReport == null ? 0 : confirmedCases - previousReport.getConfirmedCases(),
                 previousReport == null ? 0 : hospitalized - previousReport.getHospitalized(),
                 previousReport == null ? 0 : deaths - previousReport.getDeaths());
+
+        // Calculate VM
+        VmCalculator.populateVm(report, previousReport);
+
+        // Calculate biggest deltas
+        VmCalculator.populateBiggestCaseDeltas(report);
 
         logger.info("Done parsing report for " + report.getId());
 
