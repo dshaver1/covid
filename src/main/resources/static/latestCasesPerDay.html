@@ -23,6 +23,11 @@
             shape-rendering: crispEdges;
         }
 
+        .projectionbar:hover {
+            fill: #c2c1d9;
+            shape-rendering: crispEdges;
+        }
+
         .axis {
             font: 10px sans-serif;
         }
@@ -208,7 +213,7 @@
     }]
 
     var keys = ["Confirmed Cases", "Deaths"];
-    var colors = ["#8a89a6", "#ff8c00", "#504aff", "#b81200"];
+    var colors = ["#8a89a6", "#ff8c00", "#504aff", "#b81200", "#c2c1d9", "#565668", "#68677d"];
 
     // set the dimensions of the canvas
     var margin = {top: 0, right: 20, bottom: 120, left: 60},
@@ -250,7 +255,7 @@
 
     // gridlines in y axis function
     function make_y_gridlines() {
-        return d3.axisLeft(dphyScale).tickValues([0,100,200,300,400,500,600,700,800,900])
+        return d3.axisLeft(dphyScale).tickValues([0, 100, 200, 300, 400, 500, 600, 700, 800, 900])
     }
 
     function drawAxisLines() {
@@ -273,6 +278,7 @@
             console.log("Switching to delta graph");
 
             deltaEnabled = true;
+            dphSvg.selectAll("rect").remove();
             dphyScale.domain([-50, getYScale(theData)]);
             drawAxisLines();
         } else {
@@ -284,8 +290,8 @@
         }
 
         dphSvg.selectAll("g.y.axis").transition().duration(100).call(dphyAxis)
-        updateBothCharts();
-        createTooltips(data);
+        updateAllCharts();
+        createTooltips();
     });
 
     // load the DPH data
@@ -376,14 +382,25 @@
             .style("alignment-baseline", "middle")
 
         // Add bar chart
-        updateBothCharts();
+        updateAllCharts();
     });
 
-    function updateBothCharts() {
-        console.log("Updating both charts");
+    function updateAllCharts() {
+        console.log("Updating all charts");
         var idx = getReportForDate(theData, getReverseIdxValue(dataTime, sliderTime.value()))
-        updateChart(theData[idx], getCases, "casebar", colors[0], colors[2]);
-        updateChart(theData[idx], getDeaths, "deathbar", colors[1], colors[3]);
+
+        if (!deltaEnabled) {
+            dphSvg.selectAll(".projectionline").remove();
+            dphSvg.selectAll("circle").remove();
+            updateBarChart(theData[idx], getProjections, "projectionbar", colors[4], colors[5]);
+        }
+
+        updateBarChart(theData[idx], getCases, "casebar", colors[0], colors[2]);
+        updateBarChart(theData[idx], getDeaths, "deathbar", colors[1], colors[3]);
+
+        if (deltaEnabled) {
+            updateLineChart(theData[idx], getProjections, "projectionline", colors[5], colors[6])
+        }
     }
 
     function createSlider(data) {
@@ -401,7 +418,7 @@
             .tickValues([0, -7, -14, -21, -28, -35])
             .on('onchange', val => {
                 d3.select('p#value-time').text(getReverseIdxValue(dataTime, val));
-                updateBothCharts();
+                updateAllCharts();
             });
 
         var gTime = d3
@@ -502,8 +519,9 @@
                 var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
                 content += `
                     <table style="margin-top: 2.5px;">
-                            <tr><td>Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
-                            <tr><td>Deaths: </td><td style="text-align: right">` + getDeaths(d) + `</td></tr>
+                            <tr><td>Confirmed Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
+                            <tr><td>Projected Cases: </td><td style="text-align: right">` + getProjections(d) + `</td></tr>
+                            <tr><td>Confirmed Deaths: </td><td style="text-align: right">` + getDeaths(d) + `</td></tr>
                     </table>
                     `;
                 return content;
@@ -529,6 +547,14 @@
         return data.deathcnt;
     }
 
+    function getProjections(data) {
+        if (deltaEnabled) {
+            return data.medianCaseDelta;
+        }
+
+        return data.casesExtrapolated;
+    }
+
     function getCases(data) {
         if (deltaEnabled) {
             return data.casesVm;
@@ -543,11 +569,58 @@
         }
 
         return d3.max(data[data.length - 1].georgiaEpicurve.data, function (d) {
-            return d.positives;
+            return d.casesExtrapolated;
         })
     }
 
-    function updateChart(data, dataCallback, clazz, color, highlightColor) {
+    function updateLineChart(data, dataCallback, clazz, color, highlightColor) {
+        var selectedData = dphSvg.selectAll("." + clazz).data([data.georgiaEpicurve.data], function (d) {
+            return d.label;
+        });
+
+        // Draw path
+        selectedData.enter()
+            .append("path")
+            .attr("class", clazz)
+            .merge(selectedData)
+            //.transition()
+            //.duration(100)
+            .attr("d", d3.line()
+                .curve(d3.curveCardinal)
+                .x(function (d) {
+                    return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
+                })
+                .y(function (d) {
+                    return dphyScale(dataCallback(d));
+                }))
+            .attr("fill", "none")
+            .attr("stroke", color)
+            .attr("stroke-width", 2);
+
+        var selectedCircles = dphSvg.selectAll('circle').data(data.georgiaEpicurve.data);
+
+        selectedCircles.enter()
+            .append('circle')
+            .merge(selectedCircles)
+            .attr('cx', function(d) {
+                return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
+            })
+            .attr('cy', function(d) {
+                return dphyScale(dataCallback(d));
+            })
+            .attr("stroke", highlightColor)
+            .attr("fill", "none")
+            .attr('r', 3);
+
+        selectedCircles.exit().remove();
+
+        // Ensure notable dates lines are on top!
+        dphSvg.selectAll("." + clazz).moveToFront();
+        dphSvg.selectAll("line").moveToFront();
+        dphSvg.selectAll("circle").moveToFront();
+    }
+
+    function updateBarChart(data, dataCallback, clazz, color, highlightColor) {
         var selectedData = dphSvg.selectAll("." + clazz).data(data.georgiaEpicurve.data);
         var enterData = selectedData.enter();
 

@@ -1,5 +1,6 @@
 package org.dshaver.covid.domain.epicurve;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public interface EpicurvePoint extends Comparable<EpicurvePoint> {
@@ -50,4 +51,8 @@ public interface EpicurvePoint extends Comparable<EpicurvePoint> {
     Integer getCasesExtrapolated();
 
     void setCasesExtrapolated(Integer casesExtrapolated);
+
+    Integer getMedianCaseDelta();
+
+    void setMedianCaseDelta(Integer medianCaseDelta);
 }
