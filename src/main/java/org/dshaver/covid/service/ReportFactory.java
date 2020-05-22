@@ -103,7 +103,8 @@ public class ReportFactory {
         VmCalculator.populateVm(report, previousReport);
 
         // Calculate biggest deltas
-        VmCalculator.populateBiggestCaseDeltas(report);
+        report.setTop5CaseDeltas(VmCalculator.calculateTopDeltas(report, EpicurvePoint::getCasesVm));
+        report.setTop5DeathDeltas(VmCalculator.calculateTopDeltas(report, EpicurvePoint::getDeathsVm));
 
         logger.info("Done parsing report for " + report.getId());
 
@@ -144,7 +145,8 @@ public class ReportFactory {
         VmCalculator.populateVm(report, previousReport);
 
         // Calculate biggest deltas
-        VmCalculator.populateBiggestCaseDeltas(report);
+        report.setTop5CaseDeltas(VmCalculator.calculateTopDeltas(report, EpicurvePoint::getCasesVm));
+        report.setTop5DeathDeltas(VmCalculator.calculateTopDeltas(report, EpicurvePoint::getDeathsVm));
 
         logger.info("Done parsing report for " + report.getId());
 
@@ -203,7 +205,8 @@ public class ReportFactory {
         VmCalculator.populateVm(report, previousReport);
 
         // Calculate biggest deltas
-        VmCalculator.populateBiggestCaseDeltas(report);
+        report.setTop5CaseDeltas(VmCalculator.calculateTopDeltas(report, EpicurvePoint::getCasesVm));
+        report.setTop5DeathDeltas(VmCalculator.calculateTopDeltas(report, EpicurvePoint::getDeathsVm));
 
         logger.info("Done parsing report for " + report.getId());
 

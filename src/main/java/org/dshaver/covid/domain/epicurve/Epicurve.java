@@ -11,6 +11,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @RequiredArgsConstructor
+@EqualsAndHashCode
 public class Epicurve {
     @NonNull
     String county;

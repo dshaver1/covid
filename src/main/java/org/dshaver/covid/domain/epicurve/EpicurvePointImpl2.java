@@ -3,12 +3,14 @@ package org.dshaver.covid.domain.epicurve;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Data
+@EqualsAndHashCode
 public class EpicurvePointImpl2 implements EpicurvePoint {
     LocalDate labelDate;
     String label;

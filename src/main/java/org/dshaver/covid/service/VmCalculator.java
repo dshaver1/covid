@@ -64,17 +64,29 @@ public class VmCalculator {
      * <p>
      * Assumes that VM has already been calculated.
      */
-    public static Report populateBiggestCaseDeltas(Report report) {
-        Set<EpicurvePoint> top10 = report.getEpicurves().values()
+    public static Collection<EpicurvePoint> calculateTopDeltas(Report report, Function<EpicurvePoint, Integer> valueFunction) {
+        List<EpicurvePoint> sorted = report.getEpicurves().values()
                 .stream()
                 .filter(epicurve -> !epicurve.getCounty().equals("Georgia"))
+                .filter(epicurve -> !epicurve.getCounty().equals("Unknown"))
                 .flatMap(epicurve -> epicurve.getData().stream())
-                .sorted(Comparator.comparing(EpicurvePoint::getCasesVm).reversed())
-                .limit(5)
-                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(EpicurvePoint::getCasesVm).reversed())));
+                .filter(point -> valueFunction.apply(point) != null)
+                .filter(point -> point.getLabel() != null)
+                .sorted(Comparator.comparing(valueFunction).thenComparing(EpicurvePoint::getLabel).reversed())
+                .collect(Collectors.toList());
 
-        report.setTop5CaseDeltas(top10);
+        // Short circuit if no county data (most cases at the moment)
+        if (sorted.isEmpty()) {
+            return new ArrayList<>();
+        }
 
-        return report;
+        int topX = 5;
+        EpicurvePoint[] array = new EpicurvePoint[topX];
+        Iterator<EpicurvePoint> iterator = sorted.iterator();
+        for (int i = 0; i < topX; i++) {
+            array[i] = iterator.next();
+        }
+
+        return Arrays.asList(array);
     }
 }

@@ -21,7 +21,9 @@ import java.util.Map;
  */
 @Data
 @ToString(exclude = {"epicurves"})
-@JsonPropertyOrder(value = {"id", "createTime", "reportDate", "totalTests", "totalTestsVm", "confirmedCases", "confirmedCasesVm", "deaths", "deathsVm", "hospitalized", "hospitalizedVm", "icu", "icuVm", "top5CaseDeltas", "georgiaEpicurve"})
+@JsonPropertyOrder(value = {"id", "createTime", "reportDate", "totalTests", "totalTestsVm", "confirmedCases",
+        "confirmedCasesVm", "deaths", "deathsVm", "hospitalized", "hospitalizedVm", "icu", "icuVm",
+        "top5CaseDeltas", "top5DeathDeltas", "georgiaEpicurve"})
 @Document("reports")
 public class Report {
     public static final String GEORGIA = "Georgia";
@@ -34,6 +36,7 @@ public class Report {
     private LocalDate reportDate;
     private Map<String, Epicurve> epicurves;
     private Collection<EpicurvePoint> top5CaseDeltas;
+    private Collection<EpicurvePoint> top5DeathDeltas;
     private int totalTests;
     private int totalTestsVm;
     private int confirmedCases;
