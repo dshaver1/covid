@@ -30,6 +30,7 @@ public class EpicurveExtrapolator {
             BigDecimal currentPointPositiveCount = BigDecimal.valueOf(currentPoint.getPositiveCount());
             BigDecimal divided = currentHist.compareTo(BigDecimal.ZERO) == 0 || currentPointPositiveCount.compareTo(BigDecimal.ZERO) == 0 ? currentPointPositiveCount : currentPointPositiveCount.divide(currentHist, RoundingMode.HALF_DOWN);
             currentPoint.setCasesExtrapolated(divided.intValue());
+            currentPoint.setMedianCaseDelta(histogramReport.getCasesMedianHist().get(reverseIdx));
         }
 
         return report;

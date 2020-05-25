@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -25,6 +26,8 @@ public class EpicurvePointImpl1 implements EpicurvePoint {
     Integer casesVm;
     Integer deathsVm;
     Integer casesExtrapolated;
+    Integer medianCaseDelta;
+    Integer movingAvg;
 
     @Override
     public int compareTo(EpicurvePoint o) {

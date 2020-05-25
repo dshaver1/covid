@@ -10,10 +10,7 @@ import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,7 +25,7 @@ public class HistogramReport {
     @Id
     String id;
 
-    Map<Integer, Integer> casesHist, deathsHist;
+    Map<Integer, Integer> casesHist, deathsHist, casesMedianHist, deathsMedianHist;
     Map<Integer, BigDecimal> casesPercentageHist, deathsPercentageHist, casesPercentageCumulative, deathsPercentageCumulative;
 
     public HistogramReport() {
@@ -39,6 +36,8 @@ public class HistogramReport {
         id = dailyReports.stream().skip(dailyReports.size() - 1).map(Report::getId).findFirst().get();
         casesHist = new HashMap<>();
         deathsHist = new HashMap<>();
+        casesMedianHist = new HashMap<>();
+        deathsMedianHist = new HashMap<>();
         casesPercentageHist = new HashMap<>();
         deathsPercentageHist = new HashMap<>();
         casesPercentageCumulative = new HashMap<>();
@@ -46,6 +45,9 @@ public class HistogramReport {
 
         // need array to manipulate index
         Report[] reportArray = dailyReports.toArray(new Report[]{});
+
+        Map<Integer, List<Integer>> casesMedianContainer = new HashMap<>();
+        Map<Integer, List<Integer>> deathsMedianContainer = new HashMap<>();
 
         // Calculate raw histograms
         for (int index = 1; index < reportArray.length; index++) {
@@ -55,13 +57,26 @@ public class HistogramReport {
             casesVm.forEach((date, value) -> {
                 Integer dayDiff = ((Long) ChronoUnit.DAYS.between(currentReport.getReportDate(), date)).intValue();
                 casesHist.merge(dayDiff, value, Integer::sum);
+                casesMedianContainer.computeIfAbsent(dayDiff, k -> new ArrayList<>()).add(value);
             });
             Map<LocalDate, Integer> deathsVm = getVm(currentReport, prevReport, EpicurvePoint::getDeathCount);
             deathsVm.forEach((date, value) -> {
                 Integer dayDiff = ((Long) ChronoUnit.DAYS.between(currentReport.getReportDate(), date)).intValue();
                 deathsHist.merge(dayDiff, value, Integer::sum);
+                deathsMedianContainer.computeIfAbsent(dayDiff, k -> new ArrayList<>()).add(value);
             });
         }
+
+        // Calculate medians
+        casesMedianContainer.forEach((dayDiff, container) -> {
+            Collections.sort(container);
+            casesMedianHist.put(dayDiff, container.get(container.size() / 2));
+        });
+
+        deathsMedianContainer.forEach((dayDiff, container) -> {
+            Collections.sort(container);
+            deathsMedianHist.put(dayDiff, container.get(container.size() / 2));
+        });
 
         // Calculate percentage histograms
         int casesSum = casesHist.values().stream().mapToInt(i -> i).sum();

@@ -92,6 +92,9 @@ public class ReportService {
                         // Extrapolate
                         report = EpicurveExtrapolator.extrapolateCases(report, histogramReport);
 
+                        // Calculate moving average
+                        report = MovingAverageCalculator.calculate(report, 7);
+
                         // Save
                         reportRepository.save(report);
                         prevReport = report;
@@ -153,6 +156,10 @@ public class ReportService {
 
             // Extrapolate
             report = EpicurveExtrapolator.extrapolateCases(report, histogramReport);
+
+            // Calculate moving average
+            report = MovingAverageCalculator.calculate(report, 7);
+
             response.setReport(report);
             logger.info("Done creating Report.");
 
