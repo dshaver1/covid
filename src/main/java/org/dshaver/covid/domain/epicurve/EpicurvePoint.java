@@ -55,4 +55,8 @@ public interface EpicurvePoint extends Comparable<EpicurvePoint> {
     Integer getMedianCaseDelta();
 
     void setMedianCaseDelta(Integer medianCaseDelta);
+
+    Integer getMovingAvg();
+
+    void setMovingAvg(Integer movingAvg);
 }

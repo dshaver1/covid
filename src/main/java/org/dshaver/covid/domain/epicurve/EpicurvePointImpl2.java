@@ -31,6 +31,7 @@ public class EpicurvePointImpl2 implements EpicurvePoint {
     Integer deathsVm;
     Integer casesExtrapolated;
     Integer medianCaseDelta;
+    Integer movingAvg;
     @JsonIgnore
     Integer manualCaseTotal;
     @JsonIgnore
