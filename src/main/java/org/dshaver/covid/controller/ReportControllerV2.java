@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @RestController
 public class ReportControllerV2 {
     private static final Logger logger = LoggerFactory.getLogger(ReportControllerV2.class);
-    private static final String REPORT_TGT_DIR = "H:\\dev\\covid\\src\\main\\resources\\static\\reports\\";
+    private static final String REPORT_TGT_DIR = "H:\\dev\\covid\\src\\main\\resources\\static\\reports\\v2\\";
     private static final int DEFAULT_TARGET_HOUR = 18;
     private final ReportRepository reportRepository;
     private final RawDataRepositoryV2 rawDataRepository;
@@ -67,7 +67,7 @@ public class ReportControllerV2 {
 
         List<ArrayReport> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate).stream().map(ArrayReport::new).collect(Collectors.toList());
 
-        File file = Paths.get(REPORT_TGT_DIR, "v2daily").toFile();
+        File file = Paths.get(REPORT_TGT_DIR, "daily").toFile();
         objectMapper.writeValue(file, reportList);
 
         return reportList;
