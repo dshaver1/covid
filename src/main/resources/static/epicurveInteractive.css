@@ -51,9 +51,14 @@ body {
     stroke: lightgray;
 }
 
-.c3-axis-y text, .c3-axis-y2 text, .c3-axis-x text, .c3-legend-item text {
+.tick text {
+    shape-rendering: crispEdges;
     fill: lightgray;
-    font-size:12px;
+}
+
+.tick line, .axis path, .domain {
+    shape-rendering: crispEdges;
+    stroke: lightgray;
 }
 
 /*
@@ -63,5 +68,13 @@ body {
     fill-opacity: 1 !important;
     opacity: 0.5 !important;
 }
+
+/*#graphContent {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+}*/
 
 
