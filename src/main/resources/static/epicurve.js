@@ -18,12 +18,12 @@ function updateBarChart(data, dataCallback, clazz, color, highlightColor) {
             return Math.abs(dphyScale(dataCallback(d)) - dphyScale(0));
         })
         .attr("width", dphxScale.bandwidth())
-        .style("fill", color)
-        .on("mouseover", function (d, i) {
-            handleDeathMouseOver(d, i, d3.select(this), highlightColor)
-        })
-        .on("mouseout", function (d, i) {
-            handleDeathMouseOut(d, i, d3.select(this), color)
+        .style("fill", function (d) {
+            if (dataCallback(d) > 0) {
+                return color;
+            }
+
+            return highlightColor;
         });
 
     selectedData.transition().duration(100)
@@ -36,6 +36,13 @@ function updateBarChart(data, dataCallback, clazz, color, highlightColor) {
         })
         .attr("height", function (d) {
             return Math.abs(dphyScale(dataCallback(d)) - dphyScale(0));
+        })
+        .style("fill", function (d) {
+            if (dataCallback(d) > 0) {
+                return color;
+            }
+
+            return highlightColor;
         });
 
     selectedData.exit().remove();
@@ -43,14 +50,15 @@ function updateBarChart(data, dataCallback, clazz, color, highlightColor) {
     // Ensure notable dates lines are on top!
     dphSvg.selectAll("." + clazz).moveToFront();
     dphSvg.selectAll("line").moveToFront();
+    dphSvg.selectAll('.mouseoverclazz').moveToFront();
 }
 
-function updateLineChart(data, dataCallback, clazz, color, highlightColor) {
+function updateLineChart(data, dataCallback, clazz, color, highlightColor, prelimRegionStart) {
     var selectedData = dphSvg.selectAll("." + clazz).data([data], function (d) {
         return d.label;
     });
 
-    // Draw path
+    // Initial Data
     selectedData.enter()
         .append("path")
         .attr("class", clazz)
@@ -62,14 +70,15 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor) {
             .y(function (d) {
                 return dphyScale(dataCallback(d));
             })
+            // Don't draw the line if it's in the preliminary region.
             .defined(function (d) {
-                return dataCallback(d) !== 0;
+                return dphxScale(d.label) < dphxScale(prelimRegionStart);
             }))
-        //.merge(selectedData)
         .attr("fill", "none")
         .attr("stroke", color)
         .attr("stroke-width", 1);
 
+    // Updated Data
     selectedData
         .merge(selectedData)
         .transition()
@@ -82,13 +91,15 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor) {
             .y(function (d) {
                 return dphyScale(dataCallback(d));
             })
+            // Don't draw the line if it's in the preliminary region.
             .defined(function (d) {
-                return dataCallback(d) !== 0;
+                return dphxScale(d.label) < dphxScale(prelimRegionStart);
             }))
 
     var circleClass = clazz + '-circle';
     var selectedCircles = dphSvg.selectAll('.' + circleClass).data(data);
 
+    // Initial data
     selectedCircles.enter()
         .append('circle')
         .attr('class', circleClass)
@@ -100,12 +111,27 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor) {
         })
         .attr("stroke", highlightColor)
         .attr("fill", color)
+        .attr("opacity", function (d) {
+            if (dphxScale(d.label) < dphxScale(prelimRegionStart)) {
+                return "1";
+            }
+
+            return "0.5";
+        })
         .attr('r', 2);
 
+    // Updated data
     selectedCircles
         .merge(selectedCircles)
         .transition()
         .duration(100)
+        .attr("opacity", function (d) {
+            if (dphxScale(d.label) < dphxScale(prelimRegionStart)) {
+                return "1";
+            }
+
+            return "0.5";
+        })
         .attr('cx', function (d) {
             return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
         })
@@ -113,12 +139,84 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor) {
             return dphyScale(dataCallback(d));
         })
 
+    // Removed data
     selectedCircles.exit().transition().duration(100).style("opacity", 0).remove();
 
     // Ensure notable dates lines are on top!
     dphSvg.selectAll("." + clazz).moveToFront();
     dphSvg.selectAll("line").moveToFront();
     dphSvg.selectAll('.' + circleClass).moveToFront();
+    dphSvg.selectAll('.mouseoverclazz').moveToFront();
+}
+
+function drawMouseOverRects(data) {
+    var selectedData = dphSvg.selectAll(".mouseoverclazz").data(data);
+    var enterData = selectedData.enter();
+
+    enterData.append("rect")
+        .attr("class", "mouseoverclazz")
+        .attr("x", function (d) {
+            return dphxScale(d.label);
+        })
+        .attr("y", function (d) {
+            return 0;
+        })
+        .attr("height", function (d) {
+            return height;
+        })
+        .attr("width", dphxScale.bandwidth())
+        .style("fill", "#999")
+        .attr("opacity", "0")
+        .on("mouseover", function (d, i) {
+            handleDeathMouseOver(d, i, d3.select(this), "#fff")
+        })
+        .on("mouseout", function (d, i) {
+            handleDeathMouseOut(d, i, d3.select(this), "#999")
+        });
+
+    selectedData.exit().remove();
+}
+
+function draw14DayWindow(offsetDate, offset) {
+    let selectedData = dphSvg.selectAll(".prelim-region").data([offsetDate]);
+    let enterData = selectedData.enter();
+
+    enterData.append("rect")
+        .attr("class", "prelim-region")
+        .attr("x", function (d) {
+            return dphxScale(d);
+        })
+        .attr("y", function (d) {
+            return 0;
+        })
+        .attr("height", function (d) {
+            return height;
+        })
+        .attr("width", dphxScale.bandwidth() * (offset + 1))
+        .style("fill", "#999")
+        .attr("opacity", "0.1");
+
+    selectedData
+        .merge(selectedData)
+        .transition()
+        .duration(100)
+        .attr("x", function (d) {
+            return dphxScale(d);
+        })
+}
+
+function applyDateOffset(date, offset) {
+    let dateObj = new Date(date);
+    dateObj.setDate(dateObj.getDate() - offset);
+    return getFormattedDate(dateObj);
+}
+
+function getFormattedDate(date) {
+    let year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+
+    return year + '-' + month + '-' + day;
 }
 
 function getLastElement(data) {
@@ -242,7 +340,7 @@ function getYScale(data) {
         return 300;
     }
 
-    return 100 + d3.max(data, function (d) {
+    return 300 + d3.max(data, function (d) {
         return d.cases;
     })
 }
@@ -282,12 +380,20 @@ function getReverseIdxValue(data, idx) {
 
 // Create Event Handlers for mouse
 function handleDeathMouseOver(d, i, d3This, color) {
-    d3This.style("fill", color);
+    d3This
+        .transition()
+        .duration(50)
+        .style("fill", color)
+        .attr("opacity", "0.2");
     tip.show(d, i);
 }
 
 function handleDeathMouseOut(d, i, d3This, color) {
-    d3This.style("fill", color);
+    d3This
+        .transition()
+        .duration(200)
+        .style("fill", color)
+        .attr("opacity", "0");
     tip.hide(d, i);
 }
 
@@ -298,7 +404,7 @@ function createTooltips(value) {
             content += `
                     <table style="margin-top: 2.5px;">
                             <tr><td>Confirmed Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
-                            <tr><td>Projected Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
+                            <tr><td>Case Delta: </td><td style="text-align: right">` + getCaseDeltas(d) + `</td></tr>
                             <tr><td>Confirmed Deaths: </td><td style="text-align: right">` + getDeaths(d) + `</td></tr>
                     </table>
                     `;

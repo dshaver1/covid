@@ -65,7 +65,7 @@
     // set the dimensions of the canvas
     var margin = {top: 0, right: 20, bottom: 120, left: 60},
         width = 1000 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom
+        height = 600 - margin.top - margin.bottom
 
     // set the ranges
     var dphxScale = d3.scaleBand().rangeRound([0, width]);
@@ -130,7 +130,7 @@
         dphxScale.domain(getLastElement(chartData).map(function (d) {
             return d.label;
         }));
-        dphyScale.domain([0, getYScale(getLastElement(chartData))]);
+        dphyScale.domain([-100, getYScale(getLastElement(chartData))]);
         //drawAxisLines();
 
         // add DPH axis
@@ -139,12 +139,21 @@
         updateAllGraphs(getLastElement(timeData))
 
         createTooltips();
+
     });
     
     function updateAllGraphs(dateString) {
-        //updateBarChart(chartData["2020-05-27T09:00:03"], getCases, "casebar", "#597994", "#35a5ff");
-        updateLineChart(chartData[dateString], getCases, "caseline", "#35a5ff", "#597994");
-        updateLineChart(chartData[dateString], getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e");
+        let offsetDate = applyDateOffset(dateString, 14);
+        //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
+        updateBarChart(chartData[dateString], getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
+        updateLineChart(chartData[dateString], getCases, "caseline", "#35a5ff", "#67b0ff", offsetDate);
+        updateLineChart(chartData[dateString], getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate);
+        draw14DayWindow(offsetDate, 14);
+        drawMouseOverRects(chartData[dateString]);
+    }
+    
+    function getCaseDeltas(data) {
+        return data.casesDelta;
     }
 
     function getCases(data) {
