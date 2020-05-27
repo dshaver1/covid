@@ -69,7 +69,7 @@ public class ReportControllerV2 {
             case "deaths":
                 return readFile("deaths.csv");
             case "deathDeltas":
-                return readFile("deathsDeltas.csv");
+                return readFile("deathDeltas.csv");
             case "summary":
                 return readFile("summary.csv");
             default:
