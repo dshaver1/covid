@@ -73,10 +73,11 @@
     let timeData, chartData, summaryData, sliderTime, chart, tip;
     let prevSliderValue = 0;
     let deltaEnabled = false;
+    let tipWidth = 100;
 
     // set the dimensions of the canvas
     var margin = {top: 0, right: 20, bottom: 120, left: 60},
-        width = 1000 - margin.left - margin.right,
+        width = window.innerWidth - margin.left - margin.right - tipWidth,
         height = 600 - margin.top - margin.bottom
 
     // set the ranges
