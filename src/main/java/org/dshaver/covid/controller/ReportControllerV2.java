@@ -186,8 +186,8 @@ public class ReportControllerV2 {
 
         List<ArrayReport> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate).stream().map(ArrayReport::new).collect(Collectors.toList());
 
-        File file = Paths.get(REPORT_TGT_DIR, "daily").toFile();
-        objectMapper.writeValue(file, reportList);
+        //File file = Paths.get(REPORT_TGT_DIR, "daily").toFile();
+        //objectMapper.writeValue(file, reportList);
 
         return reportList;
     }
