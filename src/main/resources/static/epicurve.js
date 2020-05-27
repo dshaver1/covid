@@ -3,6 +3,7 @@ function updateBarChart(data, dataCallback, clazz, color, highlightColor) {
     var enterData = selectedData.enter();
 
     enterData.append("rect")
+        .style("shape-rendering", "crispEdges")
         .attr("class", clazz)
         .attr("x", function (d) {
             return dphxScale(d.label);
@@ -97,12 +98,13 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
             }))
 
     var circleClass = clazz + '-circle';
+    var isVisible = "visible" === dphSvg.selectAll('.' + clazz).style("visibility");
     var selectedCircles = dphSvg.selectAll('.' + circleClass).data(data);
 
     // Initial data
     selectedCircles.enter()
         .append('circle')
-        .attr('class', circleClass)
+        .attr('class', circleClass + " " + clazz)
         .attr('cx', function (d) {
             return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
         })
@@ -118,7 +120,14 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
 
             return "0.5";
         })
-        .attr('r', 2);
+        .attr('r', 2)
+        .style("visibility", function(d) {
+            if (isVisible) {
+                return "visible";
+            }
+
+            return "hidden";
+        });
 
     // Updated data
     selectedCircles
@@ -181,7 +190,10 @@ function draw14DayWindow(offsetDate, offset) {
     let selectedData = dphSvg.selectAll(".prelim-region").data([offsetDate]);
     let enterData = selectedData.enter();
 
-    enterData.append("rect")
+    // draw initial region
+    enterData
+        .append("rect")
+        .style("shape-rendering", "crispEdges")
         .attr("class", "prelim-region")
         .attr("x", function (d) {
             return dphxScale(d);
@@ -193,16 +205,79 @@ function draw14DayWindow(offsetDate, offset) {
             return height;
         })
         .attr("width", dphxScale.bandwidth() * (offset + 1))
-        .style("fill", "#999")
-        .attr("opacity", "0.1");
+        .style("fill", "#c6d1ff")
+        .attr("opacity", "0.05");
 
+    // update region location
     selectedData
         .merge(selectedData)
         .transition()
         .duration(100)
         .attr("x", function (d) {
             return dphxScale(d);
+        });
+
+
+    let boundaryLineSelectedData = dphSvg.selectAll(".prelim-boundary-line").data([offsetDate]);
+    let boundaryLineEnterData = boundaryLineSelectedData.enter();
+
+    // draw initial boundary line
+    boundaryLineEnterData
+        .append("line")
+        .attr("class", "prelim-boundary-line")
+        .style("stroke", "#7ba4c9")
+        .style("shape-rendering", "crispEdges")
+        .style("stroke-width", 1)
+        .attr("x1", function (d) {
+            return dphxScale(d);
         })
+        .attr("y1", 0)
+        .attr("x2", function (d) {
+            return dphxScale(d);
+        })
+        .attr("y2", height);
+
+    // update boundary line location
+    boundaryLineSelectedData
+        .merge(boundaryLineSelectedData)
+        .transition()
+        .duration(100)
+        .attr("x1", function (d) {
+            return dphxScale(d);
+        })
+        .attr("x2", function (d) {
+            return dphxScale(d);
+        });
+
+    // draw initial text
+    let textSelectedData = dphSvg.selectAll(".prelim-text").data([{date: offsetDate, label: "Preliminary Data"}]);
+    let textEnterData = textSelectedData.enter();
+
+    textEnterData
+        .append("text")
+        .attr("class", "prelim-text")
+        .attr("x", function (d) {
+            return -80;
+        })
+        .attr("y", function (d, i) {
+            return dphxScale(d.date) + dphxScale.bandwidth();
+        })
+        .text(function (d) {
+            return d.label
+        })
+        .attr("text-anchor", "top")
+        .style("alignment-baseline", "top")
+        // .attr("dx", "-.8em")
+        // .attr("dy", "-.55em")
+        .attr("transform", "rotate(-90)")
+
+    textSelectedData
+        .merge(textSelectedData)
+        .transition()
+        .duration(100)
+        .attr("y", function (d) {
+            return dphxScale(d.date) + dphxScale.bandwidth();
+        });
 }
 
 function applyDateOffset(date, offset) {
@@ -328,11 +403,12 @@ function createAxis(parent, xAxis, yAxis, height) {
         .attr("class", "y axis")
         .call(yAxis)
         .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 5)
+        .attr("y", 100)
+        .attr("x", 100)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Cases Per Day");
+        .text("Cases Per Day")
+    //.attr("transform", "translate(5,5)rotate(-90)");
 }
 
 function getYScale(data) {
@@ -404,13 +480,64 @@ function createTooltips(value) {
             content += `
                     <table style="margin-top: 2.5px;">
                             <tr><td>Confirmed Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
-                            <tr><td>Case Delta: </td><td style="text-align: right">` + getCaseDeltas(d) + `</td></tr>
                             <tr><td>Confirmed Deaths: </td><td style="text-align: right">` + getDeaths(d) + `</td></tr>
+                            <tr><td>Case Delta: </td><td style="text-align: right">\` + getCaseDeltas(d) + \`</td></tr>
+                            <tr><td>Moving Average: </td><td style="text-align: right">\` + getMovingAvg(d) + \`</td></tr>
                     </table>
                     `;
             return content;
         });
     dphSvg.call(tip);
+}
+
+function createLegend(legend) {
+    let size = 8
+    dphSvg.selectAll("mydots")
+        .data(legend)
+        .enter()
+        .append("rect")
+        .on("click", toggleVisibility)
+        .attr("x", width / 2)
+        .attr("y", function (d, i) {
+            return height + 80 + (i * (size + 5));
+        })
+        .attr("width", size)
+        .attr("height", size)
+        .style("fill", function (d) {
+            return d.color;
+        })
+
+
+    dphSvg.selectAll("mylabels")
+        .data(legend)
+        .enter()
+        .append("text")
+        .on("click", toggleVisibility)
+        .attr("x", width / 2 + size + 5)
+        .attr("y", function (d, i) {
+            return height + 80 + (i * (size + 5)) + 9;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })
+        .text(function (d) {
+            return d.key;
+        })
+        .attr("text-anchor", "left")
+        .style("font", "11px sans-serif")
+        .style("alignment-baseline", "middle")
+}
+
+function toggleVisibility(d) {
+    let currentVis = d3.selectAll("." + d.clazz).style("visibility");
+    console.log("Legend click! Toggling " + d.key + "... current visibility: " + currentVis);
+
+    let targetVis = "visible";
+    if (targetVis === currentVis) {
+        targetVis = "hidden";
+    }
+
+    d3.selectAll("." + d.clazz).transition().duration(200).style("visibility", targetVis);
 }
 
 d3.selection.prototype.moveToFront = function () {

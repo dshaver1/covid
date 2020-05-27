@@ -57,7 +57,7 @@
         arrow: true,
         placement: 'bottom'
     });
-    
+
     let timeData, chartData, summaryData, sliderTime, chart, tip;
     let prevSliderValue = 0;
     let deltaEnabled = false;
@@ -110,19 +110,19 @@
         });
         sliderTime = createSlider()
             .on('onchange', val => {
-            //console.log("previous slider:" + prevSliderValue + "Math.round(val):" + Math.round(val) + " current slider: " + val);
-            if (Math.abs(Math.round(val) - Math.round(prevSliderValue)) >= 1) {
-                //console.log("previous slider:" + prevSliderValue + " current slider: " + val);
-                let currentDate = getReverseIdxValue(timeData, Math.round(val));
-                let currentChartData = getReverseIdxValue(chartData, Math.round(val));
-                d3.select('p#value-time').text(currentDate);
-                let currentDateObj = new Date(currentDate);
-                currentDateObj.setDate(currentDateObj.getDate() - 13)
-                updateAllGraphs(currentDate);
-                prevSliderValue = Math.round(val);
-            }
-        });
-        
+                //console.log("previous slider:" + prevSliderValue + "Math.round(val):" + Math.round(val) + " current slider: " + val);
+                if (Math.abs(Math.round(val) - Math.round(prevSliderValue)) >= 1) {
+                    //console.log("previous slider:" + prevSliderValue + " current slider: " + val);
+                    let currentDate = getReverseIdxValue(timeData, Math.round(val));
+                    let currentChartData = getReverseIdxValue(chartData, Math.round(val));
+                    d3.select('p#value-time').text(currentDate);
+                    let currentDateObj = new Date(currentDate);
+                    currentDateObj.setDate(currentDateObj.getDate() - 13)
+                    updateAllGraphs(currentDate);
+                    prevSliderValue = Math.round(val);
+                }
+            });
+
         d3.select('p#value-time').text(getLastElement(timeData));
 
         // Axis should be set to the latest data.
@@ -140,8 +140,20 @@
 
         createTooltips();
 
+        createLegend([
+            {
+                clazz: "caseline",
+                key: "Confirmed Cases",
+                color: "#35a5ff"
+            },
+            {
+                clazz: "avgline",
+                key: "7-day Moving Average",
+                color: "#ff7f0e"
+            }])
+
     });
-    
+
     function updateAllGraphs(dateString) {
         let offsetDate = applyDateOffset(dateString, 14);
         //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
@@ -151,7 +163,7 @@
         draw14DayWindow(offsetDate, 14);
         drawMouseOverRects(chartData[dateString]);
     }
-    
+
     function getCaseDeltas(data) {
         return data.casesDelta;
     }
@@ -179,7 +191,7 @@
     function getMovingAvg(data) {
         return data.movingAvg;
     }
-    
+
 </script>
 </body>
 </html>

@@ -70,6 +70,10 @@ div {
     opacity: 0.5 !important;
 }
 
+.prelim-text {
+    fill: #7ba4c9;
+    font: 10px sans-serif;
+}
 
 /*
  * Tooltip
