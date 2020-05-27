@@ -481,8 +481,8 @@ function createTooltips(value) {
                     <table style="margin-top: 2.5px;">
                             <tr><td>Confirmed Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
                             <tr><td>Confirmed Deaths: </td><td style="text-align: right">` + getDeaths(d) + `</td></tr>
-                            <tr><td>Case Delta: </td><td style="text-align: right">\` + getCaseDeltas(d) + \`</td></tr>
-                            <tr><td>Moving Average: </td><td style="text-align: right">\` + getMovingAvg(d) + \`</td></tr>
+                            <tr><td>Case Delta: </td><td style="text-align: right">` + getCaseDeltas(d) + `</td></tr>
+                            <tr><td>Moving Average: </td><td style="text-align: right">` + getMovingAvg(d) + `</td></tr>
                     </table>
                     `;
             return content;
