@@ -19,18 +19,22 @@
       integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"/>
 
 <div class="site-wrapper">
-    <div class="masthead clearfix">
-        <h3 class="masthead-brand">Unofficial COVID-19 Interactive Epicurve for Georgia</h3>
-    </div>
-    
-    <div class="row align-items-center">
-        <div class="col-sm-2">Selected Snapshot<p id="value-time"></p></div>
-        <div class="col-sm">
-            <div id="slider-time"></div>
+    <div class="container theme-showcase" role="main">
+        <div class="row">
+            <div class="masthead clearfix col-md-8">
+                <h3 class="masthead-brand">Unofficial COVID-19 Interactive Epicurve for Georgia</h3>
+            </div>
         </div>
-        <div class="col-sm" id="timestamp">Lastest update:&nbsp
-            <div class="col-sm">
-                <div id="update-timestamp"></div>
+        
+        <div class="row">
+            <div class="col-md-2">Selected Snapshot<p id="value-time"></p></div>
+            <div class="col-md-8">
+                <div id="slider-time"></div>
+            </div>
+            <div class="col-md-2" id="timestamp">Lastest update:&nbsp
+                <div>
+                    <div id="update-timestamp"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -100,26 +104,28 @@
         // add DPH axis
         createAxis(dphSvg, dphxAxis, dphyAxis, height);
     });
-    
+
     function getLastElement(data) {
         let keySet = Object.keys(data);
-        return data[keySet[keySet.length-1]];
+        return data[keySet[keySet.length - 1]];
     }
 
     function parseChartData(summaryData, caseData, deathData) {
         let tempChartData = [];
-        
+
         for (let i = 0; i < summaryData.length; i++) {
             let currentSummaryData = summaryData[i];
             let currentCaseData = caseData[i];
             let currentDeathData = deathData[i];
-            let currentReportDates = Object.keys(currentCaseData).filter(function(d) {return d !== 'id'});
+            let currentReportDates = Object.keys(currentCaseData).filter(function (d) {
+                return d !== 'id'
+            });
             let currentTimeseries = tempChartData[currentSummaryData.id];
             if (!currentTimeseries) {
                 currentTimeseries = [];
                 tempChartData[currentSummaryData.id] = currentTimeseries;
             }
-            currentReportDates.forEach(function(d) {
+            currentReportDates.forEach(function (d) {
                 currentTimeseries.push({
                     label: d,
                     cases: +currentCaseData[d],
