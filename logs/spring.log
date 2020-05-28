@@ -176,3 +176,88 @@
 2020-05-28 14:38:59.663  INFO 28012 --- [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2020-05-28 14:38:59.664  INFO 28012 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2020-05-28 14:38:59.668  INFO 28012 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2020-05-28 15:01:17.670  INFO 28012 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-05-28 15:01:17.670  INFO 28012 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-05-28 15:01:39.488  INFO 25876 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 25876 (started by xpdf64 in H:\dev\covid)
+2020-05-28 15:01:39.489  INFO 25876 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
+2020-05-28 15:01:39.953  INFO 25876 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2020-05-28 15:01:40.013  INFO 25876 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 55ms. Found 5 MongoDB repository interfaces.
+2020-05-28 15:01:40.687  INFO 25876 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2020-05-28 15:01:40.734  INFO 25876 --- [cluster-ClusterId{value='5ed00a940fdb4b3af84072d9', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:39132}] to localhost:27017
+2020-05-28 15:01:40.737  INFO 25876 --- [cluster-ClusterId{value='5ed00a940fdb4b3af84072d9', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=2493100}
+2020-05-28 15:01:41.412  INFO 25876 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-05-28 15:01:41.510  INFO 25876 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-05-28 15:01:41.709  INFO 25876 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-05-28 15:01:41.753  INFO 25876 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 2.548 seconds (JVM running for 3.329)
+2020-05-28 15:01:42.037  INFO 25876 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-05-28 15:01:42.038  INFO 25876 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-05-28 15:05:22.279  INFO 41264 --- [restartedMain] org.dshaver.covid.CovidApplication       : Starting CovidApplication on DESKTOP-0KHVPVS with PID 41264 (H:\dev\covid\target\classes started by xpdf64 in H:\dev\covid)
+2020-05-28 15:05:22.282  INFO 41264 --- [restartedMain] org.dshaver.covid.CovidApplication       : The following profiles are active: local
+2020-05-28 15:05:22.343  INFO 41264 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2020-05-28 15:05:22.344  INFO 41264 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2020-05-28 15:05:22.795  INFO 41264 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2020-05-28 15:05:22.855  INFO 41264 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 56ms. Found 5 MongoDB repository interfaces.
+2020-05-28 15:05:23.245  INFO 41264 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2020-05-28 15:05:23.252  INFO 41264 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2020-05-28 15:05:23.252  INFO 41264 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.33]
+2020-05-28 15:05:23.323  INFO 41264 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2020-05-28 15:05:23.323  INFO 41264 --- [restartedMain] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 979 ms
+2020-05-28 15:05:23.546  INFO 41264 --- [restartedMain] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2020-05-28 15:05:23.580  INFO 41264 --- [cluster-ClusterId{value='5ed00b735eefb453827afff5', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:39141}] to localhost:27017
+2020-05-28 15:05:23.583  INFO 41264 --- [cluster-ClusterId{value='5ed00b735eefb453827afff5', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=2315400}
+2020-05-28 15:05:23.717  INFO 41264 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2020-05-28 15:05:23.984  INFO 41264 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-05-28 15:05:24.027  INFO 41264 --- [restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-05-28 15:05:24.076  INFO 41264 --- [restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-05-28 15:05:24.124  INFO 41264 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2020-05-28 15:05:24.126  INFO 41264 --- [restartedMain] org.dshaver.covid.CovidApplication       : Started CovidApplication in 2.322 seconds (JVM running for 2.909)
+2020-05-28 15:05:26.113  INFO 41264 --- [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2020-05-28 15:05:26.113  INFO 41264 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2020-05-28 15:05:26.117  INFO 41264 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2020-05-28 15:05:26.169  INFO 41264 --- [http-nio-8080-exec-2] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:39142}] to localhost:27017
+2020-05-28 15:12:48.919  INFO 32324 --- [restartedMain] org.dshaver.covid.CovidApplication       : Starting CovidApplication on DESKTOP-0KHVPVS with PID 32324 (H:\dev\covid\target\classes started by xpdf64 in H:\dev\covid)
+2020-05-28 15:12:48.921  INFO 32324 --- [restartedMain] org.dshaver.covid.CovidApplication       : The following profiles are active: local
+2020-05-28 15:12:48.967  INFO 32324 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2020-05-28 15:12:48.967  INFO 32324 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2020-05-28 15:12:49.382  INFO 32324 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2020-05-28 15:12:49.434  INFO 32324 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 48ms. Found 5 MongoDB repository interfaces.
+2020-05-28 15:12:49.811  INFO 32324 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2020-05-28 15:12:49.817  INFO 32324 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2020-05-28 15:12:49.817  INFO 32324 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.33]
+2020-05-28 15:12:49.888  INFO 32324 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2020-05-28 15:12:49.888  INFO 32324 --- [restartedMain] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 921 ms
+2020-05-28 15:12:50.103  INFO 32324 --- [restartedMain] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2020-05-28 15:12:50.134  INFO 32324 --- [cluster-ClusterId{value='5ed00d32a7df0f09be111994', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:39157}] to localhost:27017
+2020-05-28 15:12:50.137  INFO 32324 --- [cluster-ClusterId{value='5ed00d32a7df0f09be111994', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=2193600}
+2020-05-28 15:12:50.270  INFO 32324 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2020-05-28 15:12:50.534  INFO 32324 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-05-28 15:12:50.575  INFO 32324 --- [restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-05-28 15:12:50.623  INFO 32324 --- [restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-05-28 15:12:50.670  INFO 32324 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2020-05-28 15:12:50.672  INFO 32324 --- [restartedMain] org.dshaver.covid.CovidApplication       : Started CovidApplication in 2.061 seconds (JVM running for 2.614)
+2020-05-28 15:14:18.980  INFO 30840 --- [restartedMain] org.dshaver.covid.CovidApplication       : Starting CovidApplication on DESKTOP-0KHVPVS with PID 30840 (H:\dev\covid\target\classes started by xpdf64 in H:\dev\covid)
+2020-05-28 15:14:18.981  INFO 30840 --- [restartedMain] org.dshaver.covid.CovidApplication       : The following profiles are active: local
+2020-05-28 15:14:19.023  INFO 30840 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2020-05-28 15:14:19.023  INFO 30840 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2020-05-28 15:14:19.423  INFO 30840 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2020-05-28 15:14:19.475  INFO 30840 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 49ms. Found 5 MongoDB repository interfaces.
+2020-05-28 15:14:19.844  INFO 30840 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2020-05-28 15:14:19.850  INFO 30840 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2020-05-28 15:14:19.851  INFO 30840 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.33]
+2020-05-28 15:14:19.922  INFO 30840 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2020-05-28 15:14:19.922  INFO 30840 --- [restartedMain] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 899 ms
+2020-05-28 15:14:20.138  INFO 30840 --- [restartedMain] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2020-05-28 15:14:20.169  INFO 30840 --- [cluster-ClusterId{value='5ed00d8c44ef5033f9a8b10b', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:39161}] to localhost:27017
+2020-05-28 15:14:20.173  INFO 30840 --- [cluster-ClusterId{value='5ed00d8c44ef5033f9a8b10b', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=2079900}
+2020-05-28 15:14:20.302  INFO 30840 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2020-05-28 15:14:20.567  INFO 30840 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-05-28 15:14:20.609  INFO 30840 --- [restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-05-28 15:14:20.655  INFO 30840 --- [restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-05-28 15:14:20.702  INFO 30840 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2020-05-28 15:14:20.704  INFO 30840 --- [restartedMain] org.dshaver.covid.CovidApplication       : Started CovidApplication in 2.024 seconds (JVM running for 2.579)
+2020-05-28 15:14:26.924  INFO 30840 --- [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2020-05-28 15:14:26.925  INFO 30840 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2020-05-28 15:14:26.929  INFO 30840 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2020-05-28 15:14:26.941  INFO 30840 --- [http-nio-8080-exec-2] o.d.covid.controller.ReportControllerV2  : Got request to generate all csvs!
+2020-05-28 15:14:26.942  INFO 30840 --- [http-nio-8080-exec-2] org.dshaver.covid.service.ReportService  : Saving CSVs!
+2020-05-28 15:14:26.984  INFO 30840 --- [http-nio-8080-exec-2] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:39162}] to localhost:27017

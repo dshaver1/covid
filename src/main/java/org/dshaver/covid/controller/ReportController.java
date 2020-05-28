@@ -60,32 +60,6 @@ public class ReportController {
         this.objectMapper = objectMapper;
     }
 
-    // TODO finish csv
-    @GetMapping("/reports/dailyCsv")
-    public void getCsvReports() throws Exception {
-        Collection<Report> reports = getReports(null, null);
-
-        String[] header = reports.stream()
-                .reduce((first, second) -> second)
-                .get().getGeorgiaEpicurve().getData()
-                .stream()
-                .map(EpicurvePoint::getLabel)
-                .collect(Collectors.toList())
-                .toArray(new String[]{});
-
-        Path path = Paths.get(reportTgtDir);
-        CSVWriter writer =
-                new CSVWriter(Files.newBufferedWriter(path.resolve("daily.csv"), StandardOpenOption.CREATE_NEW));
-
-        writer.writeNext(header);
-
-        for (Report report : reports) {
-
-        }
-
-        writer.close();
-    }
-
     @GetMapping("/reports/histogram")
     public HistogramReport getHistogramReport(@RequestParam(name = "startDate", required = false)
                                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,

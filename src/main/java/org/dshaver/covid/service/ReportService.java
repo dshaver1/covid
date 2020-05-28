@@ -6,11 +6,13 @@ import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,18 +33,24 @@ public class ReportService {
     private final ReportFactory reportFactory;
     private final ReportRepository reportRepository;
     private final HistogramReportRepository histogramReportRepository;
+    private final CsvService csvService;
+    private final String reportTgtDir;
 
     @Inject
     public ReportService(ReportFactory reportFactory,
                          RawDataRepositoryDelegator rawDataRepository,
                          RawDataDownloaderDelegator rawDataDownloader,
                          ReportRepository reportRepository,
-                         HistogramReportRepository histogramReportRepository) {
+                         HistogramReportRepository histogramReportRepository,
+                         CsvService csvService,
+                         @Value("${covid.report.target.v2.dir}") String reportTgtDir) {
         this.reportFactory = reportFactory;
         this.rawDataRepository = rawDataRepository;
         this.rawDataDownloader = rawDataDownloader;
         this.reportRepository = reportRepository;
         this.histogramReportRepository = histogramReportRepository;
+        this.csvService = csvService;
+        this.reportTgtDir = reportTgtDir;
     }
 
     /**
@@ -53,7 +61,38 @@ public class ReportService {
         // Download
         RawData data = rawDataDownloader.download(RawDataV2.class);
 
-        return saveReportFromRawData(data);
+        DownloadResponse response = saveReportFromRawData(data);
+
+        generateAllCsvs(reportTgtDir);
+
+        return response;
+    }
+
+    public boolean generateAllCsvs(String reportTgtDir) {
+        logger.info("Saving CSVs!");
+        boolean success = true;
+        LocalDate defaultedStartDate = LocalDate.of(2020, 1, 1);
+        LocalDate defaultedEndDate = LocalDate.of(2030, 1, 1);
+
+        Collection<ArrayReport> reports = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate).stream().map(ArrayReport::new).collect(Collectors.toList());;
+
+        String[] headerArray = csvService.createHeader(reports);
+
+        try {
+            csvService.writeFile(reportTgtDir, "cases.csv", headerArray, reports, ArrayReport::getCases);
+            csvService.writeFile(reportTgtDir, "caseDeltas.csv", headerArray, reports, ArrayReport::getCaseDeltas);
+            csvService.writeFile(reportTgtDir, "caseProjections.csv", headerArray, reports, ArrayReport::getCaseProjections);
+            csvService.writeFile(reportTgtDir, "movingAvgs.csv", headerArray, reports, ArrayReport::getMovingAvgs);
+            csvService.writeFile(reportTgtDir, "deaths.csv", headerArray, reports, ArrayReport::getDeaths);
+            csvService.writeFile(reportTgtDir, "deathDeltas.csv", headerArray, reports, ArrayReport::getDeathDeltas);
+            csvService.writeSummary(reportTgtDir, "summary.csv", reports);
+        } catch (Exception e) {
+            logger.error("Could not save csvs!", e);
+
+            success = false;
+        }
+
+        return success;
     }
 
     public void bulkProcess(LocalDate startDate, LocalDate endDate, boolean deleteFirst) {
