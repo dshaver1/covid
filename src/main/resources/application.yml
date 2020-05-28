@@ -9,7 +9,7 @@ spring.profiles: cloud
 covid.report.target.dir: /mnt/data/reports/
 covid.report.target.v2.dir: /mnt/data/reports/v2/
 server.port: 8080
-logging.file.path: /mnt/data/logs/
+logging.file.path: /mnt/data/covid/logs/
 
 ---
 spring.profiles: local
