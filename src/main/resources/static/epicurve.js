@@ -121,7 +121,7 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
             return "0.5";
         })
         .attr('r', 2)
-        .style("visibility", function(d) {
+        .style("visibility", function (d) {
             if (isVisible) {
                 return "visible";
             }
@@ -490,16 +490,88 @@ function createTooltips(value) {
     dphSvg.call(tip);
 }
 
-function createLegend(legend) {
+function createLineLegend(legend) {
+    let size = 10;
+
+    dphSvg.selectAll(".legend-lines")
+        .data(legend)
+        .enter()
+        .append("line")
+        .on("click", toggleVisibility)
+        .attr("class", "legend-lines")
+        .style("stroke", function(d) {
+            return d.color;
+        })
+        .style("shape-rendering", "crispEdges")
+        .style("stroke-width", 1)
+        .attr("x1", function (d) {
+            return d.x - 5;
+        })
+        .attr("y1", function (d,i) {
+            return height + 85 + (i * (size + 5));
+        })
+        .attr("x2", function (d) {
+            return d.x - 5 + size;
+        })
+        .attr("y2", function (d,i) {
+            return height + 85 + (i * (size + 5));
+        });
+
+    let circleX = [];
+    legend.forEach(function (d) {
+        circleX.push({x: d.x, color: d.color});
+        circleX.push({x: d.x + size, color: d.color});
+    });
+
+    dphSvg.selectAll(".legend-circles")
+        .data(circleX)
+        .enter()
+        .append('circle')
+        .on("click", toggleVisibility)
+        .attr('class', "legend-circles")
+        .attr('cx', function (d) {
+            return d.x - 5;
+        })
+        .attr('cy', function (d, i) {
+            let offset = i <= 1 ? 0 : 1;
+            return height + 85 + (offset * (size + 5));
+        })
+        //.attr("stroke", highlightColor)
+        .style("fill", function(d) {
+            return d.color;
+        })
+        .attr('r', 2);
+
+    dphSvg.selectAll("mylabels")
+        .data(legend)
+        .enter()
+        .append("text")
+        .on("click", toggleVisibility)
+        .attr("x", function (d) { return d.x + size + 5})
+        .attr("y", function (d, i) {
+            return height + 80 + (i * (size + 5)) + 9;
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })
+        .text(function (d) {
+            return d.key;
+        })
+        .attr("text-anchor", "left")
+        .style("font", "11px sans-serif")
+        .style("alignment-baseline", "middle")
+}
+
+function createBoxLegend(legend) {
     let size = 8
     dphSvg.selectAll("mydots")
         .data(legend)
         .enter()
         .append("rect")
         .on("click", toggleVisibility)
-        .attr("x", width / 2)
+        .attr("x", function (d) { return d.x})
         .attr("y", function (d, i) {
-            return height + 80 + (i * (size + 5));
+            return height + 81 + (i * ((size+2) + 5));
         })
         .attr("width", size)
         .attr("height", size)
@@ -513,11 +585,15 @@ function createLegend(legend) {
         .enter()
         .append("text")
         .on("click", toggleVisibility)
-        .attr("x", width / 2 + size + 5)
+        .attr("x", function (d) { return d.x + size + 5})
         .attr("y", function (d, i) {
-            return height + 80 + (i * (size + 5)) + 9;
+            return height + 80 + (i * (size + 7)) + 9;
         })
         .style("fill", function (d) {
+            if (d.textColor) {
+                return d.textColor;
+            }
+
             return d.color;
         })
         .text(function (d) {

@@ -153,16 +153,33 @@
 
         createTooltips();
 
-        createLegend([
+        createLineLegend([
             {
+                x: (width / 2) - 100,
                 clazz: "caseline",
                 key: "Confirmed Cases",
                 color: "#35a5ff"
             },
             {
+                x: (width / 2) - 100,
                 clazz: "avgline",
                 key: "7-day Moving Average",
                 color: "#ff7f0e"
+            }]);
+        
+        createBoxLegend([
+            {
+                x: (width / 2) + 40,
+                clazz: "casedeltabar",
+                key: "Case Deltas (Additions)",
+                color: "#35a5ff"
+            },
+            {
+                x: (width / 2) + 40,
+                clazz: "casedeltabar",
+                key: "Case Deltas (Subtractions)",
+                color: "#000",
+                textColor: "#777"
             }])
 
     });
