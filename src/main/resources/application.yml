@@ -6,10 +6,10 @@ covid.download.url2: https://ga-covid19.ondemand.sas.com/static/js/main.js
 ---
 spring.profiles: cloud
 
-covid.report.target.dir: /var/opt/reports/
-covid.report.target.v2.dir: /var/opt/reports/v2/
+covid.report.target.dir: /mnt/data/reports/
+covid.report.target.v2.dir: /mnt/data/reports/v2/
 server.port: 8080
-logging.file.path: /var/opt/covid/logs
+logging.file.path: /mnt/data/logs/
 
 ---
 spring.profiles: local
