@@ -1,0 +1,634 @@
+{
+    "reportDate": "2020-05-15",
+    "id": "2020-05-15T18:00:03",
+    "totalTests": 301874,
+    "confirmedCases": 36772,
+    "icu": 1549,
+    "hospitalizations": 6518,
+    "deaths": 1588,
+    "georgiaEpicurve": [
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-17",
+            "positives": 2,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-18",
+            "positives": 3,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-19",
+            "positives": 3,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-20",
+            "positives": 4,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-21",
+            "positives": 2,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-22",
+            "positives": 4,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-23",
+            "positives": 8,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-24",
+            "positives": 7,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-25",
+            "positives": 8,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-26",
+            "positives": 10,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-27",
+            "positives": 11,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-28",
+            "positives": 13,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-02-29",
+            "positives": 13,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-01",
+            "positives": 74,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-02",
+            "positives": 41,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-03",
+            "positives": 42,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-04",
+            "positives": 50,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-05",
+            "positives": 44,
+            "deathcnt": 1
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-06",
+            "positives": 59,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-07",
+            "positives": 62,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-08",
+            "positives": 75,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-09",
+            "positives": 124,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-10",
+            "positives": 151,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-11",
+            "positives": 156,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-12",
+            "positives": 182,
+            "deathcnt": 1
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-13",
+            "positives": 260,
+            "deathcnt": 0
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-14",
+            "positives": 215,
+            "deathcnt": 2
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-15",
+            "positives": 273,
+            "deathcnt": 4
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-16",
+            "positives": 405,
+            "deathcnt": 2
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-17",
+            "positives": 393,
+            "deathcnt": 2
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-18",
+            "positives": 435,
+            "deathcnt": 9
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-19",
+            "positives": 412,
+            "deathcnt": 5
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-20",
+            "positives": 480,
+            "deathcnt": 5
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-21",
+            "positives": 305,
+            "deathcnt": 18
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-22",
+            "positives": 338,
+            "deathcnt": 9
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-23",
+            "positives": 576,
+            "deathcnt": 10
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-24",
+            "positives": 510,
+            "deathcnt": 15
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-25",
+            "positives": 557,
+            "deathcnt": 19
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-26",
+            "positives": 501,
+            "deathcnt": 14
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-27",
+            "positives": 520,
+            "deathcnt": 13
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-28",
+            "positives": 427,
+            "deathcnt": 21
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-29",
+            "positives": 365,
+            "deathcnt": 28
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-30",
+            "positives": 697,
+            "deathcnt": 27
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-03-31",
+            "positives": 531,
+            "deathcnt": 27
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-01",
+            "positives": 734,
+            "deathcnt": 28
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-02",
+            "positives": 622,
+            "deathcnt": 36
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-03",
+            "positives": 696,
+            "deathcnt": 43
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-04",
+            "positives": 471,
+            "deathcnt": 41
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-05",
+            "positives": 420,
+            "deathcnt": 30
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-06",
+            "positives": 899,
+            "deathcnt": 41
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-07",
+            "positives": 698,
+            "deathcnt": 31
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-08",
+            "positives": 766,
+            "deathcnt": 34
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-09",
+            "positives": 822,
+            "deathcnt": 33
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-10",
+            "positives": 891,
+            "deathcnt": 37
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-11",
+            "positives": 531,
+            "deathcnt": 29
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-12",
+            "positives": 402,
+            "deathcnt": 30
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-13",
+            "positives": 862,
+            "deathcnt": 31
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-14",
+            "positives": 863,
+            "deathcnt": 44
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-15",
+            "positives": 767,
+            "deathcnt": 31
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-16",
+            "positives": 802,
+            "deathcnt": 52
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-17",
+            "positives": 875,
+            "deathcnt": 36
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-18",
+            "positives": 480,
+            "deathcnt": 31
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-19",
+            "positives": 540,
+            "deathcnt": 38
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-20",
+            "positives": 923,
+            "deathcnt": 38
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-21",
+            "positives": 897,
+            "deathcnt": 33
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-22",
+            "positives": 869,
+            "deathcnt": 43
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-23",
+            "positives": 702,
+            "deathcnt": 33
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-24",
+            "positives": 807,
+            "deathcnt": 38
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-25",
+            "positives": 442,
+            "deathcnt": 32
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-26",
+            "positives": 331,
+            "deathcnt": 33
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-27",
+            "positives": 932,
+            "deathcnt": 41
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-28",
+            "positives": 930,
+            "deathcnt": 37
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-29",
+            "positives": 749,
+            "deathcnt": 38
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-04-30",
+            "positives": 680,
+            "deathcnt": 32
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-01",
+            "positives": 718,
+            "deathcnt": 31
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-02",
+            "positives": 319,
+            "deathcnt": 27
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-03",
+            "positives": 244,
+            "deathcnt": 27
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-04",
+            "positives": 811,
+            "deathcnt": 28
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-05",
+            "positives": 513,
+            "deathcnt": 24
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-06",
+            "positives": 563,
+            "deathcnt": 22
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-07",
+            "positives": 508,
+            "deathcnt": 15
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-08",
+            "positives": 485,
+            "deathcnt": 22
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-09",
+            "positives": 256,
+            "deathcnt": 16
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-10",
+            "positives": 198,
+            "deathcnt": 19
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-11",
+            "positives": 579,
+            "deathcnt": 14
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-12",
+            "positives": 423,
+            "deathcnt": 15
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-13",
+            "positives": 247,
+            "deathcnt": 14
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-14",
+            "positives": 79,
+            "deathcnt": 9
+        },
+        {
+            "measure": "state_total",
+            "county": "Georgia",
+            "test_date": "2020-05-15",
+            "positives": 23,
+            "deathcnt": 0
+        }
+    ]
+}

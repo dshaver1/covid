@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "covid.report.target.dir",
+      "type": "java.lang.String",
+      "description": "Description for covid.report.target.dir."
+    },
+    {
+      "name": "covid.report.target.v2.dir",
+      "type": "java.lang.String",
+      "description": "Description for covid.report.target.v2.dir."
+    }
+  ] }

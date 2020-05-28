@@ -30,15 +30,15 @@
         </div>
         
         <div class="row">
-            <div class="col-md-2">Selected Snapshot<p id="value-time"></p></div>
-            <div class="col-md-8">
-                <div id="slider-time"></div>
-            </div>
             <div class="col-md-2" id="timestamp">Lastest update:&nbsp
                 <div>
                     <div id="update-timestamp"></div>
                 </div>
             </div>
+            <div class="col-md-8">
+                <div id="slider-time"></div>
+            </div>
+            <div class="col-md-2">Selected Snapshot<p id="value-time"></p></div>
         </div>
     </div>
     
@@ -77,7 +77,7 @@
 
     // set the dimensions of the canvas
     var margin = {top: 0, right: 20, bottom: 120, left: 60},
-        width = window.innerWidth - margin.left - margin.right - tipWidth,
+        width = Math.max(window.innerWidth - margin.left - margin.right - tipWidth, 600),
         height = 600 - margin.top - margin.bottom
 
     // set the ranges
@@ -105,7 +105,7 @@
         d3.csv("reports/v2/caseDeltas.csv"),
         d3.csv("reports/v2/deathDeltas.csv"),
         d3.csv("reports/v2/caseProjections.csv"),
-        d3.csv("reports/v2/movingAvgs.csv"),
+        d3.csv("reports/v2/movingAvgs.csv")
     ]).then(function (files) {
         summaryData = files[0];
         chartData = parseChartData(summaryData, files[1], files[2], files[3], files[4], files[5], files[6]);

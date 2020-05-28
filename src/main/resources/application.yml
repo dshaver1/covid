@@ -1,0 +1,20 @@
+spring.data.mongodb.database: covid
+covid.download.url: https://d20s4vd27d0hk0.cloudfront.net/
+covid.download.url2: https://ga-covid19.ondemand.sas.com/static/js/main.js
+
+
+---
+spring.profiles: cloud
+
+covid.report.target.dir: /var/opt/reports/
+covid.report.target.v2.dir: /var/opt/reports/v2/
+server.port: 8080
+logging.file.path: /var/opt/covid/logs
+
+---
+spring.profiles: local
+
+covid.report.target.dir: H:\dev\covid\src\main\resources\static\reports\
+covid.report.target.v2.dir: H:\dev\covid\src\main\resources\static\reports\v2\
+server.port: 8080
+logging.file.path: H:\dev\covid\logs\

@@ -11,11 +11,11 @@ import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.service.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @RestController
 public class ReportControllerV2 {
     private static final Logger logger = LoggerFactory.getLogger(ReportControllerV2.class);
-    private static final String REPORT_TGT_DIR = "H:\\dev\\covid\\src\\main\\resources\\static\\reports\\v2\\";
     private static final int DEFAULT_TARGET_HOUR = 18;
     private final ReportRepository reportRepository;
     private final RawDataRepositoryV2 rawDataRepository;
@@ -39,6 +38,7 @@ public class ReportControllerV2 {
     private final HistogramReportRepository histogramReportRepository;
     private final ReportService reportService;
     private final ObjectMapper objectMapper;
+    private final String reportTgtDir;
 
     @Inject
     public ReportControllerV2(ReportRepository reportRepository,
@@ -46,15 +46,18 @@ public class ReportControllerV2 {
                               ManualRawDataRepository manualRawDataRepository,
                               HistogramReportRepository histogramReportRepository,
                               ReportService reportService,
-                              ObjectMapper objectMapper) {
+                              ObjectMapper objectMapper,
+                              @Value("${covid.report.target.v2.dir}") String reportTgtDir) {
         this.reportRepository = reportRepository;
         this.rawDataRepository = rawDataRepository;
         this.manualRawDataRepository = manualRawDataRepository;
         this.histogramReportRepository = histogramReportRepository;
         this.reportService = reportService;
         this.objectMapper = objectMapper;
+        this.reportTgtDir = reportTgtDir;
     }
 
+    @CrossOrigin(origins = "http://rectangular-deposit.glitch.me")
     @GetMapping(value = "/reports/v2/{file}.csv", produces = "text/csv")
     public String getCsv(@PathVariable(name = "file") String file) throws Exception {
         switch (file) {
@@ -108,7 +111,7 @@ public class ReportControllerV2 {
     }
 
     private String writeSummary(String filename, Collection<ArrayReport> reports) throws Exception {
-        Path path = Paths.get(REPORT_TGT_DIR).resolve(filename);
+        Path path = Paths.get(reportTgtDir).resolve(filename);
         CSVWriter writer =
                 new CSVWriter(Files.newBufferedWriter(path, StandardOpenOption.CREATE));
 
@@ -145,12 +148,12 @@ public class ReportControllerV2 {
     }
 
     private String readFile(String filename) throws Exception {
-        Path path = Paths.get(REPORT_TGT_DIR).resolve(filename);
+        Path path = Paths.get(reportTgtDir).resolve(filename);
         return String.join("\n", Files.readAllLines(path));
     }
 
     private String writeFile(String filename, String[] header, Collection<ArrayReport> reports, Function<ArrayReport, Integer[]> intFunction) throws Exception {
-        Path path = Paths.get(REPORT_TGT_DIR).resolve(filename);
+        Path path = Paths.get(reportTgtDir).resolve(filename);
         CSVWriter writer =
                 new CSVWriter(Files.newBufferedWriter(path, StandardOpenOption.CREATE));
 

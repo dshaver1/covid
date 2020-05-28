@@ -11,6 +11,7 @@ import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.dshaver.covid.service.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,6 @@ import java.util.stream.Collectors;
 @RestController
 public class ReportController {
     private static final Logger logger = LoggerFactory.getLogger(ReportController.class);
-    private static final String REPORT_TGT_DIR = "H:\\dev\\covid\\src\\main\\resources\\static\\reports\\";
     private static final int DEFAULT_TARGET_HOUR = 18;
     private final ReportRepository reportRepository;
     private final RawDataRepositoryV2 rawDataRepository;
@@ -41,14 +41,17 @@ public class ReportController {
     private final HistogramReportRepository histogramReportRepository;
     private final ReportService reportService;
     private final ObjectMapper objectMapper;
+    private final String reportTgtDir;
 
     @Inject
-    public ReportController(ReportRepository reportRepository,
+    public ReportController(@Value("${covid.report.target.dir}")String reportTgtDir,
+                            ReportRepository reportRepository,
                             RawDataRepositoryV2 rawDataRepository,
                             ManualRawDataRepository manualRawDataRepository,
                             HistogramReportRepository histogramReportRepository,
                             ReportService reportService,
                             ObjectMapper objectMapper) {
+        this.reportTgtDir = reportTgtDir;
         this.reportRepository = reportRepository;
         this.rawDataRepository = rawDataRepository;
         this.manualRawDataRepository = manualRawDataRepository;
@@ -70,7 +73,7 @@ public class ReportController {
                 .collect(Collectors.toList())
                 .toArray(new String[]{});
 
-        Path path = Paths.get(REPORT_TGT_DIR);
+        Path path = Paths.get(reportTgtDir);
         CSVWriter writer =
                 new CSVWriter(Files.newBufferedWriter(path.resolve("daily.csv"), StandardOpenOption.CREATE_NEW));
 
@@ -113,7 +116,7 @@ public class ReportController {
 
         List<Report> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate);
 
-        File file = Paths.get(REPORT_TGT_DIR, "daily").toFile();
+        File file = Paths.get(reportTgtDir, "daily").toFile();
         objectMapper.writeValue(file, reportList);
 
         return reportList;
