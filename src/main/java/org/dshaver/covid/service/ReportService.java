@@ -166,17 +166,17 @@ public class ReportService {
 
         try {
             // Get previous report
-            List<Report> allExistingReports = reportRepository.findAllByOrderByIdAsc();
-            Report prevReport = allExistingReports.get(allExistingReports.size() - 1);
+            List<Report> lastFewReports = reportRepository.findByReportDateBetweenOrderByIdAsc(data.getReportDate().minusDays(2), data.getReportDate());
+            Report prevReport = lastFewReports.get(lastFewReports.size() - 1);
 
             // If previous report is on the same date, but the downloaded report is newer, delete the previous report.
             if (prevReport.getReportDate().equals(data.getReportDate()) && !prevReport.getId().equals(data.getId()) && !is1800(prevReport.getId())) {
                 reportRepository.delete(prevReport);
-                prevReport = allExistingReports.get(allExistingReports.size() - 2);
+                prevReport = lastFewReports.get(lastFewReports.size() - 2);
             }
 
             if (prevReport.getId().equals(data.getId())) {
-                prevReport = allExistingReports.get(allExistingReports.size() - 2);
+                prevReport = lastFewReports.get(lastFewReports.size() - 2);
             } else {
                 response.setFoundNew(true);
             }

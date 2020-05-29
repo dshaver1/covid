@@ -30,6 +30,7 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
 
     @Override
     public Optional<Map<String, Epicurve>> extract(List<String> raw, String id) {
+        logger.info("Extracting data from " + id);
         Optional<String> epicurveString = getVarFromRegex(raw, getPattern());
         List<EpicurvePointImpl2> epicurvePoints = null;
         Optional<Map<String, Epicurve>> epicurve = Optional.empty();

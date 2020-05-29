@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +46,7 @@ public class ReportControllerV2 {
                               HistogramReportRepository histogramReportRepository,
                               ReportService reportService,
                               ObjectMapper objectMapper,
-                              @Value("${covid.report.target.v2.dir}") String reportTgtDir, 
+                              @Value("${covid.report.target.v2.dir}") String reportTgtDir,
                               CsvService csvService) {
         this.reportRepository = reportRepository;
         this.rawDataRepository = rawDataRepository;

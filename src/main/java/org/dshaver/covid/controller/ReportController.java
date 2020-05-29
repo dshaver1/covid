@@ -1,7 +1,6 @@
 package org.dshaver.covid.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.opencsv.CSVWriter;
 import org.dshaver.covid.dao.HistogramReportRepository;
 import org.dshaver.covid.dao.ManualRawDataRepository;
 import org.dshaver.covid.dao.RawDataRepositoryV2;
@@ -18,15 +17,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by xpdf64 on 2020-04-28.
@@ -44,7 +39,7 @@ public class ReportController {
     private final String reportTgtDir;
 
     @Inject
-    public ReportController(@Value("${covid.report.target.dir}")String reportTgtDir,
+    public ReportController(@Value("${covid.report.target.dir}") String reportTgtDir,
                             ReportRepository reportRepository,
                             RawDataRepositoryV2 rawDataRepository,
                             ManualRawDataRepository manualRawDataRepository,
@@ -62,9 +57,9 @@ public class ReportController {
 
     @GetMapping("/reports/histogram")
     public HistogramReport getHistogramReport(@RequestParam(name = "startDate", required = false)
-                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                               @RequestParam(name = "endDate", required = false)
-                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
 
         // Save histogram report object
         HistogramReport histogramReport = new HistogramReport(reportRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate));
@@ -116,9 +111,9 @@ public class ReportController {
 
     @PostMapping("/reports/copyRawData")
     public void downloadLatest(@RequestParam(name = "idToCopy") String idToCopy,
-                                           @RequestParam(name = "targetId") String targetId,
-                                           @RequestParam(name = "reportDate")
-                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
+                               @RequestParam(name = "targetId") String targetId,
+                               @RequestParam(name = "reportDate")
+                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
         Optional<RawDataV2> rawDataV2 = rawDataRepository.findById(idToCopy);
         rawDataV2.get().setId(targetId);
         rawDataV2.get().setReportDate(reportDate);

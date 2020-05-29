@@ -1,9 +1,10 @@
 package org.dshaver.covid.service;
 
-import com.opencsv.CSVWriter;
 import org.dshaver.covid.domain.ArrayReport;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,17 +36,19 @@ public class CsvService {
 
     public String writeSummary(String dir, String filename, Collection<ArrayReport> reports) throws Exception {
         Path path = Paths.get(dir).resolve(filename);
-        CSVWriter writer =
-                new CSVWriter(Files.newBufferedWriter(path, StandardOpenOption.CREATE));
+        Files.deleteIfExists(path);
+        BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
 
         String[] header = new String[]{"id", "createTime", "reportDate", "totalTests", "totalTestVm",
                 "totalConfirmedCases", "totalDeaths", "confirmedCasesVm", "hospitalized", "hospitalizedVm", "deathsVm",
                 "icu", "icuVm"};
 
-        writer.writeNext(header);
+        writer.write(String.join(",", header));
 
         List<String> row = new ArrayList<>();
         for (ArrayReport report : reports) {
+            writer.write("\n");
+
             row.add(report.getId());
             row.add(report.getCreateTime().toString());
             row.add(report.getReportDate().toString());
@@ -60,9 +63,11 @@ public class CsvService {
             row.add("" + report.getIcu());
             row.add("" + report.getIcuVm());
 
-            writer.writeNext(row.toArray(new String[]{}));
+            writer.write(String.join(",", row));
 
-            row = new ArrayList<>();
+            writer.flush();
+
+            row.clear();
         }
 
         writer.close();
@@ -77,10 +82,10 @@ public class CsvService {
 
     public String writeFile(String dir, String filename, String[] header, Collection<ArrayReport> reports, Function<ArrayReport, Integer[]> intFunction) throws Exception {
         Path path = Paths.get(dir).resolve(filename);
-        CSVWriter writer =
-                new CSVWriter(Files.newBufferedWriter(path, StandardOpenOption.CREATE));
+        Files.deleteIfExists(path);
+        BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
 
-        writer.writeNext(header);
+        writer.write(String.join(",", header));
 
         writeLines(writer, reports, intFunction);
 
@@ -89,14 +94,16 @@ public class CsvService {
         return String.join("\n", Files.readAllLines(path));
     }
 
-    public void writeLines(CSVWriter writer, Collection<ArrayReport> reports, Function<ArrayReport, Integer[]> intFunction) {
+    public void writeLines(BufferedWriter writer, Collection<ArrayReport> reports, Function<ArrayReport, Integer[]> intFunction) throws IOException {
         List<String> row = new ArrayList<>();
 
         for (ArrayReport report : reports) {
+            writer.write("\n");
+
             row.add(report.getId());
             row.addAll(Arrays.stream(intFunction.apply(report)).map(Object::toString).collect(Collectors.toList()));
 
-            writer.writeNext(row.toArray(new String[]{}));
+            writer.write(String.join(",", row));
 
             row = new ArrayList<>();
         }

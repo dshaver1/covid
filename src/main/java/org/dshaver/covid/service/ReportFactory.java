@@ -60,14 +60,17 @@ public class ReportFactory {
 
     public Report createReport(RawData rawData, Report previousReport) throws Exception {
         if (rawData instanceof RawDataV2) {
+            logger.info("About to start creating report from RawDataV2");
             return createReport((RawDataV2) rawData, previousReport);
         }
 
         if (rawData instanceof RawDataV1) {
+            logger.info("About to start creating report from RawDataV1");
             return createReport((RawDataV1) rawData, previousReport);
         }
 
         if (rawData instanceof ManualRawData) {
+            logger.info("About to start creating report from ManualRawData");
             return createReport((ManualRawData) rawData, previousReport);
         }
 
