@@ -13,12 +13,11 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 public class ReportService {
     private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
+    private static final int TARGET_HOUR = 18;
 
     private final RawDataRepositoryDelegator rawDataRepository;
     private final RawDataDownloaderDelegator rawDataDownloader;
@@ -74,18 +74,39 @@ public class ReportService {
         LocalDate defaultedStartDate = LocalDate.of(2020, 1, 1);
         LocalDate defaultedEndDate = LocalDate.of(2030, 1, 1);
 
-        Collection<ArrayReport> reports = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate).stream().map(ArrayReport::new).collect(Collectors.toList());;
+        Map<LocalDate, List<ArrayReport>> groupedReports =
+                reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate).stream()
+                        .map(ArrayReport::new)
+                        .collect(Collectors.groupingBy(ArrayReport::getReportDate));
 
-        String[] headerArray = csvService.createHeader(reports);
+        TreeSet<ArrayReport> filteredReports = new TreeSet<>(Comparator.comparing(ArrayReport::getId));
+        groupedReports.forEach((reportDate, reports) -> {
+            ArrayReport selectedReport = reports.get(0);
+
+            for (ArrayReport currentReport : reports) {
+                int selectedDiff = Math.abs(LocalDateTime.parse(selectedReport.getId()).getHour() - TARGET_HOUR);
+                int currentDiff = Math.abs(LocalDateTime.parse(currentReport.getId()).getHour() - TARGET_HOUR);
+
+                selectedReport = currentDiff < selectedDiff ? currentReport : selectedReport;
+
+                if (currentDiff == 0) {
+                    break;
+                }
+            }
+
+            filteredReports.add(selectedReport);
+        });
+
+        String[] headerArray = csvService.createHeader(filteredReports);
 
         try {
-            csvService.writeFile(reportTgtDir, "cases.csv", headerArray, reports, ArrayReport::getCases);
-            csvService.writeFile(reportTgtDir, "caseDeltas.csv", headerArray, reports, ArrayReport::getCaseDeltas);
-            csvService.writeFile(reportTgtDir, "caseProjections.csv", headerArray, reports, ArrayReport::getCaseProjections);
-            csvService.writeFile(reportTgtDir, "movingAvgs.csv", headerArray, reports, ArrayReport::getMovingAvgs);
-            csvService.writeFile(reportTgtDir, "deaths.csv", headerArray, reports, ArrayReport::getDeaths);
-            csvService.writeFile(reportTgtDir, "deathDeltas.csv", headerArray, reports, ArrayReport::getDeathDeltas);
-            csvService.writeSummary(reportTgtDir, "summary.csv", reports);
+            csvService.writeFile(reportTgtDir, "cases.csv", headerArray, filteredReports, ArrayReport::getCases);
+            csvService.writeFile(reportTgtDir, "caseDeltas.csv", headerArray, filteredReports, ArrayReport::getCaseDeltas);
+            csvService.writeFile(reportTgtDir, "caseProjections.csv", headerArray, filteredReports, ArrayReport::getCaseProjections);
+            csvService.writeFile(reportTgtDir, "movingAvgs.csv", headerArray, filteredReports, ArrayReport::getMovingAvgs);
+            csvService.writeFile(reportTgtDir, "deaths.csv", headerArray, filteredReports, ArrayReport::getDeaths);
+            csvService.writeFile(reportTgtDir, "deathDeltas.csv", headerArray, filteredReports, ArrayReport::getDeathDeltas);
+            csvService.writeSummary(reportTgtDir, "summary.csv", filteredReports);
         } catch (Exception e) {
             logger.error("Could not save csvs!", e);
 
