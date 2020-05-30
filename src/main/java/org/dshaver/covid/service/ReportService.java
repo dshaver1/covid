@@ -12,12 +12,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 public class ReportService {
     private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
-    private static final int TARGET_HOUR = 18;
+    private static final int TARGET_HOUR = 19;
 
     private final RawDataRepositoryDelegator rawDataRepository;
     private final RawDataDownloaderDelegator rawDataDownloader;
