@@ -185,12 +185,12 @@
     });
 
     function updateAllGraphs(dateString) {
-        let offsetDate = applyDateOffset(dateString, 14);
+        let offsetDate = applyDateOffset(dateString, 13);
         //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
         updateBarChart(chartData[dateString], getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
         updateLineChart(chartData[dateString], getCases, "caseline", "#35a5ff", "#67b0ff", offsetDate);
         updateLineChart(chartData[dateString], getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate);
-        draw14DayWindow(offsetDate, 14);
+        draw14DayWindow(offsetDate, 13);
         drawMouseOverRects(chartData[dateString]);
     }
 
