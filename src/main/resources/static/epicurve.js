@@ -426,12 +426,12 @@ function createSlider() {
         .sliderBottom()
         //.min(-1 * (timeData.length - 1))
         //.max(0)
-        .domain([-42, 0])
-        .marks([-42, 0])
+        .domain([-58, 0])
+        .marks([-58, 0])
         .step(1)
         //.ticks(5)
         .width(350)
-        .tickValues([0, -7, -14, -21, -28, -35, -42]);
+        .tickValues([0, -7, -14, -21, -28, -35, -42, -49, -56]);
 
     var gTime = d3
         .select('div#slider-time')
