@@ -59,7 +59,8 @@
                 <li><a href="/reports/v2/cases.csv">Cases Per Day</a></li>
                 <li><a href="/reports/v2/deaths.csv">Deaths Per Day</a></li>
                 <li><a href="/reports/v2/caseDeltas.csv">Case Deltas Per Day</a></li>
-                <li><a href="/reports/v2/movingAvgs.csv">Moving Averages</a></li>
+                <li><a href="/reports/v2/movingAvgs.csv">Case Moving Averages</a></li>
+                <li><a href="/reports/v2/summary.csv">Summary Data</a></li>
             </ul>
             </p>
         </div>
@@ -156,11 +157,26 @@
         // add DPH axis
         createAxis(dphSvg, dphxAxis, dphyAxis, height);
 
-        updateAllGraphs(getLastElement(timeData))
+        let dateString = getLastElement(timeData);
+
+        //updateBarChart(chartData[dateString], getReportedCases, "reportedcasesbar", "#1f3d61", "#000");
+
+        updateLineChart(chartData[dateString], getReportedCases, "reportedcasesbar", "#2b5280", "#2b5280", applyDateOffset(dateString, 13));
+
+        updateAllGraphs(dateString);
 
         createTooltips();
 
+        let infoToolTip = createInfoTooltip();
+        
         createLineLegend([
+            {
+                x: (width / 2) - 100,
+                clazz: "reportedcasesbar",
+                key: "Reported Cases",
+                color: "#325b8d",
+                tooltip: infoToolTip
+            },
             {
                 x: (width / 2) - 100,
                 clazz: "caseline",
@@ -191,6 +207,20 @@
 
     });
 
+    function createInfoTooltip() {
+        let infoToolTip = d3.tip().attr('class', 'd3-tip').direction('s').offset([5, 5])
+            .html(function (d) {
+                var content = "<div style='margin-left: 2.5px;width:250px' class='d3-tip-text'>The difference between 'Reported Cases' and 'Confirmed Cases' " +
+                    "is that Confirmed Cases are allocated to different days based on symptom onset date and test report date," +
+                    " whereas Reported Cases are merely the top-line total cases that have been reported on that date. <br/>Note that Reported Cases" +
+                    " does not change over time because it merely represents the difference between that day and the previous day.</div><br>";
+                return content;
+            });
+        dphSvg.call(infoToolTip);
+
+        return infoToolTip;
+    }
+
     function updateAllGraphs(dateString) {
         let offsetDate = applyDateOffset(dateString, 13);
         //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
@@ -203,6 +233,14 @@
 
     function getCaseDeltas(data) {
         return data.casesDelta;
+    }
+
+    function getReportedCases(data) {
+        return data.reportedCases;
+    }
+
+    function getReportedDeaths(data) {
+        return data.reportedDeaths;
     }
 
     function getCases(data) {

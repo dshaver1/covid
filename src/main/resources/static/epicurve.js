@@ -322,6 +322,16 @@ function getLastElement(data) {
 function parseChartData(summaryData, caseData, deathData, caseDeltaData, deathDeltaData, caseProjectionData, movingAvgData) {
     let tempChartData = [];
 
+    let reportedCasesData = []
+    summaryData.forEach(function(d) {
+        reportedCasesData[d.reportDate] = d.confirmedCasesVm;
+    });
+
+    let reportedDeathsData = []
+    summaryData.forEach(function(d) {
+        reportedDeathsData[d.reportDate] = d.deathsVm;
+    });
+
     for (let i = 0; i < summaryData.length; i++) {
         let currentSummaryData = summaryData[i];
         let currentCaseData = caseData[i];
@@ -351,6 +361,8 @@ function parseChartData(summaryData, caseData, deathData, caseDeltaData, deathDe
                     deathsDelta: +currentDeathDeltaData[d],
                     casesProjection: +currentCaseProjectionData[d],
                     movingAvg: +currentMovingAvgData[d],
+                    reportedCases: +reportedCasesData[d] || 0,
+                    reportedDeaths: +reportedDeathsData[d] || 0
                 });
             });
     }
@@ -479,6 +491,7 @@ function createTooltips(value) {
             var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
             content += `
                     <table style="margin-top: 2.5px;">
+                            <tr><td>Reported Cases: </td><td style="text-align: right">` + getReportedCases(d) + `</td></tr>
                             <tr><td>Confirmed Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
                             <tr><td>Confirmed Deaths: </td><td style="text-align: right">` + getDeaths(d) + `</td></tr>
                             <tr><td>Case Delta: </td><td style="text-align: right">` + getCaseDeltas(d) + `</td></tr>
@@ -498,6 +511,16 @@ function createLineLegend(legend) {
         .enter()
         .append("line")
         .on("click", toggleVisibility)
+        .on("mouseover", function(d) {
+            if (d.tooltip) {
+                d.tooltip.show();
+            }
+        })
+        .on("mouseout", function(d) {
+            if (d.tooltip) {
+                d.tooltip.hide();
+            }
+        })
         .attr("class", "legend-lines")
         .style("stroke", function(d) {
             return d.color;
@@ -518,9 +541,9 @@ function createLineLegend(legend) {
         });
 
     let circleX = [];
-    legend.forEach(function (d) {
-        circleX.push({x: d.x, color: d.color});
-        circleX.push({x: d.x + size, color: d.color});
+    legend.forEach(function (d,i) {
+        circleX.push({yOffset: i, x: d.x, color: d.color});
+        circleX.push({yOffset: i, x: d.x + size, color: d.color});
     });
 
     dphSvg.selectAll(".legend-circles")
@@ -528,13 +551,22 @@ function createLineLegend(legend) {
         .enter()
         .append('circle')
         .on("click", toggleVisibility)
+        .on("mouseover", function(d) {
+            if (d.tooltip) {
+                d.tooltip.show();
+            }
+        })
+        .on("mouseout", function(d) {
+            if (d.tooltip) {
+                d.tooltip.hide();
+            }
+        })
         .attr('class', "legend-circles")
         .attr('cx', function (d) {
             return d.x - 5;
         })
         .attr('cy', function (d, i) {
-            let offset = i <= 1 ? 0 : 1;
-            return height + 85 + (offset * (size + 5));
+            return height + 85 + (d.yOffset * (size + 5));
         })
         //.attr("stroke", highlightColor)
         .style("fill", function(d) {
@@ -547,6 +579,16 @@ function createLineLegend(legend) {
         .enter()
         .append("text")
         .on("click", toggleVisibility)
+        .on("mouseover", function(d) {
+            if (d.tooltip) {
+                d.tooltip.show();
+            }
+        })
+        .on("mouseout", function(d) {
+            if (d.tooltip) {
+                d.tooltip.hide();
+            }
+        })
         .attr("x", function (d) { return d.x + size + 5})
         .attr("y", function (d, i) {
             return height + 80 + (i * (size + 5)) + 9;
@@ -569,6 +611,16 @@ function createBoxLegend(legend) {
         .enter()
         .append("rect")
         .on("click", toggleVisibility)
+        .on("mouseover", function(d) {
+            if (d.tooltip) {
+                d.tooltip.show();
+            }
+        })
+        .on("mouseout", function(d) {
+            if (d.tooltip) {
+                d.tooltip.hide();
+            }
+        })
         .attr("x", function (d) { return d.x})
         .attr("y", function (d, i) {
             return height + 81 + (i * ((size+2) + 5));
@@ -585,6 +637,16 @@ function createBoxLegend(legend) {
         .enter()
         .append("text")
         .on("click", toggleVisibility)
+        .on("mouseover", function(d) {
+            if (d.tooltip) {
+                d.tooltip.show();
+            }
+        })
+        .on("mouseout", function(d) {
+            if (d.tooltip) {
+                d.tooltip.hide();
+            }
+        })
         .attr("x", function (d) { return d.x + size + 5})
         .attr("y", function (d, i) {
             return height + 80 + (i * (size + 7)) + 9;

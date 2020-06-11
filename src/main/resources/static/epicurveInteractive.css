@@ -88,6 +88,12 @@ div {
     font-size: 12px;
 }
 
+.d3-tip-text {
+    padding: 6px;
+    color: #222;
+    font-size: 12px;
+}
+
 /*
  * Footer
  */
