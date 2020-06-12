@@ -69,11 +69,11 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
                 return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
             })
             .y(function (d) {
-                return dphyScale(dataCallback(d));
+                return getLineY(dataCallback(d));
             })
             // Don't draw the line if it's in the preliminary region.
             .defined(function (d) {
-                return dphxScale(d.label) < dphxScale(prelimRegionStart);
+                return isPointDefined(dataCallback, d, prelimRegionStart);
             }))
         .attr("fill", "none")
         .attr("stroke", color)
@@ -90,11 +90,11 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
                 return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
             })
             .y(function (d) {
-                return dphyScale(dataCallback(d));
+                return getLineY(dataCallback(d));
             })
             // Don't draw the line if it's in the preliminary region.
             .defined(function (d) {
-                return dphxScale(d.label) < dphxScale(prelimRegionStart);
+                return isPointDefined(dataCallback, d, prelimRegionStart);
             }))
 
     var circleClass = clazz + '-circle';
@@ -109,16 +109,12 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
             return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
         })
         .attr('cy', function (d) {
-            return dphyScale(dataCallback(d));
+            return getLineY(dataCallback(d));
         })
         .attr("stroke", highlightColor)
         .attr("fill", color)
         .attr("opacity", function (d) {
-            if (dphxScale(d.label) < dphxScale(prelimRegionStart)) {
-                return "1";
-            }
-
-            return "0.5";
+            return getLineOpacity(dataCallback, d, prelimRegionStart);
         })
         .attr('r', 2)
         .style("visibility", function (d) {
@@ -135,17 +131,13 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
         .transition()
         .duration(100)
         .attr("opacity", function (d) {
-            if (dphxScale(d.label) < dphxScale(prelimRegionStart)) {
-                return "1";
-            }
-
-            return "0.5";
+            return getLineOpacity(dataCallback, d, prelimRegionStart);
         })
         .attr('cx', function (d) {
             return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
         })
         .attr('cy', function (d) {
-            return dphyScale(dataCallback(d));
+            return getLineY(dataCallback(d));
         })
 
     // Removed data
@@ -156,6 +148,53 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
     dphSvg.selectAll("line").moveToFront();
     dphSvg.selectAll('.' + circleClass).moveToFront();
     dphSvg.selectAll('.mouseoverclazz').moveToFront();
+}
+
+/**
+ * Used to determine if a data point should be shown on the graph. NaN's should not be shown, and neither should points
+ * after the given 'preliminary' region start date.
+ *
+ * @param dataCallback The callback to get the Y value
+ * @param dataPoint The data point object which contains all relevant information for the given point.
+ * @param prelimRegionStart The start of the preliminary region. Points after this should not be shown.
+ * @returns true if the point should be shown on the graph, false if the point should not be shown.
+ */
+function isPointDefined(dataCallback, dataPoint, prelimRegionStart) {
+    if (isNaN(dataCallback(dataPoint))) {
+        return false;
+    }
+
+    if (prelimRegionStart) {
+        return dphxScale(dataPoint.label) < dphxScale(prelimRegionStart);
+    }
+
+    return true;
+}
+
+/**
+ * Convenience function to check for NaN's.
+ */
+function getLineY(d) {
+    if (!isNaN(d)) {
+        return dphyScale(d);
+    }
+
+    return 0;
+}
+
+/**
+ * Convenience function to set opacity to 0 for NaN, and 0.5 for preliminary region.
+ */
+function getLineOpacity(dataCallback, dataPoint, prelimRegionStart) {
+    if (isNaN(dataCallback(dataPoint))) {
+        return "0";
+    }
+
+    if (prelimRegionStart && dphxScale(dataPoint.label) >= dphxScale(prelimRegionStart)) {
+        return "0.5";
+    }
+
+    return "1";
 }
 
 function drawMouseOverRects(data) {
@@ -323,12 +362,12 @@ function parseChartData(summaryData, caseData, deathData, caseDeltaData, deathDe
     let tempChartData = [];
 
     let reportedCasesData = []
-    summaryData.forEach(function(d) {
+    summaryData.forEach(function (d) {
         reportedCasesData[d.reportDate] = d.confirmedCasesVm;
     });
 
     let reportedDeathsData = []
-    summaryData.forEach(function(d) {
+    summaryData.forEach(function (d) {
         reportedDeathsData[d.reportDate] = d.deathsVm;
     });
 
@@ -361,8 +400,8 @@ function parseChartData(summaryData, caseData, deathData, caseDeltaData, deathDe
                     deathsDelta: +currentDeathDeltaData[d],
                     casesProjection: +currentCaseProjectionData[d],
                     movingAvg: +currentMovingAvgData[d],
-                    reportedCases: +reportedCasesData[d] || 0,
-                    reportedDeaths: +reportedDeathsData[d] || 0
+                    reportedCases: +reportedCasesData[d],
+                    reportedDeaths: +reportedDeathsData[d]
                 });
             });
     }
@@ -511,18 +550,18 @@ function createLineLegend(legend) {
         .enter()
         .append("line")
         .on("click", toggleVisibility)
-        .on("mouseover", function(d) {
+        .on("mouseover", function (d) {
             if (d.tooltip) {
                 d.tooltip.show();
             }
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function (d) {
             if (d.tooltip) {
                 d.tooltip.hide();
             }
         })
         .attr("class", "legend-lines")
-        .style("stroke", function(d) {
+        .style("stroke", function (d) {
             return d.color;
         })
         .style("shape-rendering", "crispEdges")
@@ -530,18 +569,18 @@ function createLineLegend(legend) {
         .attr("x1", function (d) {
             return d.x - 5;
         })
-        .attr("y1", function (d,i) {
+        .attr("y1", function (d, i) {
             return height + 85 + (i * (size + 5));
         })
         .attr("x2", function (d) {
             return d.x - 5 + size;
         })
-        .attr("y2", function (d,i) {
+        .attr("y2", function (d, i) {
             return height + 85 + (i * (size + 5));
         });
 
     let circleX = [];
-    legend.forEach(function (d,i) {
+    legend.forEach(function (d, i) {
         circleX.push({yOffset: i, x: d.x, color: d.color});
         circleX.push({yOffset: i, x: d.x + size, color: d.color});
     });
@@ -551,12 +590,12 @@ function createLineLegend(legend) {
         .enter()
         .append('circle')
         .on("click", toggleVisibility)
-        .on("mouseover", function(d) {
+        .on("mouseover", function (d) {
             if (d.tooltip) {
                 d.tooltip.show();
             }
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function (d) {
             if (d.tooltip) {
                 d.tooltip.hide();
             }
@@ -569,7 +608,7 @@ function createLineLegend(legend) {
             return height + 85 + (d.yOffset * (size + 5));
         })
         //.attr("stroke", highlightColor)
-        .style("fill", function(d) {
+        .style("fill", function (d) {
             return d.color;
         })
         .attr('r', 2);
@@ -579,17 +618,19 @@ function createLineLegend(legend) {
         .enter()
         .append("text")
         .on("click", toggleVisibility)
-        .on("mouseover", function(d) {
+        .on("mouseover", function (d) {
             if (d.tooltip) {
                 d.tooltip.show();
             }
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function (d) {
             if (d.tooltip) {
                 d.tooltip.hide();
             }
         })
-        .attr("x", function (d) { return d.x + size + 5})
+        .attr("x", function (d) {
+            return d.x + size + 5
+        })
         .attr("y", function (d, i) {
             return height + 80 + (i * (size + 5)) + 9;
         })
@@ -611,19 +652,21 @@ function createBoxLegend(legend) {
         .enter()
         .append("rect")
         .on("click", toggleVisibility)
-        .on("mouseover", function(d) {
+        .on("mouseover", function (d) {
             if (d.tooltip) {
                 d.tooltip.show();
             }
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function (d) {
             if (d.tooltip) {
                 d.tooltip.hide();
             }
         })
-        .attr("x", function (d) { return d.x})
+        .attr("x", function (d) {
+            return d.x
+        })
         .attr("y", function (d, i) {
-            return height + 81 + (i * ((size+2) + 5));
+            return height + 81 + (i * ((size + 2) + 5));
         })
         .attr("width", size)
         .attr("height", size)
@@ -637,17 +680,19 @@ function createBoxLegend(legend) {
         .enter()
         .append("text")
         .on("click", toggleVisibility)
-        .on("mouseover", function(d) {
+        .on("mouseover", function (d) {
             if (d.tooltip) {
                 d.tooltip.show();
             }
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function (d) {
             if (d.tooltip) {
                 d.tooltip.hide();
             }
         })
-        .attr("x", function (d) { return d.x + size + 5})
+        .attr("x", function (d) {
+            return d.x + size + 5
+        })
         .attr("y", function (d, i) {
             return height + 80 + (i * (size + 7)) + 9;
         })
