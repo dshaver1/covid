@@ -13,4 +13,6 @@ import java.util.List;
 public interface RawDataRepositoryV2 extends MongoRepository<RawDataV2, String> {
 
     List<RawData> findByReportDateBetweenOrderByIdAsc(LocalDate startDate, LocalDate endDate);
+
+    List<RawData> findByReportDateOrderByIdAsc(LocalDate reportDate);
 }

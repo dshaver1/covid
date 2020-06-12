@@ -15,4 +15,6 @@ public interface RawDataRepositoryV1 extends MongoRepository<RawDataV1, String> 
 
     List<RawData> findByReportDateBetweenOrderByIdAsc(LocalDate startDate, LocalDate endDate);
 
+    List<RawData> findByReportDateOrderByIdAsc(LocalDate reportDate);
+
 }

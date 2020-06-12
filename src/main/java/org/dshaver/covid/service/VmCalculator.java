@@ -12,6 +12,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class VmCalculator {
+    public static final LocalDate CUTOFF_DATE = LocalDate.of(2020, 4,15);
+
     public static Report populateVm(Report report, Report previousReport) {
         if (previousReport == null) {
             report.getGeorgiaEpicurve().getData().forEach(point -> {
@@ -50,8 +52,10 @@ public class VmCalculator {
 
                 if (previousValue.isPresent()) {
                     vm.put(currentCounty, currentDate, currentValue - previousValue.get());
-                } else {
+                } else if (currentDate.isAfter(CUTOFF_DATE)) {
                     vm.put(currentCounty, currentDate, currentValue);
+                } else {
+                    vm.put(currentCounty, currentDate, 0);
                 }
             }
         }
