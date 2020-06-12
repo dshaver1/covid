@@ -158,33 +158,35 @@ public class ReportController {
     }
 
     @PostMapping("/reports/insertManualData")
-    public void insertManualData(@RequestBody ManualReportRequest request) throws Exception {
+    public void insertManualData(@RequestBody List<ManualReportRequest> requests) throws Exception {
         LocalDate defaultStartDate = LocalDate.of(2020, 1, 1);
         LocalDate defaultEndDate = LocalDate.of(2030, 1, 1);
 
-        // Populate epicurve points with top-level reportDate
-        for (EpicurvePoint epicurvePoint : request.getGeorgiaEpicurve()) {
-            epicurvePoint.setLabelDate(LocalDate.parse(epicurvePoint.getTestDate(), DateTimeFormatter.ISO_DATE));
-            epicurvePoint.setLabel(epicurvePoint.getTestDate());
+        for (ManualReportRequest request : requests) {
+            // Populate epicurve points with top-level reportDate
+            for (EpicurvePoint epicurvePoint : request.getGeorgiaEpicurve()) {
+                epicurvePoint.setLabelDate(LocalDate.parse(epicurvePoint.getTestDate(), DateTimeFormatter.ISO_DATE));
+                epicurvePoint.setLabel(epicurvePoint.getTestDate());
+            }
+
+            // Convert to string
+            String epicurveString = objectMapper.writeValueAsString(request.getGeorgiaEpicurve());
+
+            // Create ManualRawData
+            ManualRawData manualRawData = new ManualRawData();
+            manualRawData.setId(request.getId());
+            manualRawData.setReportDate(request.getReportDate());
+            manualRawData.setCreateTime(LocalDateTime.now());
+            manualRawData.setPayload(Collections.singletonList(epicurveString));
+            manualRawData.setConfirmedCases(request.getConfirmedCases());
+            manualRawData.setTotalTests(request.getTotalTests());
+            manualRawData.setIcu(request.getIcu());
+            manualRawData.setHospitalizations(request.getHospitalizations());
+            manualRawData.setDeaths(request.getDeaths());
+
+            // Save the raw data
+            manualRawDataRepository.save(manualRawData);
         }
-
-        // Convert to string
-        String epicurveString = objectMapper.writeValueAsString(request.getGeorgiaEpicurve());
-
-        // Create ManualRawData
-        ManualRawData manualRawData = new ManualRawData();
-        manualRawData.setId(request.getId());
-        manualRawData.setReportDate(request.getReportDate());
-        manualRawData.setCreateTime(LocalDateTime.now());
-        manualRawData.setPayload(Collections.singletonList(epicurveString));
-        manualRawData.setConfirmedCases(request.getConfirmedCases());
-        manualRawData.setTotalTests(request.getTotalTests());
-        manualRawData.setIcu(request.getIcu());
-        manualRawData.setHospitalizations(request.getHospitalizations());
-        manualRawData.setDeaths(request.getDeaths());
-
-        // Save the raw data
-        manualRawDataRepository.save(manualRawData);
 
         // Reprocess all data into reports
         reportService.bulkProcess(defaultStartDate, defaultEndDate, true);
