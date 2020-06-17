@@ -1,4 +1,4 @@
-function updateBarChart(data, dataCallback, clazz, color, highlightColor) {
+function updateBarChart(data, xCallback, yCallback, clazz, color, highlightColor) {
     var selectedData = dphSvg.selectAll("." + clazz).data(data);
     var enterData = selectedData.enter();
 
@@ -6,21 +6,21 @@ function updateBarChart(data, dataCallback, clazz, color, highlightColor) {
         .style("shape-rendering", "crispEdges")
         .attr("class", clazz)
         .attr("x", function (d) {
-            return dphxScale(d.label);
+            return dphxScale(xCallback(d));
         })
         .attr("y", function (d) {
-            if (dataCallback(d) > 0) {
-                return dphyScale(dataCallback(d));
+            if (yCallback(d) > 0) {
+                return dphyScale(yCallback(d));
             } else {
                 return dphyScale(0);
             }
         })
         .attr("height", function (d) {
-            return Math.abs(dphyScale(dataCallback(d)) - dphyScale(0));
+            return Math.abs(dphyScale(yCallback(d)) - dphyScale(0));
         })
         .attr("width", dphxScale.bandwidth())
         .style("fill", function (d) {
-            if (dataCallback(d) > 0) {
+            if (yCallback(d) > 0) {
                 return color;
             }
 
@@ -29,17 +29,17 @@ function updateBarChart(data, dataCallback, clazz, color, highlightColor) {
 
     selectedData.transition().duration(100)
         .attr("y", function (d) {
-            if (dataCallback(d) > 0) {
-                return dphyScale(dataCallback(d));
+            if (yCallback(d) > 0) {
+                return dphyScale(yCallback(d));
             } else {
                 return dphyScale(0);
             }
         })
         .attr("height", function (d) {
-            return Math.abs(dphyScale(dataCallback(d)) - dphyScale(0));
+            return Math.abs(dphyScale(yCallback(d)) - dphyScale(0));
         })
         .style("fill", function (d) {
-            if (dataCallback(d) > 0) {
+            if (yCallback(d) > 0) {
                 return color;
             }
 
@@ -54,9 +54,9 @@ function updateBarChart(data, dataCallback, clazz, color, highlightColor) {
     dphSvg.selectAll('.mouseoverclazz').moveToFront();
 }
 
-function updateLineChart(data, dataCallback, clazz, color, highlightColor, prelimRegionStart) {
+function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
     var selectedData = dphSvg.selectAll("." + clazz).data([data], function (d) {
-        return d.label;
+        return xCallback(d);
     });
 
     // Initial Data
@@ -66,14 +66,18 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
         .attr("d", d3.line()
             //.curve(d3.curveCardinal)
             .x(function (d) {
-                return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
+                if (isBanded) {
+                    return dphxScale(xCallback(d)) + (dphxScale.bandwidth() / 2);
+                }
+
+                return dphxScale(xCallback(d));
             })
             .y(function (d) {
-                return getLineY(dataCallback(d));
+                return getLineY(yCallback(d));
             })
             // Don't draw the line if it's in the preliminary region.
             .defined(function (d) {
-                return isPointDefined(dataCallback, d, prelimRegionStart);
+                return isPointDefined(yCallback, d, prelimRegionStart);
             }))
         .attr("fill", "none")
         .attr("stroke", color)
@@ -87,14 +91,18 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
         .attr("d", d3.line()
             //.curve(d3.curveCardinal)
             .x(function (d) {
-                return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
+                if (isBanded) {
+                    return dphxScale(xCallback(d)) + (dphxScale.bandwidth() / 2);
+                }
+
+                return dphxScale(xCallback(d));
             })
             .y(function (d) {
-                return getLineY(dataCallback(d));
+                return getLineY(yCallback(d));
             })
             // Don't draw the line if it's in the preliminary region.
             .defined(function (d) {
-                return isPointDefined(dataCallback, d, prelimRegionStart);
+                return isPointDefined(yCallback, d, prelimRegionStart);
             }))
 
     var circleClass = clazz + '-circle';
@@ -106,15 +114,19 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
         .append('circle')
         .attr('class', circleClass + " " + clazz)
         .attr('cx', function (d) {
-            return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
+            if (isBanded) {
+                return dphxScale(xCallback(d)) + (dphxScale.bandwidth() / 2);
+            }
+
+            return dphxScale(xCallback(d));
         })
         .attr('cy', function (d) {
-            return getLineY(dataCallback(d));
+            return getLineY(yCallback(d));
         })
         .attr("stroke", highlightColor)
         .attr("fill", color)
         .attr("opacity", function (d) {
-            return getLineOpacity(dataCallback, d, prelimRegionStart);
+            return getLineOpacity(yCallback, d, prelimRegionStart);
         })
         .attr('r', 2)
         .style("visibility", function (d) {
@@ -131,13 +143,17 @@ function updateLineChart(data, dataCallback, clazz, color, highlightColor, preli
         .transition()
         .duration(100)
         .attr("opacity", function (d) {
-            return getLineOpacity(dataCallback, d, prelimRegionStart);
+            return getLineOpacity(yCallback, d, prelimRegionStart);
         })
         .attr('cx', function (d) {
-            return dphxScale(d.label) + (dphxScale.bandwidth() / 2);
+            if (isBanded) {
+                return dphxScale(xCallback(d)) + (dphxScale.bandwidth() / 2);
+            }
+
+            return dphxScale(xCallback(d));
         })
         .attr('cy', function (d) {
-            return getLineY(dataCallback(d));
+            return getLineY(yCallback(d));
         })
 
     // Removed data
@@ -197,14 +213,14 @@ function getLineOpacity(dataCallback, dataPoint, prelimRegionStart) {
     return "1";
 }
 
-function drawMouseOverRects(data) {
+function drawMouseOverRects(xCallback, data) {
     var selectedData = dphSvg.selectAll(".mouseoverclazz").data(data);
     var enterData = selectedData.enter();
 
     enterData.append("rect")
         .attr("class", "mouseoverclazz")
         .attr("x", function (d) {
-            return dphxScale(d.label);
+            return dphxScale(xCallback(d));
         })
         .attr("y", function (d) {
             return 0;
@@ -225,7 +241,7 @@ function drawMouseOverRects(data) {
     selectedData.exit().remove();
 }
 
-function draw14DayWindow(offsetDate, offset) {
+function draw14DayWindow(xCallback, offsetDate, offset) {
     let selectedData = dphSvg.selectAll(".prelim-region").data([offsetDate]);
     let enterData = selectedData.enter();
 
@@ -302,7 +318,7 @@ function draw14DayWindow(offsetDate, offset) {
             return dphxScale(d.date) + dphxScale.bandwidth();
         })
         .text(function (d) {
-            return d.label
+            return xCallback(d);
         })
         .attr("text-anchor", "top")
         .style("alignment-baseline", "top")
@@ -439,7 +455,7 @@ function createXAxisTickValues() {
     return xAxisTickValues;
 }
 
-function createAxis(parent, xAxis, yAxis, height) {
+function createAxis(parent, xAxis, yAxis, height, yLabel) {
     parent.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
@@ -454,12 +470,12 @@ function createAxis(parent, xAxis, yAxis, height) {
         .attr("class", "y axis")
         .call(yAxis)
         .append("text")
-        .attr("y", 100)
-        .attr("x", 100)
-        .attr("dy", ".71em")
+        .attr("y", 5)
+        .attr("x", 5)
+        //.attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Cases Per Day")
-    //.attr("transform", "translate(5,5)rotate(-90)");
+        .text(yLabel)
+        .attr("transform", "translate(5,5)rotate(-90)");
 }
 
 function getYScale(data) {

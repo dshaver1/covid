@@ -48,7 +48,7 @@ div {
 /*
  * Axes
  */
-.tick text {
+.tick text, g text {
     shape-rendering: crispEdges;
     fill: #859cb1;
 }

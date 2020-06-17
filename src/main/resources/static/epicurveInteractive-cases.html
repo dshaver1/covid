@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GA Deaths Epicurve</title>
+    <title>GA Cases Epicurve</title>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-2"></div>
             <div class="masthead clearfix col-md-8">
-                <h3 class="masthead-brand">Historical COVID-19 Deaths Epicurve for Georgia</h3>
+                <h3 class="masthead-brand">Historical COVID-19 Cases Epicurve for Georgia</h3>
             </div>
             <div class="col-md-2"></div>
         </div>
@@ -156,11 +156,11 @@
         dphxScale.domain(getLastElement(chartData).map(function (d) {
             return d.label;
         }));
-        dphyScale.domain([-10, getDeathsYScale(getLastElement(chartData))]);
+        dphyScale.domain([-100, getYScale(getLastElement(chartData))]);
         //drawAxisLines();
 
         // add DPH axis
-        createAxis(dphSvg, dphxAxis, dphyAxis, height, "Deaths Per Day");
+        createAxis(dphSvg, dphxAxis, dphyAxis, height, "Cases Per Day");
 
         let dateString = getLastElement(timeData);
 
@@ -178,50 +178,46 @@
             {
                 x: (width / 2) - 100,
                 clazz: "reportedcasesbar",
-                key: "Reported Deaths",
-                color: "#802929",
+                key: "Reported Cases",
+                color: "#325b8d",
                 tooltip: infoToolTip
             },
             {
                 x: (width / 2) - 100,
                 clazz: "caseline",
-                key: "Confirmed Deaths",
-                color: "#ff0000"
+                key: "Confirmed Cases",
+                color: "#35a5ff"
+            },
+            {
+                x: (width / 2) - 100,
+                clazz: "avgline",
+                key: "7-day Moving Average",
+                color: "#ff7f0e"
             }]);
 
         createBoxLegend([
             {
                 x: (width / 2) + 40,
                 clazz: "casedeltabar",
-                key: "Death Deltas (Additions)",
-                color: "#ff0000"
+                key: "Case Deltas (Additions)",
+                color: "#35a5ff"
             },
             {
                 x: (width / 2) + 40,
                 clazz: "casedeltabar",
-                key: "Death Deltas (Subtractions)",
+                key: "Case Deltas (Subtractions)",
                 color: "#000",
                 textColor: "#777"
             }])
 
     });
 
-    function getDeathsYScale(data) {
-        if (deltaEnabled) {
-            return 30;
-        }
-
-        return 30 + d3.max(data, function (d) {
-            return d.deaths;
-        })
-    }
-
     function createInfoTooltip() {
         let infoToolTip = d3.tip().attr('class', 'd3-tip').direction('s').offset([5, 5])
             .html(function (d) {
-                var content = "<div style='margin-left: 2.5px;width:250px' class='d3-tip-text'>The difference between 'Reported Deaths' and 'Confirmed Deaths' " +
-                    "is that Confirmed Deaths are allocated to different days based on symptom onset date and test report date," +
-                    " whereas Reported Deaths are merely the top-line total cases that have been reported on that date. <br/>Note that Reported Deaths" +
+                var content = "<div style='margin-left: 2.5px;width:250px' class='d3-tip-text'>The difference between 'Reported Cases' and 'Confirmed Cases' " +
+                    "is that Confirmed Cases are allocated to different days based on symptom onset date and test report date," +
+                    " whereas Reported Cases are merely the top-line total cases that have been reported on that date. <br/>Note that Reported Cases" +
                     " does not change over time because it merely represents the difference between that day and the previous day.</div><br>";
                 return content;
             });
@@ -234,10 +230,10 @@
         let offsetDate = applyDateOffset(dateString, 13);
         //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
 
-        updateLineChart(chartData[dateString], getLabel, getReportedDeaths, "reportedcasesbar", "#632626", "#632626", "no", true);
-        updateBarChart(chartData[dateString], getLabel, getDeathDeltas, "casedeltabar", "#ff0000", "#000");
-        updateLineChart(chartData[dateString], getLabel, getDeaths, "caseline", "#ff0000", "#ff0000", offsetDate, true);
-        //updateLineChart(chartData[dateString], getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate);
+        updateLineChart(chartData[dateString], getLabel, getReportedCases, "reportedcasesbar", "#2b5280", "#2b5280", true);
+        updateBarChart(chartData[dateString], getLabel, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
+        updateLineChart(chartData[dateString], getLabel, getCases, "caseline", "#35a5ff", "#67b0ff", offsetDate, true);
+        updateLineChart(chartData[dateString], getLabel, getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate, true);
         draw14DayWindow(getLabel, offsetDate, 13);
         drawMouseOverRects(getLabel, chartData[dateString]);
     }
@@ -272,10 +268,6 @@
         }
 
         return data.deaths;
-    }
-    
-    function getDeathDeltas(data) {
-        return data.deathsDelta;
     }
 
     function getProjections(data) {

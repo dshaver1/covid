@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GA Deaths Epicurve</title>
+    <title>GA Cases And Deaths Correlation</title>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-2"></div>
             <div class="masthead clearfix col-md-8">
-                <h3 class="masthead-brand">Historical COVID-19 Deaths Epicurve for Georgia</h3>
+                <h3 class="masthead-brand">Correlation Between COVID-19 Cases And Deaths in Georgia</h3>
             </div>
             <div class="col-md-2"></div>
         </div>
@@ -94,7 +94,7 @@
         height = 600 - margin.top - margin.bottom
 
     // set the ranges
-    var dphxScale = d3.scaleBand().rangeRound([0, width]);
+    var dphxScale = d3.scaleLinear().range([0, width]);
 
     var dphyScale = d3.scaleLinear().range([height, 0]);
 
@@ -153,14 +153,12 @@
 
         // Axis should be set to the latest data.
         // scale the range of the data
-        dphxScale.domain(getLastElement(chartData).map(function (d) {
-            return d.label;
-        }));
+        dphxScale.domain([0, 1500]);
         dphyScale.domain([-10, getDeathsYScale(getLastElement(chartData))]);
         //drawAxisLines();
 
         // add DPH axis
-        createAxis(dphSvg, dphxAxis, dphyAxis, height, "Deaths Per Day");
+        createCorrelationAxis(dphSvg, dphxAxis, dphyAxis, height);
 
         let dateString = getLastElement(timeData);
 
@@ -178,33 +176,49 @@
             {
                 x: (width / 2) - 100,
                 clazz: "reportedcasesbar",
-                key: "Reported Deaths",
-                color: "#802929",
+                key: "Reported Cases vs. Reported Deaths",
+                color: "#325b8d",
                 tooltip: infoToolTip
             },
             {
                 x: (width / 2) - 100,
                 clazz: "caseline",
-                key: "Confirmed Deaths",
-                color: "#ff0000"
+                key: "Confirmed Cases vs. Confirmed Deaths",
+                color: "#35a5ff"
             }]);
 
-        createBoxLegend([
-            {
-                x: (width / 2) + 40,
-                clazz: "casedeltabar",
-                key: "Death Deltas (Additions)",
-                color: "#ff0000"
-            },
-            {
-                x: (width / 2) + 40,
-                clazz: "casedeltabar",
-                key: "Death Deltas (Subtractions)",
-                color: "#000",
-                textColor: "#777"
-            }])
-
     });
+
+    function createCorrelationAxis(parent, xAxis, yAxis, height) {
+        parent.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-90)");
+
+        parent.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "end")
+            .attr("x", width)
+            .attr("y", height - 6)
+            .text("Cases");
+
+        parent.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("y", 5)
+            .attr("x", 5)
+            //.attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Deaths")
+            .attr("transform", "translate(5,5)rotate(-90)");
+        //.attr("transform", "translate(5,5)rotate(-90)");
+    }
 
     function getDeathsYScale(data) {
         if (deltaEnabled) {
@@ -234,14 +248,14 @@
         let offsetDate = applyDateOffset(dateString, 13);
         //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
 
-        updateLineChart(chartData[dateString], getLabel, getReportedDeaths, "reportedcasesbar", "#632626", "#632626", "no", true);
-        updateBarChart(chartData[dateString], getLabel, getDeathDeltas, "casedeltabar", "#ff0000", "#000");
-        updateLineChart(chartData[dateString], getLabel, getDeaths, "caseline", "#ff0000", "#ff0000", offsetDate, true);
+        updateLineChart(chartData[dateString], getReportedCases, getReportedDeaths, "reportedcasesbar", "#2b5280", "#2b5280", "no");
+        //updateBarChart(chartData[dateString], getReportedCases, getDeathDeltas, "casedeltabar", "#ff0000", "#000");
+        updateLineChart(chartData[dateString], getCases, getDeaths, "caseline", "#35a5ff", "#35a5ff", offsetDate);
         //updateLineChart(chartData[dateString], getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate);
-        draw14DayWindow(getLabel, offsetDate, 13);
-        drawMouseOverRects(getLabel, chartData[dateString]);
+        //draw14DayWindow(getReportedCases, offsetDate, 13);
+        //drawMouseOverRects(getReportedCases, chartData[dateString]);
     }
-
+    
     function getLabel(data) {
         return data.label;
     }
