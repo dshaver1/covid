@@ -155,6 +155,16 @@ function updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
         .type(d3.symbolDiamond)
         .size(20);
 
+    let existing = dphSvg.selectAll('.' + clazz);
+    let isVisible = true;
+    if (existing) {
+        try {
+            isVisible = "visible" === existing.style("visibility");
+        } catch(err) {
+            isVisible = true;
+        }
+    }
+
     selectedData.enter().append("path")
         .attr("class", clazz)
         .attr("d", triangle)
@@ -163,7 +173,14 @@ function updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
         .attr("opacity", function (d) {
             return getLineOpacity(yCallback, d, null);
         })
-        .attr("transform", function(d) { return "translate(" + getLineX(xCallback(d), true) + "," + getLineY(yCallback(d)) + ")"; });
+        .attr("transform", function(d) { return "translate(" + getLineX(xCallback(d), true) + "," + getLineY(yCallback(d)) + ")"; })
+        .style("visibility", function (d) {
+            if (isVisible) {
+                return "visible";
+            }
+
+            return "hidden";
+        });
 
     selectedData.exit().transition().duration(100).style("opacity", 0).remove();
 }
