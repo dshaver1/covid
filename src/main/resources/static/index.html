@@ -1,20 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>COVID-19 Stats</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GA Epicurve Tools</title>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    
+    <link href="epicurveInteractive.css" rel="stylesheet">
+
 </head>
 <body>
-<p><a href="epicurveInteractive-cases.html">GA Interactive Epicurve Tool</a></p>
-<p><a href="latestCasesPerDay.html">Deprecated Epicurve Tool</a></p>
-<p>
-    Data dumps (CSV)<br/>
-<ul>
-    <li><a href="/reports/v2/cases.csv">Cases Per Day</a></li>
-    <li><a href="/reports/v2/deaths.csv">Deaths Per Day</a></li>
-    <li><a href="/reports/v2/caseDeltas.csv">Case Deltas Per Day</a></li>
-    <li><a href="/reports/v2/movingAvgs.csv">Moving Averages</a></li>
-</ul>
-</p>
+<script src="d3-simple-slider.min.js"></script>
+<script src="d3-tip.js"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"/>
+
+<div class="site-wrapper">
+    <div class="container theme-showcase" role="main">
+        <div class="row">
+            <!--<div class="col-md-8">
+                <br/>
+                <p>If this page is empty, try refreshing or going here: <a href="http://208.97.140.204:8080/epicurveInteractive.html">http://208.97.140.204:8080/epicurveInteractive.html</a>.
+                </p>
+            </div>-->
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="masthead clearfix col-md-8">
+                <h3 class="masthead-brand">Historical COVID-19 Epicurve Tools for Georgia</h3>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        
+        <div class="row"><a href="/epicurveInteractive-cases.html">Historical COVID-19 Cases</a><span
+                style="font-family: Consolas, serif">: visualize how cases have shifted over time</span></div>
+        <div class="row"><a href="/epicurveInteractive-deaths.html">Historical COVID-19 Deaths</a><span
+                style="font-family: Consolas, serif">: visualize how deaths have shifted over time</span></div>
+        <div class="row"><a href="/epicurveInteractive-correlation.html">Correlation of cases vs. deaths</a><span
+                style="font-family: Consolas, serif">: visualize the correlation between cases and deaths</span></div>
+        
+        <div class="row"><p>&nbsp;</p></div>
+        <div class="row">
+            <p>
+                Data dumps (CSV)<br/>
+            <ul>
+                <li><a href="/reports/v2/cases.csv">Cases Per Day</a></li>
+                <li><a href="/reports/v2/deaths.csv">Deaths Per Day</a></li>
+                <li><a href="/reports/v2/caseDeltas.csv">Case Deltas Per Day</a></li>
+                <li><a href="/reports/v2/movingAvgs.csv">Case Moving Averages</a></li>
+                <li><a href="/reports/v2/summary.csv">Summary Data</a></li>
+            </ul>
+            </p>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

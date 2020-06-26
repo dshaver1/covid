@@ -38,6 +38,16 @@ public class RawDataRepositoryDelegator {
         return entity;
     }
 
+    public void deleteAll(Class<? extends RawData> rawDataClass) {
+        if (rawDataClass.equals(RawDataV1.class)) {
+            rawDataRepositoryV1.deleteAll();
+        } else if (rawDataClass.equals(RawDataV2.class)) {
+            rawDataRepositoryV2.deleteAll();
+        } else if (rawDataClass.equals(ManualRawData.class)) {
+            manualRawDataRepository.deleteAll();
+        }
+    }
+
     public List<RawData> findByReportDateBetweenOrderByIdAsc(LocalDate startDate, LocalDate endDate, Class<? extends RawData> rawDataClass) {
         if (rawDataClass.equals(RawDataV1.class)) {
             return rawDataRepositoryV1.findByReportDateBetweenOrderByIdAsc(startDate, endDate);

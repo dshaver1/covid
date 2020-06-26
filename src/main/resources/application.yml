@@ -8,13 +8,15 @@ spring.profiles: cloud
 
 covid.report.target.dir: /mnt/data/reports/
 covid.report.target.v2.dir: /mnt/data/reports/v2/
+covid.raw.dir: /mnt/data/raw
 server.port: 8080
 logging.file.path: /mnt/data/covid/logs/
 
 ---
 spring.profiles: local
 
-covid.report.target.dir: H:\dev\covid\src\main\resources\static\reports\
-covid.report.target.v2.dir: H:\dev\covid\src\main\resources\static\reports\v2\
+covid.report.target.dir: H:\dev\workingdir\covid\reports
+covid.report.target.v2.dir: H:\dev\workingdir\covid\reports
+covid.raw.dir: H:\dev\workingdir\covid\raw
 server.port: 8080
 logging.file.path: H:\dev\covid\logs\

@@ -15,12 +15,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static org.dshaver.covid.service.RawDataParsingTools.getVarFromRegex;
+import static org.dshaver.covid.service.RawDataParsingTools.find;
 
 @Component
 public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extractor<String, Map<String, Epicurve>> {
     private static final Logger logger = LoggerFactory.getLogger(EpicurveExtractorImpl2.class);
-    private static final Pattern epicurvePattern = Pattern.compile(".*JSON.parse\\('(\\[\\{\"measure\".+?]'\\)}).*");
+    private static final Pattern epicurvePattern = Pattern.compile("(\\[\\{\"measure\".+?}])");
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
 
     @Inject
@@ -31,7 +31,7 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
     @Override
     public Optional<Map<String, Epicurve>> extract(List<String> raw, String id) {
         logger.info("Extracting data from " + id);
-        Optional<String> epicurveString = getVarFromRegex(raw, getPattern());
+        Optional<String> epicurveString = find(raw, getPattern());
         List<EpicurvePointImpl2> epicurvePoints = null;
         Optional<Map<String, Epicurve>> epicurve = Optional.empty();
         Map<LocalDate, Integer> caseTotals = new HashMap<>();

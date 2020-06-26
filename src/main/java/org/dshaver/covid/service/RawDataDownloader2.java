@@ -1,10 +1,12 @@
 package org.dshaver.covid.service;
 
+import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,32 +28,60 @@ import java.util.regex.Pattern;
 public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
     private static final Logger logger = LoggerFactory.getLogger(RawDataDownloader2.class);
     private final Pattern timePattern = Pattern.compile(".*JSON.parse\\('\\{\"currdate\":\"(\\d{1,2}/\\d{1,2}/\\d{4},\\s\\d{1,2}:\\d{1,2}:\\d{1,2}\\s[AP]M)\"}.*");
+    private final Pattern allJsonPattern = Pattern.compile("JSON\\.parse\\('(.*?)'\\)");
     private final DateTimeFormatter timeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().parseLenient().appendPattern("M/dd/uuuu, hh:mm:ss a").toFormatter();
+    private final RawDataWriter rawDataWriter;
 
+    @Inject
+    public RawDataDownloader2(RawDataWriter rawDataWriter) {
+        this.rawDataWriter = rawDataWriter;
+    }
 
     public RawDataV2 download(String urlString) {
         logger.info("Downloading report from " + urlString);
+        try {
+            URL url = new URL(urlString);
+            try (InputStream inputStream = url.openStream()) {
+                RawData rawData = filter(inputStream);
+
+                rawDataWriter.write(rawData);
+                return filter(inputStream);
+            } catch (IOException e) {
+                logger.error("Error opening stream!");
+            }
+        } catch (MalformedURLException me) {
+            throw new RuntimeException(me);
+        }
+
+        return null;
+    }
+
+    public RawDataV2 filter(InputStream inputStream) {
+        logger.info("Filtering supplied inputStream...");
         RawDataV2 rawData = new RawDataV2();
         rawData.setCreateTime(LocalDateTime.now());
 
         List<String> downloadedStrings = new ArrayList<>();
-        URL url;
-        InputStream is = null;
+        List<String> filteredStrings = new ArrayList<>();
         BufferedReader br;
         String line;
+        LocalDateTime dateObj = null;
 
         try {
-            url = new URL(urlString);
-            is = url.openStream();  // throws an IOException
-            br = new BufferedReader(new InputStreamReader(is));
+            br = new BufferedReader(new InputStreamReader(inputStream));
             while ((line = br.readLine()) != null) {
                 downloadedStrings.add(line);
                 Matcher timeMatcher = timePattern.matcher(line);
                 if (timeMatcher.matches()) {
                     String dateTimeString = timeMatcher.group(1);
-                    LocalDateTime dateObj = LocalDateTime.from(timeFormatter.parse(dateTimeString));
+                    dateObj = LocalDateTime.from(timeFormatter.parse(dateTimeString));
                     rawData.setId(dateObj.format(DateTimeFormatter.ISO_DATE_TIME));
                     rawData.setReportDate(dateObj.toLocalDate());
+                }
+
+                Matcher jsonMatcher = allJsonPattern.matcher(line);
+                while (jsonMatcher.find()) {
+                    filteredStrings.add(jsonMatcher.group(1));
                 }
             }
 
@@ -59,15 +89,13 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
             mue.printStackTrace();
         } catch (IOException ioe) {
             ioe.printStackTrace();
-        } finally {
-            try {
-                if (is != null) is.close();
-            } catch (IOException ioe) {
-                // nothing to see here
-            }
         }
 
-        rawData.setPayload(downloadedStrings);
+        if (dateObj == null) {
+            throw new IllegalStateException("Could not find date in raw DPH data!");
+        }
+
+        rawData.setPayload(filteredStrings);
         return rawData;
     }
 }

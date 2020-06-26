@@ -9,10 +9,10 @@ public class RawDataParsingTools {
     /**
      * Get the specified pattern (that is assumed to have exactly 1 regex group) from the provided rawData.
      */
-    public static Optional<String> getVarFromRegex(List<String> rawData, Pattern pattern) {
+    public static Optional<String> find(List<String> rawData, Pattern pattern) {
         for (String s : rawData) {
             Matcher matcher = pattern.matcher(s);
-            if (matcher.matches()) {
+            if (matcher.find()) {
                 return Optional.of(matcher.group(1));
             }
         }

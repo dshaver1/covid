@@ -15,10 +15,7 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +26,7 @@ public class ReportService {
     private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
     private static final int TARGET_HOUR = 19;
 
+    private final RawDataFileRepository rawDataFileRepository;
     private final RawDataRepositoryDelegator rawDataRepository;
     private final RawDataDownloaderDelegator rawDataDownloader;
     private final ReportFactory reportFactory;
@@ -38,13 +36,15 @@ public class ReportService {
     private final String reportTgtDir;
 
     @Inject
-    public ReportService(ReportFactory reportFactory,
+    public ReportService(RawDataFileRepository rawDataFileRepository,
+                         ReportFactory reportFactory,
                          RawDataRepositoryDelegator rawDataRepository,
                          RawDataDownloaderDelegator rawDataDownloader,
                          ReportRepository reportRepository,
                          HistogramReportRepository histogramReportRepository,
                          CsvService csvService,
                          @Value("${covid.report.target.v2.dir}") String reportTgtDir) {
+        this.rawDataFileRepository = rawDataFileRepository;
         this.reportFactory = reportFactory;
         this.rawDataRepository = rawDataRepository;
         this.rawDataDownloader = rawDataDownloader;
@@ -119,13 +119,16 @@ public class ReportService {
 
     public void bulkProcess(LocalDate startDate, LocalDate endDate, boolean deleteFirst) {
         List<RawData> allData = rawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate, RawDataV1.class);
-        allData.addAll(rawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate, RawDataV2.class));
         allData.addAll(rawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate, ManualRawData.class));
+        allData.addAll(rawDataFileRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate));
 
         if (deleteFirst) {
             logger.info("Deleting all reports!");
             reportRepository.deleteAll();
+            rawDataRepository.deleteAll(RawDataV2.class);
         }
+
+        allData.stream().filter(data -> data.getClass().equals(RawDataV2.class)).forEach(rawDataRepository::save);
 
         List<Report> candidatePreviousReports = reportRepository.findByReportDateOrderByIdAsc(allData.get(0).getReportDate().minusDays(1));
 

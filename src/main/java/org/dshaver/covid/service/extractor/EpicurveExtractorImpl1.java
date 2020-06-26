@@ -1,9 +1,9 @@
 package org.dshaver.covid.service.extractor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.dshaver.covid.domain.epicurve.*;
-import org.dshaver.covid.domain.epicurve.EpicurveDto;
+import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1;
+import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -15,12 +15,12 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static org.dshaver.covid.service.RawDataParsingTools.getVarFromRegex;
+import static org.dshaver.covid.service.RawDataParsingTools.find;
 
 @Component
 public class EpicurveExtractorImpl1 extends AbstractExtractor implements Extractor<String, Map<String, Epicurve>> {
     private static final Logger logger = LoggerFactory.getLogger(EpicurveExtractorImpl1.class);
-    private static final Pattern epicurvePattern = Pattern.compile(".*JSON.parse\\('(\\{\"SASJSONExport\":\"\\d\\.\\d.+?\",\"SASTableData\\+EPICURVE\".+?}]}).*");
+    private static final Pattern epicurvePattern = Pattern.compile("(\\{\"SASJSONExport\":\"\\d\\.\\d.+?\",\"SASTableData\\+EPICURVE\".+?}]})");
     private static final DateTimeFormatter SOURCE_LABEL_FORMAT_V2 = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("ddMMMyyyy").toFormatter();
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
 
@@ -31,7 +31,7 @@ public class EpicurveExtractorImpl1 extends AbstractExtractor implements Extract
 
     @Override
     public Optional<Map<String, Epicurve>> extract(List<String> raw, String id) {
-        Optional<String> epicurveString = getVarFromRegex(raw, getPattern());
+        Optional<String> epicurveString = find(raw, getPattern());
         Optional<Map<String, Epicurve>> maybeEpicurve = Optional.empty();
         EpicurveDtoImpl1 epicurve = null;
         try {

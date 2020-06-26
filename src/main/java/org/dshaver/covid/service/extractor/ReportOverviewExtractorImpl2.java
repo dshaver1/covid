@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import static org.dshaver.covid.service.RawDataParsingTools.getVarFromRegex;
+import static org.dshaver.covid.service.RawDataParsingTools.find;
 
 @Component
 public class ReportOverviewExtractorImpl2 extends AbstractExtractor implements Extractor<String, ReportOverview> {
     private static final Logger logger = LoggerFactory.getLogger(ReportOverviewExtractorImpl2.class);
-    private static final Pattern overviewPattern = Pattern.compile(".*JSON.parse\\('(\\[\\{\"total_tests\".+?]'\\)}).*");
+    private static final Pattern overviewPattern = Pattern.compile("(\\[\\{\"total_tests\".+?}])");
 
     @Inject
     protected ReportOverviewExtractorImpl2(ObjectMapper objectMapper) {
@@ -28,7 +28,7 @@ public class ReportOverviewExtractorImpl2 extends AbstractExtractor implements E
     @Override
     public Optional<ReportOverview> extract(List<String> raw, String id) {
         Optional<ReportOverview> reportOverview = Optional.empty();
-        Optional<String> overviewString = getVarFromRegex(raw, getPattern());
+        Optional<String> overviewString = find(raw, getPattern());
         List<ReportOverviewImpl2> reportOverviewContainer = null;
 
         try {
