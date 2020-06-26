@@ -177,13 +177,6 @@
         createLineLegend([
             {
                 x: (width / 2) - 100,
-                clazz: "reportedcasesbar",
-                key: "Reported Deaths",
-                color: "#802929",
-                tooltip: infoToolTip
-            },
-            {
-                x: (width / 2) - 100,
                 clazz: "caseline",
                 key: "Confirmed Deaths",
                 color: "#ff0000"
@@ -202,7 +195,16 @@
                 key: "Death Deltas (Subtractions)",
                 color: "#000",
                 textColor: "#777"
-            }])
+            }]);
+
+        createShapeLegend([
+            {
+                x: (width / 2) - 240,
+                clazz: "reportedcasesbar",
+                key: "Reported Deaths",
+                color: "#802929",
+                tooltip: infoToolTip
+            }]);
 
     });
 
@@ -234,7 +236,8 @@
         let offsetDate = applyDateOffset(dateString, 13);
         //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
 
-        updateLineChart(chartData[dateString], getLabel, getReportedDeaths, "reportedcasesbar", "#632626", "#632626", "no", true);
+        updateFloatingPoints(chartData[dateString], getLabel, getReportedDeaths, "reportedcasesbar", "#632626");
+        //updateLineChart(chartData[dateString], getLabel, getReportedDeaths, "reportedcasesbar", "#632626", "#632626", "no", true);
         updateBarChart(chartData[dateString], getLabel, getDeathDeltas, "casedeltabar", "#ff0000", "#000");
         updateLineChart(chartData[dateString], getLabel, getDeaths, "caseline", "#ff0000", "#ff0000", offsetDate, true);
         //updateLineChart(chartData[dateString], getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate);

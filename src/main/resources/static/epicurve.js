@@ -64,13 +64,8 @@ function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColo
         .append("path")
         .attr("class", clazz)
         .attr("d", d3.line()
-            //.curve(d3.curveCardinal)
             .x(function (d) {
-                if (isBanded) {
-                    return dphxScale(xCallback(d)) + (dphxScale.bandwidth() / 2);
-                }
-
-                return dphxScale(xCallback(d));
+                return getLineX(xCallback(d), isBanded);
             })
             .y(function (d) {
                 return getLineY(yCallback(d));
@@ -89,13 +84,8 @@ function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColo
         .transition()
         .duration(100)
         .attr("d", d3.line()
-            //.curve(d3.curveCardinal)
             .x(function (d) {
-                if (isBanded) {
-                    return dphxScale(xCallback(d)) + (dphxScale.bandwidth() / 2);
-                }
-
-                return dphxScale(xCallback(d));
+                return getLineX(xCallback(d), isBanded);
             })
             .y(function (d) {
                 return getLineY(yCallback(d));
@@ -114,11 +104,7 @@ function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColo
         .append('circle')
         .attr('class', circleClass + " " + clazz)
         .attr('cx', function (d) {
-            if (isBanded) {
-                return dphxScale(xCallback(d)) + (dphxScale.bandwidth() / 2);
-            }
-
-            return dphxScale(xCallback(d));
+            return getLineX(xCallback(d), isBanded);
         })
         .attr('cy', function (d) {
             return getLineY(yCallback(d));
@@ -146,11 +132,7 @@ function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColo
             return getLineOpacity(yCallback, d, prelimRegionStart);
         })
         .attr('cx', function (d) {
-            if (isBanded) {
-                return dphxScale(xCallback(d)) + (dphxScale.bandwidth() / 2);
-            }
-
-            return dphxScale(xCallback(d));
+            return getLineX(xCallback(d), isBanded);
         })
         .attr('cy', function (d) {
             return getLineY(yCallback(d));
@@ -164,6 +146,35 @@ function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColo
     dphSvg.selectAll("line").moveToFront();
     dphSvg.selectAll('.' + circleClass).moveToFront();
     dphSvg.selectAll('.mouseoverclazz').moveToFront();
+}
+
+function updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
+    let selectedData = dphSvg.selectAll("." + clazz).data(data);
+
+    let triangle = d3.symbol()
+        .type(d3.symbolDiamond)
+        .size(20);
+
+    selectedData.enter().append("path")
+        .attr("class", clazz)
+        .attr("d", triangle)
+        .attr("stroke", color)
+        .attr("fill", color)
+        .attr("opacity", function (d) {
+            return getLineOpacity(yCallback, d, null);
+        })
+        .attr("transform", function(d) { return "translate(" + getLineX(xCallback(d), true) + "," + getLineY(yCallback(d)) + ")"; });
+
+    selectedData.exit().transition().duration(100).style("opacity", 0).remove();
+}
+
+function getLineX(d, isBanded) {
+
+    if (isBanded) {
+        return dphxScale(d) + (dphxScale.bandwidth() / 2);
+    }
+
+    return dphxScale(d);
 }
 
 /**
@@ -698,7 +709,7 @@ function createBoxLegend(legend) {
             return d.x
         })
         .attr("y", function (d, i) {
-            return height + 81 + (i * ((size + 2) + 5));
+            return getLegendHeight(size, i);
         })
         .attr("width", size)
         .attr("height", size)
@@ -741,6 +752,90 @@ function createBoxLegend(legend) {
         .attr("text-anchor", "left")
         .style("font", "11px sans-serif")
         .style("alignment-baseline", "middle")
+}
+
+function createShapeLegend(legend) {
+    let size = 8;
+    let triangle = d3.symbol()
+        .type(d3.symbolDiamond)
+        .size(20);
+    /*
+        let selectedData = dphSvg.selectAll("." + clazz).data(data);
+
+    selectedData.enter().append("path")
+        .attr("class", clazz)
+        .attr("d", triangle)
+        .attr("stroke", color)
+        .attr("fill", color)
+        .attr("opacity", function (d) {
+            return getLineOpacity(yCallback, d, null);
+        })
+        .attr("transform", function(d) { return "translate(" + getLineX(xCallback(d), true) + "," + getLineY(yCallback(d)) + ")"; });
+     */
+    dphSvg.selectAll("myshapes")
+        .data(legend)
+        .enter()
+        .append("path")
+        //.attr("class", clazz)
+        .attr("d", triangle)
+        .attr("transform", function(d,i) { return "translate(" + (d.x + 5) + "," + (getLegendHeight(size, i) + 4) + ")"; })
+        .on("click", toggleVisibility)
+        .on("mouseover", function (d) {
+            if (d.tooltip) {
+                d.tooltip.show();
+            }
+        })
+        .on("mouseout", function (d) {
+            if (d.tooltip) {
+                d.tooltip.hide();
+            }
+        })
+        .style("fill", function (d) {
+            return d.color;
+        })
+        .style("stroke", function (d) {
+            return d.color;
+        });
+
+
+    dphSvg.selectAll("mylabels")
+        .data(legend)
+        .enter()
+        .append("text")
+        .on("click", toggleVisibility)
+        .on("mouseover", function (d) {
+            if (d.tooltip) {
+                d.tooltip.show();
+            }
+        })
+        .on("mouseout", function (d) {
+            if (d.tooltip) {
+                d.tooltip.hide();
+            }
+        })
+        .attr("x", function (d) {
+            return d.x + size + 5
+        })
+        .attr("y", function (d, i) {
+            return height + 80 + (i * (size + 7)) + 9;
+        })
+        .style("fill", function (d) {
+            if (d.textColor) {
+                return d.textColor;
+            }
+
+            return d.color;
+        })
+        .text(function (d) {
+            return d.key;
+        })
+        .attr("text-anchor", "left")
+        .style("font", "11px sans-serif")
+        .style("alignment-baseline", "middle")
+}
+
+function getLegendHeight(size, i) {
+    return height + 81 + (i * ((size + 2) + 5))
 }
 
 function toggleVisibility(d) {
