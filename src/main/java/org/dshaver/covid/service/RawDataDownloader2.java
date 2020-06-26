@@ -42,10 +42,9 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
         try {
             URL url = new URL(urlString);
             try (InputStream inputStream = url.openStream()) {
-                RawData rawData = filter(inputStream);
+                RawDataV2 rawData = filter(inputStream, true);
 
-                rawDataWriter.write(rawData);
-                return filter(inputStream);
+                return rawData;
             } catch (IOException e) {
                 logger.error("Error opening stream!");
             }
@@ -56,7 +55,7 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
         return null;
     }
 
-    public RawDataV2 filter(InputStream inputStream) {
+    public RawDataV2 filter(InputStream inputStream, boolean writeToDisk) {
         logger.info("Filtering supplied inputStream...");
         RawDataV2 rawData = new RawDataV2();
         rawData.setCreateTime(LocalDateTime.now());
@@ -93,6 +92,10 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
 
         if (dateObj == null) {
             throw new IllegalStateException("Could not find date in raw DPH data!");
+        }
+
+        if (writeToDisk) {
+            rawDataWriter.write(dateObj, downloadedStrings);
         }
 
         rawData.setPayload(filteredStrings);

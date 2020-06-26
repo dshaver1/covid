@@ -55,7 +55,7 @@ public class RawDataFileRepository {
                     return null;
                 })
                 .filter(Objects::nonNull)
-                .map(rawDataDownloader2::filter)
+                .map(file -> rawDataDownloader2.filter(file, false))
                 .sorted(Comparator.comparing(RawDataV2::getReportDate))
                 .collect(Collectors.toList());
     }

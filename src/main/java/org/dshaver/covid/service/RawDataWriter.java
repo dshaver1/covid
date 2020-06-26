@@ -52,7 +52,7 @@ public class RawDataWriter {
 
     public void write(String filename, List<String> lines) {
         try {
-            Files.write(Paths.get(rawDir, filename), lines, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(Paths.get(rawDir, filename), lines, StandardOpenOption.CREATE);
         } catch (IOException e) {
             throw new RuntimeException("Could not write raw data file " + filename, e);
         }
