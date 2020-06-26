@@ -448,7 +448,7 @@ function createXAxisTickValues() {
     let epicurve = getLastElement(chartData);
     let xAxisTickValues = [];
 
-    for (let i = 0; i < epicurve.length; i += 2) {
+    for (let i = 0; i < epicurve.length; i += 7) {
         xAxisTickValues.push(epicurve[i].label);
     }
 
@@ -488,17 +488,27 @@ function getYScale(data) {
     })
 }
 
-function createSlider() {
+function createSlider(data) {
+    let count = 0;
+
+    for (let value of Object.values(data)) {
+        if (value.length > 0) {
+            count++
+        }
+    }
+
+    count = (count-1) * -1;
+
     let sliderTime = d3
         .sliderBottom()
         //.min(-1 * (timeData.length - 1))
         //.max(0)
-        .domain([-58, 0])
-        .marks([-58, 0])
+        .domain([count, 0])
+        .marks([count, 0])
         .step(1)
         //.ticks(5)
         .width(350)
-        .tickValues([0, -7, -14, -21, -28, -35, -42, -49, -56]);
+        .tickValues([0, -7, -14, -21, -28, -35, -42, -49, -56, -63, -70]);
 
     var gTime = d3
         .select('div#slider-time')
