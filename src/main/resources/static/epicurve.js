@@ -494,8 +494,8 @@ function getYScale(data) {
         return 300;
     }
 
-    return 300 + d3.max(data, function (d) {
-        return d.cases;
+    return 50 + d3.max(data, function (d) {
+        return d.reportedCases;
     })
 }
 
