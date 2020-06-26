@@ -499,6 +499,12 @@ function createSlider(data) {
 
     count = (count-1) * -1;
 
+    let tickValueArray = [];
+
+    for (let current = 0; current > count; current = current - 7) {
+        tickValueArray.push(current);
+    }
+
     let sliderTime = d3
         .sliderBottom()
         //.min(-1 * (timeData.length - 1))
@@ -508,7 +514,7 @@ function createSlider(data) {
         .step(1)
         //.ticks(5)
         .width(350)
-        .tickValues([0, -7, -14, -21, -28, -35, -42, -49, -56, -63, -70]);
+        .tickValues(tickValueArray);
 
     var gTime = d3
         .select('div#slider-time')
