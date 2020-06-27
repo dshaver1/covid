@@ -41,7 +41,7 @@ public class CsvService {
 
         String[] header = new String[]{"id", "createTime", "reportDate", "totalTests", "totalTestVm",
                 "totalConfirmedCases", "totalDeaths", "confirmedCasesVm", "hospitalized", "hospitalizedVm", "deathsVm",
-                "icu", "icuVm"};
+                "icu", "icuVm", "casesVsDeathsCorrelation"};
 
         writer.write(String.join(",", header));
 

@@ -160,7 +160,7 @@ function updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
     if (existing) {
         try {
             isVisible = "visible" === existing.style("visibility");
-        } catch(err) {
+        } catch (err) {
             isVisible = true;
         }
     }
@@ -173,7 +173,9 @@ function updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
         .attr("opacity", function (d) {
             return getLineOpacity(yCallback, d, null);
         })
-        .attr("transform", function(d) { return "translate(" + getLineX(xCallback(d), true) + "," + getLineY(yCallback(d)) + ")"; })
+        .attr("transform", function (d) {
+            return "translate(" + getLineX(xCallback(d), true) + "," + getLineY(yCallback(d)) + ")";
+        })
         .style("visibility", function (d) {
             if (isVisible) {
                 return "visible";
@@ -525,7 +527,7 @@ function createSlider(data) {
         }
     }
 
-    count = (count-1) * -1;
+    count = (count - 1) * -1;
 
     let tickValueArray = [];
 
@@ -795,7 +797,9 @@ function createShapeLegend(legend) {
         .append("path")
         //.attr("class", clazz)
         .attr("d", triangle)
-        .attr("transform", function(d,i) { return "translate(" + (d.x + 5) + "," + (getLegendHeight(size, i) + 4) + ")"; })
+        .attr("transform", function (d, i) {
+            return "translate(" + (d.x + 5) + "," + (getLegendHeight(size, i) + 4) + ")";
+        })
         .on("click", toggleVisibility)
         .on("mouseover", function (d) {
             if (d.tooltip) {
@@ -865,6 +869,38 @@ function toggleVisibility(d) {
     }
 
     d3.selectAll("." + d.clazz).transition().duration(200).style("visibility", targetVis);
+}
+
+function calculateCorrelationCoefficient(xData, yData) {
+    if (xData.length !== yData.length) {
+        throw "In order to calculate standard deviation, x and y must have the same number of elements!";
+    }
+
+    let xMean = xData.reduce((a, b) => a + b) / xData.length;
+    let yMean = yData.reduce((a, b) => a + b) / yData.length;
+    let xStdev = Math.sqrt(xData.reduce(function (sq, n) {
+        return sq + Math.pow(n - xMean, 2);
+    }, 0) / (xData.length - 1));
+    let yStdev = Math.sqrt(yData.reduce(function (sq, n) {
+        return sq + Math.pow(n - yMean, 2);
+    }, 0) / (yData.length - 1));
+    let xStandardized = xData.map(function (d) {
+        return (d - xMean) / xStdev;
+    });
+    let yStandardized = yData.map(function (d) {
+        return (d - yMean) / yStdev;
+    });
+    let multipliedCoords = [];
+
+    for (let i = 0; i < xStandardized.length; i++) {
+        multipliedCoords.push(xStandardized[i] * yStandardized[i]);
+    }
+
+    let correlationCoefficient = multipliedCoords.reduce((a, b) => a + b) / (xData.length - 1);
+
+    console.log("Correlation Coefficient: " + correlationCoefficient);
+
+    return correlationCoefficient;
 }
 
 d3.selection.prototype.moveToFront = function () {

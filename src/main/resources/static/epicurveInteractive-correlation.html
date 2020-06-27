@@ -48,7 +48,12 @@
                 </div>
             </div>
             <div class="col-md-8">
-                <div id="slider-time"></div>
+                <div class="row">
+                    <div class="col-lg-8" id="slider-time"></div>
+                    <div class="col-md-2">Correlation Coefficient:
+                        <p id="correlation-coeff"></p>
+                    </div>
+                </div>
             </div>
             <div class="col-md-2">Selected Snapshot<p id="value-time"></p></div>
         </div>
@@ -171,7 +176,7 @@
         createTooltips();
 
         let infoToolTip = createInfoTooltip();
-        
+
         createLineLegend([
             {
                 x: (width / 2) - 100,
@@ -254,8 +259,18 @@
         //updateLineChart(chartData[dateString], getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate);
         //draw14DayWindow(getReportedCases, offsetDate, 13);
         //drawMouseOverRects(getReportedCases, chartData[dateString]);
+
+        let cases = chartData[dateString].map(function (d) {
+            return d.cases;
+        });
+        let deaths = chartData[dateString].map(function (d) {
+            return d.deaths;
+        });
+        let correlationCoeff = calculateCorrelationCoefficient(cases, deaths);
+
+        d3.select('p#correlation-coeff').text(correlationCoeff);
     }
-    
+
     function getLabel(data) {
         return data.label;
     }
@@ -287,7 +302,7 @@
 
         return data.deaths;
     }
-    
+
     function getDeathDeltas(data) {
         return data.deathsDelta;
     }
