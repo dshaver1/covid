@@ -61,7 +61,10 @@
         </div>
     </div>
     
-    <div id="graphContent"></div>
+    <div class="row">
+        <div><div id="graphContentLeft"></div></div>
+        <div><div id="graphContentRight"></div></div>
+    </div>
     
     <div class="footer">
         <div class="row">
@@ -90,36 +93,53 @@
         placement: 'bottom'
     });
 
-    let epicurve, timeData, chartData, summaryData, caseData, deathData, sliderTime, sliderDeathOffset, chart, tip;
+    let epicurveCorr, epicurveAvg, timeData, chartData, lastData, summaryData, caseData, deathData, sliderTime, sliderDeathOffset,
+        chart, tip;
     let prevSliderValue = 0;
     let prevDeathOffsetSliderValue = 0;
     let deltaEnabled = false;
+    let reportedEnabled = true;
     let tipWidth = 100;
 
     // set the dimensions of the canvas
     var margin = {top: 0, right: 20, bottom: 120, left: 60},
-        corrWidth = Math.max(window.innerWidth - margin.left - margin.right - tipWidth, 600),
+        corrWidth = Math.max(window.innerWidth - margin.left - margin.right - tipWidth, 600) / 2,
         corrHeight = 600 - margin.top - margin.bottom
 
     // set the ranges
     var corrxScale = d3.scaleLinear().range([0, corrWidth]);
+    var avgxScale = d3.scaleBand().rangeRound([0, corrWidth]);
 
     var corryScale = d3.scaleLinear().range([corrHeight, 0]);
+    var avgyScale = d3.scaleLinear().range([corrHeight, 0]);
+    var avgyScale2 = d3.scaleLinear().range([corrHeight, 0]);
 
     // define the axis
     var corrxAxis = d3.axisBottom(corrxScale);
+    var avgxAxis = d3.axisBottom(avgxScale);
 
     var corryAxis = d3.axisLeft(corryScale).ticks(10);
+    var avgyAxis = d3.axisLeft(avgyScale).ticks(10);
+    var avgyAxis2 = d3.axisLeft(avgyScale2).ticks(10);
 
-    var corrSvg = d3.select("#graphContent").append("svg")
+    var corrSvg = d3.select("#graphContentLeft").append("svg")
         .attr("id", "corrSvg")
         .attr("width", corrWidth + margin.left + margin.right)
         .attr("height", corrHeight + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
-    
-    epicurve = new Epicurve(corrSvg, corrWidth, corrHeight, corrxScale, corryScale, corrxAxis, corryAxis);
+
+    var avgSvg = d3.select("#graphContentRight").append("svg")
+        .attr("id", "avgSvg")
+        .attr("width", corrWidth + margin.left + margin.right)
+        .attr("height", corrHeight + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    epicurveCorr = new Epicurve(corrSvg, corrWidth, corrHeight, corrxScale, corryScale, corrxAxis, corryAxis);
+    epicurveAvg = new Epicurve(avgSvg, corrWidth, corrHeight, avgxScale, avgyScale, avgxAxis, avgyAxis, avgyScale2, avgyAxis2);
 
     Promise.all([
         d3.csv("reports/v2/summary.csv"),
@@ -129,12 +149,25 @@
         summaryData = files[0];
         caseData = files[1];
         deathData = files[2];
-        chartData = epicurve.parseCorrelationData(summaryData, caseData, deathData, 0);
+        chartData = epicurveCorr.parseCorrelationData(summaryData, caseData, deathData, 0);
         let latestSummary = summaryData[summaryData.length - 1];
         let latestDate = latestSummary.reportDate;
 
         console.log("Got files! files[0].length: " + summaryData.length + ", files[1].length: " + chartData.length);
         console.log("latestDate: " + latestDate)
+
+        // set correlation graph axis scales
+        corrxScale.domain([0, getCasesYScale(getLastElement(chartData))]);
+        corryScale.domain([0, getDeathsYScale(getLastElement(chartData))]);
+        epicurveCorr.createAxisLabels("Cases", "Deaths");
+
+        // set avg graph axis scales
+        avgxScale.domain(getLastElement(chartData).map(function (d) {
+            return d.label;
+        }));
+        avgyScale.domain([0, getDeathsYScale(getLastElement(chartData))]);
+        avgyScale2.domain([0, getCasesYScale(getLastElement(chartData))]);
+        epicurveAvg.createAxis(chartData, "Deaths", "Cases");
 
         d3.select('div#update-timestamp').text(latestSummary.id);
 
@@ -142,28 +175,28 @@
         timeData = summaryData.map(function (d) {
             return d.id;
         });
-        
+
         sliderDeathOffset =
             d3.sliderBottom()
-            //.min(-1 * (timeData.length - 1))
-            //.max(0)
-            .domain([-21, 0])
-            .marks([-21, -14, -7, 0])
-            .step(1)
-            //.ticks(5)
-            .width(350)
-            .tickValues([-21, -14, -7, 0]);
+                //.min(-1 * (timeData.length - 1))
+                //.max(0)
+                .domain([-21, 0])
+                .marks([-21, -14, -7, 0])
+                .step(1)
+                //.ticks(5)
+                .width(350)
+                .tickValues([-21, -14, -7, 0]);
 
-        let offsetG =  d3
+        let offsetG = d3
             .select('div#slider-death-offset')
             .append('svg')
             .attr('width', 400)
             .attr('height', 100)
             .append('g')
             .attr('transform', 'translate(30,30)');
-        
+
         offsetG.call(sliderDeathOffset);
-        
+
         sliderDeathOffset
             .on('onchange', val => {
                 let currentDateVal = Math.round(d3.select("div#slider-time svg g g g path").attr("aria-valuenow"));
@@ -179,12 +212,12 @@
                     prevDeathOffsetSliderValue = Math.round(val);
                 }
             })
-        
+
         sliderTime = createSlider(chartData)
             .on('onchange', val => {
                 let currentDeathOffset = Math.abs(Math.round(d3.select("div#slider-death-offset svg g g g path").attr("aria-valuenow")));
                 console.log("currentDeathOffset: " + currentDeathOffset);
-                
+
                 //console.log("previous slider:" + prevSliderValue + "Math.round(val):" + Math.round(val) + " current slider: " + val);
                 if (Math.abs(Math.round(val) - Math.round(prevSliderValue)) >= 1) {
                     //console.log("previous slider:" + prevSliderValue + " current slider: " + val);
@@ -200,81 +233,68 @@
 
         d3.select('p#value-time').text(getLastElement(timeData));
 
-        // Axis should be set to the latest data.
-        // scale the range of the data
-        corrxScale.domain([0, getCasesYScale(getLastElement(chartData))]);
-        corryScale.domain([0, getDeathsYScale(getLastElement(chartData))]);
         //drawAxisLines();
-
-        // add DPH axis
-        createCorrelationAxis(corrSvg, corrxAxis, corryAxis, corrHeight);
 
         let dateString = getLastElement(timeData);
 
         updateAllGraphs(dateString, 0);
 
-        epicurve.createTooltips();
+        epicurveCorr.createTooltips();
 
         let infoToolTip = createInfoTooltip();
+        
+        let reportedLegend = {
+            x: (corrWidth / 2) - 100,
+            clazz: ["reportedcasesbar", "corrLine-reported", "corrLine-reported-text"],
+            key: "Reported Cases vs. Reported Deaths",
+            color: "#325b8d",
+            tooltip: infoToolTip
+        }
+        
+        let confirmedLegend = {
+            x: (corrWidth / 2) - 100,
+            clazz: ["caseline", "corrLine-confirmed", "corrLine-confirmed-text"],
+            key: "Confirmed Cases vs. Confirmed Deaths",
+            color: "#35a5ff"
+        }
 
-        epicurve.createLineLegend([
+        epicurveCorr.createLineLegend([reportedLegend, confirmedLegend],
+            d => {
+                reportedEnabled = !reportedEnabled;
+                toggleVisibility(d);
+                if (d.key === reportedLegend.key) {
+                    toggleVisibility(confirmedLegend);
+                } else {
+                    toggleVisibility(reportedLegend);
+                }
+                updateAvgGraphs(lastData);
+            });
+
+        toggleVisibility({clazz: ["caseline", "corrLine-confirmed", "corrLine-confirmed-text"], key: ""});
+
+        epicurveAvg.createLineLegend([
             {
                 x: (corrWidth / 2) - 100,
-                clazz: "reportedcasesbar",
-                key: "Reported Cases vs. Reported Deaths",
-                color: "#325b8d",
+                clazz: ["caseAvgLine"],
+                key: "7-Day Case Average",
+                color: "#35a5ff",
                 tooltip: infoToolTip
             },
             {
                 x: (corrWidth / 2) - 100,
-                clazz: "caseline",
-                key: "Confirmed Cases vs. Confirmed Deaths",
-                color: "#35a5ff"
-            }]);
+                clazz: ["deathAvgLine"],
+                key: "7-Day Death Average",
+                color: "#ff0000"
+            }], toggleVisibility);
 
     });
 
-    function createCorrelationAxis(parent, xAxis, yAxis, corrHeight) {
-        parent.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + corrHeight + ")")
-            .call(xAxis)
-            .selectAll("text")
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", "-.55em")
-            .attr("transform", "rotate(-90)");
-
-        parent.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "end")
-            .attr("x", corrWidth)
-            .attr("y", corrHeight - 6)
-            .text("Cases");
-
-        parent.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("y", 5)
-            .attr("x", 5)
-            //.attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("Deaths")
-            .attr("transform", "translate(5,5)rotate(-90)");
-        //.attr("transform", "translate(5,5)rotate(-90)");
-    }
-
     function getDeathsYScale(data) {
-        return 5 + d3.max(data, function (d) {
-            return d.reportedDeathsAvg;
-        })
+        return 30 + d3.max(data, d => d.reportedDeathsAvg);
     }
-    
+
     function getCasesYScale(data) {
-        return 30 + d3.max(data, function (d) {
-            return d.reportedCasesAvg;
-        })
+        return 30 + d3.max(data, d => d.reportedCasesAvg);
     }
 
     function createInfoTooltip() {
@@ -290,20 +310,32 @@
 
         return infoToolTip;
     }
-
+    
     function updateAllGraphs(dateString, deathOffset) {
-        chartData = epicurve.parseCorrelationData(summaryData, caseData, deathData, deathOffset);
-
-        let reportedCorrelationCoeff = epicurve.calculateCorrelationCoefficient(chartData[dateString].map(d => d.reportedCasesAvg), chartData[dateString].map(d => d.reportedDeathsAvg));
-        let confirmedCorrelationCoeff = epicurve.calculateCorrelationCoefficient(chartData[dateString].map(d => d.casesAvg), chartData[dateString].map(d => d.deathsAvg));
+        chartData = epicurveAvg.parseCorrelationData(summaryData, caseData, deathData, deathOffset);
+        lastData = chartData[dateString];
+        let offsetDate = epicurveCorr.applyDateOffset(dateString, 13);
         
-        let offsetDate = epicurve.applyDateOffset(dateString, 13);
+        updateCorrelationGraph(chartData[dateString], offsetDate);
+        updateAvgGraphs(chartData[dateString], offsetDate);
+    }
 
-        epicurve.updateLineChart(chartData[dateString], getReportedCasesAvg, getReportedDeathsAvg, "reportedcasesbar", "#2b5280", "#2b5280", "no");
-        epicurve.updateLineChart(chartData[dateString], getCasesAvg, getDeathsAvg, "caseline", "#35a5ff", "#35a5ff", offsetDate);
+    function updateCorrelationGraph(data, offsetDate) {
+        console.log("Updating correlation graph");
+        let reportedCorrelationCoeff = epicurveCorr.calculateCorrelationCoefficient(data.map(d => d.reportedCasesAvg), data.map(d => d.reportedDeathsAvg));
+        let confirmedCorrelationCoeff = epicurveCorr.calculateCorrelationCoefficient(data.map(d => d.casesAvg), data.map(d => d.deathsAvg));
+        
+        epicurveCorr.updateLineChart(data, getReportedCasesAvg, getReportedDeathsAvg, "reportedcasesbar", "#2b5280", "#2b5280", "no");
+        epicurveCorr.updateLineChart(data, getCasesAvg, getDeathsAvg, "caseline", "#35a5ff", "#35a5ff", offsetDate);
 
-        epicurve.updateCorrelationLine(reportedCorrelationCoeff, "corrLine-reported", "#2b5280");
-        epicurve.updateCorrelationLine(confirmedCorrelationCoeff, "corrLine-confirmed", "#35a5ff");
+        epicurveCorr.updateCorrelationLine(reportedCorrelationCoeff, "corrLine-reported", "#2b5280");
+        epicurveCorr.updateCorrelationLine(confirmedCorrelationCoeff, "corrLine-confirmed", "#35a5ff");
+    }
+    
+    function updateAvgGraphs(data) {
+        console.log("Updating avg graph");
+        epicurveAvg.updateLineChartY2(data, getLabel, getToggleableCases, "caseAvgLine", "#35a5ff", "#35a5ff", null, true);
+        epicurveAvg.updateLineChartY1(data, getLabel, getToggleableDeaths, "deathAvgLine", "#ff0000", "#ff0000", null, true);
     }
 
     function getLabel(data) {
@@ -312,6 +344,22 @@
 
     function getCaseDeltas(data) {
         return data.casesDelta;
+    }
+
+    function getToggleableCases(data) {
+        if (reportedEnabled) {
+            return getReportedCasesAvg(data);
+        }
+
+        return getCasesAvg(data);
+    }
+
+    function getToggleableDeaths(data) {
+        if (reportedEnabled) {
+            return getReportedDeathsAvg(data);
+        }
+
+        return getDeathsAvg(data);
     }
 
     function getReportedCases(data) {
@@ -331,10 +379,6 @@
     }
 
     function getCases(data) {
-        if (deltaEnabled) {
-            return data.casesDelta;
-        }
-
         return data.cases;
     }
 
@@ -343,10 +387,6 @@
     }
 
     function getDeaths(data) {
-        if (deltaEnabled) {
-            return data.deathsDelta;
-        }
-
         return data.deaths;
     }
 

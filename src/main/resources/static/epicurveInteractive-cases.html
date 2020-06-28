@@ -179,27 +179,27 @@
         epicurve.createLineLegend([
             {
                 x: (width / 2) - 100,
-                clazz: "caseline",
+                clazz: ["caseline"],
                 key: "Confirmed Cases",
                 color: "#35a5ff"
             },
             {
                 x: (width / 2) - 100,
-                clazz: "avgline",
+                clazz: ["avgline"],
                 key: "7-day Moving Average",
                 color: "#ff7f0e"
-            }]);
+            }], toggleVisibility);
 
         epicurve.createBoxLegend([
             {
                 x: (width / 2) + 40,
-                clazz: "casedeltabar",
+                clazz: ["casedeltabar"],
                 key: "Case Deltas (Additions)",
                 color: "#35a5ff"
             },
             {
                 x: (width / 2) + 40,
-                clazz: "casedeltabar",
+                clazz: ["casedeltabar"],
                 key: "Case Deltas (Subtractions)",
                 color: "#000",
                 textColor: "#777"
@@ -208,7 +208,7 @@
         epicurve.createShapeLegend([
             {
                 x: (width / 2) - 220,
-                clazz: "reportedcasesbar",
+                clazz: ["reportedcasesbar"],
                 key: "Reported Cases",
                 color: "#325b8d",
                 tooltip: infoToolTip

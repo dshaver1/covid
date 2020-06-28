@@ -1,6 +1,6 @@
 class Epicurve {
 
-    constructor(svg, width, height, xScale, yScale, xAxis, yAxis) {
+    constructor(svg, width, height, xScale, yScale, xAxis, yAxis, yScale2, yAxis2) {
         this.svg = svg;
         this.width = width;
         this.height = height;
@@ -8,6 +8,39 @@ class Epicurve {
         this.yScale = yScale;
         this.xAxis = xAxis;
         this.yAxis = yAxis;
+        this.yScale2 = yScale2;
+        this.yAxis2 = yAxis2;
+    }
+
+    createAxisLabels(xLabel, yLabel) {
+        this.svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + this.height + ")")
+            .call(this.xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-90)");
+
+        this.svg.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "end")
+            .attr("x", this.width)
+            .attr("y", this.height - 6)
+            .text(xLabel);
+
+        this.svg.append("g")
+            .attr("class", "y axis")
+            .call(this.yAxis)
+            .append("text")
+            .attr("y", 5)
+            .attr("x", 5)
+            //.attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(yLabel)
+            .attr("transform", "translate(5,5)rotate(-90)");
+        //.attr("transform", "translate(5,5)rotate(-90)");
     }
 
     updateBarChart(data, xCallback, yCallback, clazz, color, highlightColor) {
@@ -36,7 +69,16 @@ class Epicurve {
         this.svg.selectAll('.mouseoverclazz').moveToFront();
     }
 
-    updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
+    updateLineChartY1(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
+        this.updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, this.yScale)
+    }
+
+    updateLineChartY2(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
+        this.updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, this.yScale2)
+    }
+
+    updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, yScale) {
+        let dYScale = yScale ? yScale : this.yScale;
         var selectedData = this.svg.selectAll("." + clazz).data([data], d => xCallback(d));
 
         // Draw initial line
@@ -45,7 +87,7 @@ class Epicurve {
             .attr("class", clazz)
             .attr("d", d3.line()
                 .x(d => this.getLineX(xCallback(d), isBanded))
-                .y(d => this.getLineY(yCallback(d)))
+                .y(d => this.getLineY(yCallback(d), dYScale))
                 // Don't draw the line if it's in the preliminary region.
                 .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart)))
             .attr("fill", "none")
@@ -59,7 +101,7 @@ class Epicurve {
             .duration(100)
             .attr("d", d3.line()
                 .x(d => this.getLineX(xCallback(d), isBanded))
-                .y(d => this.getLineY(yCallback(d)))
+                .y(d => this.getLineY(yCallback(d), dYScale))
                 // Don't draw the line if it's in the preliminary region.
                 .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart)));
 
@@ -72,7 +114,7 @@ class Epicurve {
             .append('circle')
             .attr('class', circleClass + " " + clazz)
             .attr('cx', d => this.getLineX(xCallback(d), isBanded))
-            .attr('cy', d => this.getLineY(yCallback(d)))
+            .attr('cy', d => this.getLineY(yCallback(d), dYScale))
             .attr("stroke", highlightColor)
             .attr("fill", color)
             .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
@@ -86,7 +128,7 @@ class Epicurve {
             .duration(100)
             .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
             .attr('cx', d => this.getLineX(xCallback(d), isBanded))
-            .attr('cy', d => this.getLineY(yCallback(d)));
+            .attr('cy', d => this.getLineY(yCallback(d), dYScale));
 
         // Removed data
         selectedCircles.exit().transition().duration(100).style("opacity", 0).remove();
@@ -121,7 +163,7 @@ class Epicurve {
             .attr("stroke", color)
             .attr("fill", color)
             .attr("opacity", d => this.getLineOpacity(yCallback, d, null))
-            .attr("transform", d => "translate(" + this.getLineX(xCallback(d), true) + "," + this.getLineY(yCallback(d)) + ")")
+            .attr("transform", d => "translate(" + this.getLineX(xCallback(d), true) + "," + this.getLineY(yCallback(d), this.yScale) + ")")
             .style("visibility", d => isVisible ? "visible" : "hidden");
 
         selectedData.exit().transition().duration(100).style("opacity", 0).remove();
@@ -225,9 +267,9 @@ class Epicurve {
     /**
      * Convenience function to check for NaN's.
      */
-    getLineY(d) {
+    getLineY(d, yScale) {
         if (!isNaN(d)) {
-            return this.yScale(d);
+            return yScale(d);
         }
 
         return 0;
@@ -505,10 +547,10 @@ class Epicurve {
         return xAxisTickValues;
     }
 
-    createAxis(data, yLabel) {
+    createAxis(data, yLabel, yLabel2) {
         this.svg.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
+            .attr("transform", "translate(0," + this.height + ")")
             .call(this.xAxis.tickValues(this.createXAxisTickValues(data)))
             .selectAll("text")
             .style("text-anchor", "end")
@@ -526,6 +568,21 @@ class Epicurve {
             .style("text-anchor", "end")
             .text(yLabel)
             .attr("transform", "translate(5,5)rotate(-90)");
+
+        if (this.yScale2 && this.yAxis2) {
+            this.svg.append("g")
+                //.attr("transform", "translate("+(this.width-4)+",0)")
+                .attr("transform", "translate("+(this.width)+",0)")
+                .attr("class", "y axis")
+                .call(this.yAxis2)
+                .append("text")
+                .attr("y", 5)
+                .attr("x", 5)
+                //.attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text(yLabel2)
+                .attr("transform", "translate(5,5)rotate(-90)");
+        }
     }
 
     getYScale(data) {
@@ -554,14 +611,14 @@ class Epicurve {
         this.svg.call(tip);
     }
 
-    createLineLegend(legend) {
+    createLineLegend(legend, clickCallback) {
         let size = 10;
 
         this.svg.selectAll(".legend-lines")
             .data(legend)
             .enter()
             .append("line")
-            .on("click", toggleVisibility)
+            .on("click", clickCallback)
             .on("mouseover", function (d) {
                 if (d.tooltip) {
                     d.tooltip.show();
@@ -591,7 +648,7 @@ class Epicurve {
             .data(circleX)
             .enter()
             .append('circle')
-            .on("click", toggleVisibility)
+            .on("click", clickCallback)
             .on("mouseover", function (d) {
                 if (d.tooltip) {
                     d.tooltip.show();
@@ -613,7 +670,7 @@ class Epicurve {
             .data(legend)
             .enter()
             .append("text")
-            .on("click", toggleVisibility)
+            .on("click", clickCallback)
             .on("mouseover", function (d) {
                 if (d.tooltip) {
                     d.tooltip.show();
@@ -852,16 +909,22 @@ function getLegendHeight(height, size, i) {
     return height + 81 + (i * ((size + 2) + 5))
 }
 
-function toggleVisibility(d) {
-    let currentVis = d3.selectAll("." + d.clazz).style("visibility");
-    console.log("Legend click! Toggling " + d.key + "... current visibility: " + currentVis);
+function toggleVisibilityExclusive(d) {
+    toggleVisibility(d, true);
+}
 
-    let targetVis = "visible";
-    if (targetVis === currentVis) {
-        targetVis = "hidden";
-    }
+function toggleVisibility(d, exclusive) {
+    d.clazz.forEach(c => {
+        let currentVis = d3.selectAll("." + c).style("visibility");
+        console.log("Legend click! Toggling " + d.key + "... current visibility: " + currentVis);
 
-    d3.selectAll("." + d.clazz).transition().duration(200).style("visibility", targetVis);
+        let targetVis = "visible";
+        if (targetVis === currentVis) {
+            targetVis = "hidden";
+        }
+
+        d3.selectAll("." + c).transition().duration(200).style("visibility", targetVis);
+    });
 }
 
 function handleDeathMouseOver(d, i, d3This, color) {

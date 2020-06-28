@@ -179,21 +179,21 @@
         epicurve.createLineLegend([
             {
                 x: (width / 2) - 100,
-                clazz: "caseline",
+                clazz: ["caseline"],
                 key: "Confirmed Deaths",
                 color: "#ff0000"
-            }]);
+            }], toggleVisibility);
 
         epicurve.createBoxLegend([
             {
                 x: (width / 2) + 40,
-                clazz: "casedeltabar",
+                clazz: ["casedeltabar"],
                 key: "Death Deltas (Additions)",
                 color: "#ff0000"
             },
             {
                 x: (width / 2) + 40,
-                clazz: "casedeltabar",
+                clazz: ["casedeltabar"],
                 key: "Death Deltas (Subtractions)",
                 color: "#000",
                 textColor: "#777"
@@ -202,7 +202,7 @@
         epicurve.createShapeLegend([
             {
                 x: (width / 2) - 240,
-                clazz: "reportedcasesbar",
+                clazz: ["reportedcasesbar"],
                 key: "Reported Deaths",
                 color: "#802929",
                 tooltip: infoToolTip
