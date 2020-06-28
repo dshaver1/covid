@@ -51,16 +51,10 @@
                 <div class="row">Date Selector</div>
                 <div class="row">
                     <div class="col-lg-8" id="slider-time"></div>
-                    <div class="col-md-2">Confirmed Correlation Coefficient:
-                        <p id="confirmed-correlation-coeff"></p>
-                    </div>
                 </div>
                 <div class="row">Deaths Offset Selector</div>
                 <div class="row">
                     <div class="col-lg-8" id="slider-death-offset"></div>
-                    <div class="col-md-2">Reported Correlation Coefficient:
-                        <p id="reported-correlation-coeff"></p>
-                    </div>
                 </div>
             </div>
             <div class="col-md-2">Selected Snapshot<p id="value-time"></p></div>
@@ -302,9 +296,6 @@
 
         let reportedCorrelationCoeff = epicurve.calculateCorrelationCoefficient(chartData[dateString].map(d => d.reportedCasesAvg), chartData[dateString].map(d => d.reportedDeathsAvg));
         let confirmedCorrelationCoeff = epicurve.calculateCorrelationCoefficient(chartData[dateString].map(d => d.casesAvg), chartData[dateString].map(d => d.deathsAvg));
-
-        d3.select('p#reported-correlation-coeff').text(reportedCorrelationCoeff);
-        d3.select('p#confirmed-correlation-coeff').text(confirmedCorrelationCoeff);
         
         let offsetDate = epicurve.applyDateOffset(dateString, 13);
 

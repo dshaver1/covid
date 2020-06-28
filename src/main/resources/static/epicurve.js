@@ -128,8 +128,9 @@ class Epicurve {
     }
 
     updateCorrelationLine(correlationCoefficient, clazz, color) {
+        let rounded = Math.round((correlationCoefficient + Number.EPSILON) * 10000) / 10000
 
-        let selectedLine = this.svg.selectAll('.' + clazz).data([correlationCoefficient]);
+        let selectedLine = this.svg.selectAll('.' + clazz).data([rounded]);
 
         let top = 45;
         let right = 1800;
@@ -149,6 +150,31 @@ class Epicurve {
             .duration(100)
             .attr("y1", d => this.yScale(top - (top * d)))
             .attr("y2", d => this.yScale(top * d));
+
+        let textClass = clazz + '-text';
+        let selectedText = this.svg.selectAll('.' + textClass).data([rounded]);
+
+        selectedText.enter()
+            .append("text")
+            .attr("class", textClass)
+            .attr("x", d => this.xScale(right - 100))
+            .attr("y", d => this.yScale(top * d) - 10)
+            .text(d => "r: " + d)
+            .attr("text-anchor", "top")
+            .style("alignment-baseline", "top")
+            .style("fill", color)
+            .style("font", "12px \"Courier New\", Courier, monospace")
+            //.attr("transform", "rotate(-90)")
+
+        selectedText
+            .merge(selectedText)
+            .transition()
+            .duration(100)
+            .text(d => "r: " + d)
+            .attr("y", d => this.yScale(top * d) - 10);
+
+
+        selectedText.exit().remove();
     }
 
     getLineX(d, isBanded) {
@@ -600,9 +626,9 @@ class Epicurve {
             })
             .attr("x", d => d.x + size + 5)
             .attr("y", (d,i) => this.height + 80 + (i * (size + 5)) + 9)
-            .style("fill", d => d.color)
             .text(d => d.key)
             .attr("text-anchor", "left")
+            .style("fill", d => d.color)
             .style("font", "11px sans-serif")
             .style("alignment-baseline", "middle")
     }
