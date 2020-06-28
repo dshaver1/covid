@@ -48,10 +48,18 @@
                 </div>
             </div>
             <div class="col-md-8">
+                <div class="row">Date Selector</div>
                 <div class="row">
                     <div class="col-lg-8" id="slider-time"></div>
-                    <div class="col-md-2">Correlation Coefficient:
-                        <p id="correlation-coeff"></p>
+                    <div class="col-md-2">Confirmed Correlation Coefficient:
+                        <p id="confirmed-correlation-coeff"></p>
+                    </div>
+                </div>
+                <div class="row">Deaths Offset Selector</div>
+                <div class="row">
+                    <div class="col-lg-8" id="slider-death-offset"></div>
+                    <div class="col-md-2">Reported Correlation Coefficient:
+                        <p id="reported-correlation-coeff"></p>
                     </div>
                 </div>
             </div>
@@ -88,8 +96,9 @@
         placement: 'bottom'
     });
 
-    let timeData, chartData, summaryData, sliderTime, chart, tip;
+    let timeData, chartData, summaryData, caseData, deathData, sliderTime, sliderDeathOffset, chart, tip;
     let prevSliderValue = 0;
+    let prevDeathOffsetSliderValue = 0;
     let deltaEnabled = false;
     let tipWidth = 100;
 
@@ -119,14 +128,12 @@
     Promise.all([
         d3.csv("reports/v2/summary.csv"),
         d3.csv("reports/v2/cases.csv"),
-        d3.csv("reports/v2/deaths.csv"),
-        d3.csv("reports/v2/caseDeltas.csv"),
-        d3.csv("reports/v2/deathDeltas.csv"),
-        d3.csv("reports/v2/caseProjections.csv"),
-        d3.csv("reports/v2/movingAvgs.csv")
+        d3.csv("reports/v2/deaths.csv")
     ]).then(function (files) {
         summaryData = files[0];
-        chartData = parseChartData(summaryData, files[1], files[2], files[3], files[4], files[5], files[6]);
+        caseData = files[1];
+        deathData = files[2];
+        chartData = parseCorrelationData(summaryData, caseData, deathData, 0);
         let latestSummary = summaryData[summaryData.length - 1];
         let latestDate = latestSummary.reportDate;
 
@@ -135,12 +142,53 @@
 
         d3.select('div#update-timestamp').text(latestSummary.id);
 
-        // Slider!
+        // Sliders!
         timeData = summaryData.map(function (d) {
             return d.id;
         });
+        
+        sliderDeathOffset =
+            d3.sliderBottom()
+            //.min(-1 * (timeData.length - 1))
+            //.max(0)
+            .domain([-21, 0])
+            .marks([-21, -14, -7, 0])
+            .step(1)
+            //.ticks(5)
+            .width(350)
+            .tickValues([-21, -14, -7, 0]);
+
+        let offsetG =  d3
+            .select('div#slider-death-offset')
+            .append('svg')
+            .attr('width', 400)
+            .attr('height', 100)
+            .append('g')
+            .attr('transform', 'translate(30,30)');
+        
+        offsetG.call(sliderDeathOffset);
+        
+        sliderDeathOffset
+            .on('onchange', val => {
+                let currentDateVal = Math.round(d3.select("div#slider-time svg g g g path").attr("aria-valuenow"));
+                console.log("currentDateVal: " + currentDateVal);
+
+                if (Math.abs(Math.round(val) - Math.round(prevDeathOffsetSliderValue)) >= 1) {
+                    console.log("currentDeathOffset: " + Math.round(val));
+                    let currentDate = getReverseIdxValue(timeData, currentDateVal);
+                    console.log("currentDate: " + currentDate);
+                    let currentDateObj = new Date(currentDate);
+                    currentDateObj.setDate(currentDateObj.getDate() - 13);
+                    updateAllGraphs(currentDate, Math.round(val) * -1);
+                    prevDeathOffsetSliderValue = Math.round(val);
+                }
+            })
+        
         sliderTime = createSlider(chartData)
             .on('onchange', val => {
+                let currentDeathOffset = Math.abs(Math.round(d3.select("div#slider-death-offset svg g g g path").attr("aria-valuenow")));
+                console.log("currentDeathOffset: " + currentDeathOffset);
+                
                 //console.log("previous slider:" + prevSliderValue + "Math.round(val):" + Math.round(val) + " current slider: " + val);
                 if (Math.abs(Math.round(val) - Math.round(prevSliderValue)) >= 1) {
                     //console.log("previous slider:" + prevSliderValue + " current slider: " + val);
@@ -148,8 +196,8 @@
                     let currentChartData = getReverseIdxValue(chartData, Math.round(val));
                     d3.select('p#value-time').text(currentDate);
                     let currentDateObj = new Date(currentDate);
-                    currentDateObj.setDate(currentDateObj.getDate() - 13)
-                    updateAllGraphs(currentDate);
+                    currentDateObj.setDate(currentDateObj.getDate() - 13);
+                    updateAllGraphs(currentDate, currentDeathOffset);
                     prevSliderValue = Math.round(val);
                 }
             });
@@ -158,8 +206,8 @@
 
         // Axis should be set to the latest data.
         // scale the range of the data
-        dphxScale.domain([0, 1500]);
-        dphyScale.domain([-10, getDeathsYScale(getLastElement(chartData))]);
+        dphxScale.domain([0, getCasesYScale(getLastElement(chartData))]);
+        dphyScale.domain([0, getDeathsYScale(getLastElement(chartData))]);
         //drawAxisLines();
 
         // add DPH axis
@@ -171,7 +219,7 @@
 
         //updateLineChart(chartData[dateString], getReportedCases, "reportedcasesbar", "#2b5280", "#2b5280", applyDateOffset(dateString, 13));
 
-        updateAllGraphs(dateString);
+        updateAllGraphs(dateString, 0);
 
         createTooltips();
 
@@ -226,12 +274,14 @@
     }
 
     function getDeathsYScale(data) {
-        if (deltaEnabled) {
-            return 30;
-        }
-
+        return 5 + d3.max(data, function (d) {
+            return d.reportedDeathsAvg;
+        })
+    }
+    
+    function getCasesYScale(data) {
         return 30 + d3.max(data, function (d) {
-            return d.deaths;
+            return d.reportedCasesAvg;
         })
     }
 
@@ -249,26 +299,19 @@
         return infoToolTip;
     }
 
-    function updateAllGraphs(dateString) {
+    function updateAllGraphs(dateString, deathOffset) {
+        chartData = parseCorrelationData(summaryData, caseData, deathData, deathOffset);
+
+        let confirmedCorrelationCoeff = calculateCorrelationCoefficient(chartData[dateString].map(d => d.casesAvg), chartData[dateString].map(d => d.deathsAvg));
+        let reportedCorrelationCoeff = calculateCorrelationCoefficient(chartData[dateString].map(d => d.reportedCasesAvg), chartData[dateString].map(d => d.reportedDeathsAvg));
+
+        d3.select('p#confirmed-correlation-coeff').text(confirmedCorrelationCoeff);
+        d3.select('p#reported-correlation-coeff').text(reportedCorrelationCoeff);
+        
         let offsetDate = applyDateOffset(dateString, 13);
-        //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
 
-        updateLineChart(chartData[dateString], getReportedCases, getReportedDeaths, "reportedcasesbar", "#2b5280", "#2b5280", "no");
-        //updateBarChart(chartData[dateString], getReportedCases, getDeathDeltas, "casedeltabar", "#ff0000", "#000");
-        updateLineChart(chartData[dateString], getCases, getDeaths, "caseline", "#35a5ff", "#35a5ff", offsetDate);
-        //updateLineChart(chartData[dateString], getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate);
-        //draw14DayWindow(getReportedCases, offsetDate, 13);
-        //drawMouseOverRects(getReportedCases, chartData[dateString]);
-
-        let cases = chartData[dateString].map(function (d) {
-            return d.cases;
-        });
-        let deaths = chartData[dateString].map(function (d) {
-            return d.deaths;
-        });
-        let correlationCoeff = calculateCorrelationCoefficient(cases, deaths);
-
-        d3.select('p#correlation-coeff').text(correlationCoeff);
+        updateLineChart(chartData[dateString], getReportedCasesAvg, getReportedDeathsAvg, "reportedcasesbar", "#2b5280", "#2b5280", "no");
+        updateLineChart(chartData[dateString], getCasesAvg, getDeathsAvg, "caseline", "#35a5ff", "#35a5ff", offsetDate);
     }
 
     function getLabel(data) {
@@ -283,8 +326,16 @@
         return data.reportedCases;
     }
 
+    function getReportedCasesAvg(data) {
+        return data.reportedCasesAvg;
+    }
+
     function getReportedDeaths(data) {
         return data.reportedDeaths;
+    }
+
+    function getReportedDeathsAvg(data) {
+        return data.reportedDeathsAvg;
     }
 
     function getCases(data) {
@@ -295,12 +346,20 @@
         return data.cases;
     }
 
+    function getCasesAvg(data) {
+        return data.casesAvg;
+    }
+
     function getDeaths(data) {
         if (deltaEnabled) {
             return data.deathsDelta;
         }
 
         return data.deaths;
+    }
+
+    function getDeathsAvg(data) {
+        return data.deathsAvg;
     }
 
     function getDeathDeltas(data) {

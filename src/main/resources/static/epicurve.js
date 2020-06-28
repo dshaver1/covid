@@ -455,6 +455,77 @@ function parseChartData(summaryData, caseData, deathData, caseDeltaData, deathDe
     return tempChartData;
 }
 
+function parseCorrelationData(summaryData, caseData, deathData, deathOffset) {
+    let tempChartData = [];
+
+    let reportedCasesData = []
+    summaryData.forEach(function (d) {
+        reportedCasesData[d.reportDate] = d.confirmedCasesVm;
+    });
+
+    let reportedDeathsData = []
+    summaryData.forEach(function (d) {
+        reportedDeathsData[d.reportDate] = d.deathsVm;
+    });
+
+    let dateIndexLookup = {};
+    let indexDateLookup = {};
+    let allReportDates = Object.keys(deathData[deathData.length - 1]).filter(d => d !== 'id');
+    for (let i = 0; i < allReportDates.length; i++) {
+        let currentDate = allReportDates[i];
+        dateIndexLookup[currentDate] = i;
+        indexDateLookup[i] = currentDate;
+    }
+
+    for (let i = 0; i < summaryData.length; i++) {
+        let currentSummaryData = summaryData[i];
+        let currentCaseData = caseData[i];
+        let currentDeathData = deathData[i];
+        let currentReportDates = Object.keys(currentCaseData).filter(function (d) {
+            return d !== 'id'
+        });
+        let currentTimeseries = tempChartData[currentSummaryData.id];
+        if (!currentTimeseries) {
+            currentTimeseries = [];
+            tempChartData[currentSummaryData.id] = currentTimeseries;
+        }
+        currentReportDates
+            .filter(function (d) {
+                return !!currentCaseData[d];
+            })
+            .forEach(function (d) {
+                let deathOffsetDate = indexDateLookup[dateIndexLookup[d] + deathOffset];
+                if (deathOffsetDate && currentDeathData[deathOffsetDate]) {
+                    currentTimeseries.push({
+                        label: d,
+                        cases: +currentCaseData[d],
+                        deaths: +currentDeathData[deathOffsetDate],
+                        casesAvg: calcMovingAverage(indexDateLookup, dateIndexLookup, currentCaseData, d, 7),
+                        deathsAvg: calcMovingAverage(indexDateLookup, dateIndexLookup, currentDeathData, deathOffsetDate, 7),
+                        reportedCases: +reportedCasesData[d] || 0,
+                        reportedDeaths: +reportedDeathsData[deathOffsetDate] || 0,
+                        reportedCasesAvg: calcMovingAverage(indexDateLookup, dateIndexLookup, reportedCasesData, d, 7),
+                        reportedDeathsAvg: calcMovingAverage(indexDateLookup, dateIndexLookup, reportedDeathsData, deathOffsetDate, 7),
+                    });
+                }
+            });
+    }
+
+    return tempChartData;
+}
+
+function calcMovingAverage(indexDateLookup, dateIndexLookup, data, currentDate, window) {
+    let windowArray = new Array(window);
+    let currentDateIdx = dateIndexLookup[currentDate];
+
+    let sum = 0;
+    for (let i = 0; i < 7; i++) {
+        sum += +data[indexDateLookup[currentDateIdx - i]] || 0;
+    }
+
+    return sum / window;
+}
+
 function updateAllCharts(data, prelimDate) {
     console.log("Updating chart for prelim date " + prelimDate);
 
@@ -474,8 +545,8 @@ function drawAxisLines() {
         );
 }
 
-function createXAxisTickValues() {
-    let epicurve = getLastElement(chartData);
+function createXAxisTickValues(data) {
+    let epicurve = getLastElement(data);
     let xAxisTickValues = [];
 
     for (let i = 0; i < epicurve.length; i += 7) {
@@ -485,11 +556,11 @@ function createXAxisTickValues() {
     return xAxisTickValues;
 }
 
-function createAxis(parent, xAxis, yAxis, height, yLabel) {
+function createAxis(data, parent, xAxis, yAxis, height, yLabel) {
     parent.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis.tickValues(createXAxisTickValues()))
+        .call(xAxis.tickValues(createXAxisTickValues(data)))
         .selectAll("text")
         .style("text-anchor", "end")
         .attr("dx", "-.8em")
@@ -876,20 +947,48 @@ function calculateCorrelationCoefficient(xData, yData) {
         throw "In order to calculate standard deviation, x and y must have the same number of elements!";
     }
 
+    let NaNCount = 0;
+    for (let i = 0; i < xData.length; i++) {
+        if (!isNaN(xData[i]) && !isNaN(yData[i])) {
+            break;
+        }
+
+        if (isNaN(xData[i]) || isNaN(yData[i])) {
+            NaNCount++;
+        }
+    }
+
+    console.log("xData.length: " + xData.length + ", xData: " + xData);
+    console.log("yData.length: " + yData.length + ", yData: " + yData);
+    console.log(NaNCount + " NaN's found at the beginning of the array! yData.length: " + yData.length);
+    for (let i = 0; i < NaNCount; i++) {
+        xData.pop();
+        yData.shift();
+    }
+    console.log("After shift - xData.length: " + xData.length + ", yData.length: " + yData.length);
+    console.log("xData.length: " + xData.length + ", xData: " + xData);
+    console.log("yData.length: " + yData.length + ", yData: " + yData);
+
     let xMean = xData.reduce((a, b) => a + b) / xData.length;
+    console.log("xMean: " + xMean);
     let yMean = yData.reduce((a, b) => a + b) / yData.length;
+    console.log("yMean: " + yMean);
     let xStdev = Math.sqrt(xData.reduce(function (sq, n) {
         return sq + Math.pow(n - xMean, 2);
     }, 0) / (xData.length - 1));
+    console.log("xStdev: " + xStdev);
     let yStdev = Math.sqrt(yData.reduce(function (sq, n) {
         return sq + Math.pow(n - yMean, 2);
     }, 0) / (yData.length - 1));
+    console.log("yStdev: " + yStdev);
     let xStandardized = xData.map(function (d) {
         return (d - xMean) / xStdev;
     });
+    //console.log("xStandardized: " + xStandardized);
     let yStandardized = yData.map(function (d) {
         return (d - yMean) / yStdev;
     });
+    //console.log("yStandardized: " + yStandardized);
     let multipliedCoords = [];
 
     for (let i = 0; i < xStandardized.length; i++) {
