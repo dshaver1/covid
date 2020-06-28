@@ -1,11 +1,13 @@
-2020-06-27 09:48:19.890  INFO 17860 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 17860 (started by xpdf64 in H:\dev\covid)
-2020-06-27 09:48:19.894  INFO 17860 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
-2020-06-27 09:48:20.434  INFO 17860 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
-2020-06-27 09:48:20.505  INFO 17860 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 65ms. Found 5 MongoDB repository interfaces.
-2020-06-27 09:48:21.448  INFO 17860 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
-2020-06-27 09:48:22.448  INFO 17860 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
-2020-06-27 09:48:22.595  INFO 17860 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
-2020-06-27 09:48:22.830  INFO 17860 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
-2020-06-27 09:48:22.899  INFO 17860 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 3.339 seconds (JVM running for 4.161)
-2020-06-27 09:48:23.228  INFO 17860 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
-2020-06-27 09:48:23.229  INFO 17860 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-06-28 18:20:08.031  INFO 14236 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 14236 (started by xpdf64 in H:\dev\covid)
+2020-06-28 18:20:08.036  INFO 14236 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
+2020-06-28 18:20:08.524  INFO 14236 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2020-06-28 18:20:08.585  INFO 14236 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 56ms. Found 5 MongoDB repository interfaces.
+2020-06-28 18:20:09.301  INFO 14236 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2020-06-28 18:20:09.355  INFO 14236 --- [cluster-ClusterId{value='5ef917990b045642b65f1b4f', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:3}] to localhost:27017
+2020-06-28 18:20:09.359  INFO 14236 --- [cluster-ClusterId{value='5ef917990b045642b65f1b4f', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 6]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=2619100}
+2020-06-28 18:20:10.111  INFO 14236 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-06-28 18:20:10.211  INFO 14236 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-06-28 18:20:10.398  INFO 14236 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-06-28 18:20:10.444  INFO 14236 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 2.717 seconds (JVM running for 3.56)
+2020-06-28 18:20:10.742  INFO 14236 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-06-28 18:20:10.743  INFO 14236 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'

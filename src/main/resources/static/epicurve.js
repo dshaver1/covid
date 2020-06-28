@@ -174,7 +174,8 @@ class Epicurve {
 
         let selectedLine = this.svg.selectAll('.' + clazz).data([rounded]);
 
-        let top = 45;
+        let top = 70;
+        let mid = top/2;
         let right = 1800;
 
         selectedLine.enter()
@@ -183,15 +184,15 @@ class Epicurve {
             .style("stroke", color)
             .style("stroke-width", 2)
             .attr("x1", d => this.xScale(0))
-            .attr("y1", d => this.yScale(top - (top * d)))
+            .attr("y1", d => this.yScale(mid - (mid * d)))
             .attr("x2", d => this.xScale(right))
-            .attr("y2", d => this.yScale(top * d));
+            .attr("y2", d => this.yScale((mid * d) + mid));
 
         selectedLine.merge(selectedLine)
             .transition()
             .duration(100)
-            .attr("y1", d => this.yScale(top - (top * d)))
-            .attr("y2", d => this.yScale(top * d));
+            .attr("y1", d => this.yScale(mid - (mid * d)))
+            .attr("y2", d => this.yScale((mid * d) + mid));
 
         let textClass = clazz + '-text';
         let selectedText = this.svg.selectAll('.' + textClass).data([rounded]);
@@ -200,7 +201,7 @@ class Epicurve {
             .append("text")
             .attr("class", textClass)
             .attr("x", d => this.xScale(right - 100))
-            .attr("y", d => this.yScale(top * d) - 10)
+            .attr("y", d => this.yScale((mid * d) + mid) - 10)
             .text(d => "r: " + d)
             .attr("text-anchor", "top")
             .style("alignment-baseline", "top")
@@ -213,7 +214,7 @@ class Epicurve {
             .transition()
             .duration(100)
             .text(d => "r: " + d)
-            .attr("y", d => this.yScale(top * d) - 10);
+            .attr("y", d => this.yScale((mid * d) + mid) - 10);
 
 
         selectedText.exit().remove();
