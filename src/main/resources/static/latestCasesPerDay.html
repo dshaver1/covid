@@ -194,6 +194,7 @@
 <script src="https://unpkg.com/tippy.js@6"></script>
 
 <script>
+    /*
     tippy('[data-tippy-content]', {
         arrow: true,
         placement: 'bottom'
@@ -438,7 +439,7 @@
     /**
      * Gets the value from the provided array as if it were indexed from the end. So 0 gets the last element, and -data.length-1 gets the first element.
      * -1 Gets the next to the last element.
-     */
+     
     function getReverseIdxValue(data, idx) {
         return data[data.length - 1 + idx];
     }
@@ -677,7 +678,7 @@
     function handleDeathMouseOut(d, i, d3This, color) {
         d3This.style("fill", color);
         tip.hide(d, i);
-    }
+    }*/
 </script>
 </body>
 </html>

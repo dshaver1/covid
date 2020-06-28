@@ -83,7 +83,7 @@
         placement: 'bottom'
     });
 
-    let timeData, chartData, summaryData, sliderTime, chart, tip;
+    let epicurve, timeData, chartData, summaryData, sliderTime, chart, tip;
     let prevSliderValue = 0;
     let deltaEnabled = false;
     let tipWidth = 100;
@@ -110,6 +110,8 @@
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
+    
+    epicurve = new Epicurve(dphSvg, width, height, dphxScale, dphyScale, dphxAxis, dphyAxis);
 
     Promise.all([
         d3.csv("reports/v2/summary.csv"),
@@ -121,7 +123,7 @@
         d3.csv("reports/v2/movingAvgs.csv")
     ]).then(function (files) {
         summaryData = files[0];
-        chartData = parseChartData(summaryData, files[1], files[2], files[3], files[4], files[5], files[6]);
+        chartData = epicurve.parseChartData(summaryData, files[1], files[2], files[3], files[4], files[5], files[6]);
         let latestSummary = summaryData[summaryData.length - 1];
         let latestDate = latestSummary.reportDate;
 
@@ -156,11 +158,11 @@
         dphxScale.domain(getLastElement(chartData).map(function (d) {
             return d.label;
         }));
-        dphyScale.domain([-100, getYScale(getLastElement(chartData))]);
+        dphyScale.domain([-100, epicurve.getYScale(getLastElement(chartData))]);
         //drawAxisLines();
 
         // add DPH axis
-        createAxis(chartData, dphSvg, dphxAxis, dphyAxis, height, "Cases Per Day");
+        epicurve.createAxis(chartData, "Cases Per Day");
 
         let dateString = getLastElement(timeData);
 
@@ -170,11 +172,11 @@
 
         updateAllGraphs(dateString);
 
-        createTooltips(svg);
+        epicurve.createTooltips();
 
         let infoToolTip = createInfoTooltip();
-        
-        createLineLegend([
+
+        epicurve.createLineLegend([
             {
                 x: (width / 2) - 100,
                 clazz: "caseline",
@@ -188,7 +190,7 @@
                 color: "#ff7f0e"
             }]);
 
-        createBoxLegend([
+        epicurve.createBoxLegend([
             {
                 x: (width / 2) + 40,
                 clazz: "casedeltabar",
@@ -203,7 +205,7 @@
                 textColor: "#777"
             }]);
 
-        createShapeLegend([
+        epicurve.createShapeLegend([
             {
                 x: (width / 2) - 220,
                 clazz: "reportedcasesbar",
@@ -229,16 +231,14 @@
     }
 
     function updateAllGraphs(dateString) {
-        let offsetDate = applyDateOffset(dateString, 13);
-        //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
+        let offsetDate = epicurve.applyDateOffset(dateString, 13);
 
-        updateFloatingPoints(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getReportedCases, "reportedcasesbar", "#2b5280");
-        //updateLineChart(chartData[dateString], getLabel, getReportedCases, "reportedcasesbar", "#2b5280", "#2b5280", "no", true);
-        updateBarChart(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
-        updateLineChart(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getCases, "caseline", "#35a5ff", "#67b0ff", offsetDate, true);
-        updateLineChart(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate, true);
-        draw14DayWindow(dphSvg, dphxScale, getLabel, offsetDate, 13, height);
-        drawMouseOverRects(dphSvg, dphxScale, getLabel, chartData[dateString], height);
+        epicurve.updateFloatingPoints(chartData[dateString], getLabel, getReportedCases, "reportedcasesbar", "#2b5280");
+        epicurve.updateBarChart(chartData[dateString], getLabel, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
+        epicurve.updateLineChart(chartData[dateString], getLabel, getCases, "caseline", "#35a5ff", "#67b0ff", offsetDate, true);
+        epicurve.updateLineChart(chartData[dateString], getLabel, getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate, true);
+        epicurve.draw14DayWindow(getLabel, offsetDate, 13);
+        epicurve.drawMouseOverRects(getLabel, chartData[dateString]);
     }
 
     function getLabel(data) {
