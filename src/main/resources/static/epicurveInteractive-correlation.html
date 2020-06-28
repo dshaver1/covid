@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="corrWidth=device-corrWidth, initial-scale=1">
     <title>GA Cases And Deaths Correlation</title>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -104,23 +104,23 @@
 
     // set the dimensions of the canvas
     var margin = {top: 0, right: 20, bottom: 120, left: 60},
-        width = Math.max(window.innerWidth - margin.left - margin.right - tipWidth, 600),
-        height = 600 - margin.top - margin.bottom
+        corrWidth = Math.max(window.innerWidth - margin.left - margin.right - tipWidth, 600),
+        corrHeight = 600 - margin.top - margin.bottom
 
     // set the ranges
-    var dphxScale = d3.scaleLinear().range([0, width]);
+    var corrxScale = d3.scaleLinear().range([0, corrWidth]);
 
-    var dphyScale = d3.scaleLinear().range([height, 0]);
+    var corryScale = d3.scaleLinear().range([corrHeight, 0]);
 
     // define the axis
-    var dphxAxis = d3.axisBottom(dphxScale);
+    var corrxAxis = d3.axisBottom(corrxScale);
 
-    var dphyAxis = d3.axisLeft(dphyScale).ticks(10);
+    var corryAxis = d3.axisLeft(corryScale).ticks(10);
 
-    var dphSvg = d3.select("#graphContent").append("svg")
-        .attr("id", "dphSvg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+    var corrSvg = d3.select("#graphContent").append("svg")
+        .attr("id", "corrSvg")
+        .attr("width", corrWidth + margin.left + margin.right)
+        .attr("height", corrHeight + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
@@ -206,12 +206,12 @@
 
         // Axis should be set to the latest data.
         // scale the range of the data
-        dphxScale.domain([0, getCasesYScale(getLastElement(chartData))]);
-        dphyScale.domain([0, getDeathsYScale(getLastElement(chartData))]);
+        corrxScale.domain([0, getCasesYScale(getLastElement(chartData))]);
+        corryScale.domain([0, getDeathsYScale(getLastElement(chartData))]);
         //drawAxisLines();
 
         // add DPH axis
-        createCorrelationAxis(dphSvg, dphxAxis, dphyAxis, height);
+        createCorrelationAxis(corrSvg, corrxAxis, corryAxis, corrHeight);
 
         let dateString = getLastElement(timeData);
 
@@ -221,20 +221,20 @@
 
         updateAllGraphs(dateString, 0);
 
-        createTooltips();
+        createTooltips(svg);
 
         let infoToolTip = createInfoTooltip();
 
         createLineLegend([
             {
-                x: (width / 2) - 100,
+                x: (corrWidth / 2) - 100,
                 clazz: "reportedcasesbar",
                 key: "Reported Cases vs. Reported Deaths",
                 color: "#325b8d",
                 tooltip: infoToolTip
             },
             {
-                x: (width / 2) - 100,
+                x: (corrWidth / 2) - 100,
                 clazz: "caseline",
                 key: "Confirmed Cases vs. Confirmed Deaths",
                 color: "#35a5ff"
@@ -242,10 +242,10 @@
 
     });
 
-    function createCorrelationAxis(parent, xAxis, yAxis, height) {
+    function createCorrelationAxis(parent, xAxis, yAxis, corrHeight) {
         parent.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
+            .attr("transform", "translate(0," + corrHeight + ")")
             .call(xAxis)
             .selectAll("text")
             .style("text-anchor", "end")
@@ -256,8 +256,8 @@
         parent.append("text")
             .attr("class", "x label")
             .attr("text-anchor", "end")
-            .attr("x", width)
-            .attr("y", height - 6)
+            .attr("x", corrWidth)
+            .attr("y", corrHeight - 6)
             .text("Cases");
 
         parent.append("g")
@@ -294,7 +294,7 @@
                     " does not change over time because it merely represents the difference between that day and the previous day.</div><br>";
                 return content;
             });
-        dphSvg.call(infoToolTip);
+        corrSvg.call(infoToolTip);
 
         return infoToolTip;
     }
@@ -309,9 +309,9 @@
         d3.select('p#reported-correlation-coeff').text(reportedCorrelationCoeff);
         
         let offsetDate = applyDateOffset(dateString, 13);
-
-        updateLineChart(chartData[dateString], getReportedCasesAvg, getReportedDeathsAvg, "reportedcasesbar", "#2b5280", "#2b5280", "no");
-        updateLineChart(chartData[dateString], getCasesAvg, getDeathsAvg, "caseline", "#35a5ff", "#35a5ff", offsetDate);
+        
+        updateLineChart(corrSvg, chartData[dateString], corrxScale, getReportedCasesAvg, corryScale, getReportedDeathsAvg, "reportedcasesbar", "#2b5280", "#2b5280", "no");
+        updateLineChart(corrSvg, chartData[dateString], corrxScale, getCasesAvg, corryScale, getDeathsAvg, "caseline", "#35a5ff", "#35a5ff", offsetDate);
     }
 
     function getLabel(data) {

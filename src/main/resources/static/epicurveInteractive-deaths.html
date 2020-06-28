@@ -170,7 +170,7 @@
 
         updateAllGraphs(dateString);
 
-        createTooltips();
+        createTooltips(svg);
 
         let infoToolTip = createInfoTooltip();
         
@@ -236,13 +236,13 @@
         let offsetDate = applyDateOffset(dateString, 13);
         //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
 
-        updateFloatingPoints(chartData[dateString], getLabel, getReportedDeaths, "reportedcasesbar", "#632626");
+        updateFloatingPoints(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getReportedDeaths, "reportedcasesbar", "#632626");
         //updateLineChart(chartData[dateString], getLabel, getReportedDeaths, "reportedcasesbar", "#632626", "#632626", "no", true);
-        updateBarChart(chartData[dateString], getLabel, getDeathDeltas, "casedeltabar", "#ff0000", "#000");
-        updateLineChart(chartData[dateString], getLabel, getDeaths, "caseline", "#ff0000", "#ff0000", offsetDate, true);
+        updateBarChart(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getDeathDeltas, "casedeltabar", "#ff0000", "#000");
+        updateLineChart(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getDeaths, "caseline", "#ff0000", "#ff0000", offsetDate, true);
         //updateLineChart(chartData[dateString], getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate);
-        draw14DayWindow(getLabel, offsetDate, 13);
-        drawMouseOverRects(getLabel, chartData[dateString]);
+        draw14DayWindow(dphSvg, dphxScale, getLabel, offsetDate, 13, height);
+        drawMouseOverRects(dphSvg, dphxScale, getLabel, chartData[dateString], height);
     }
 
     function getLabel(data) {

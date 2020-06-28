@@ -170,7 +170,7 @@
 
         updateAllGraphs(dateString);
 
-        createTooltips();
+        createTooltips(svg);
 
         let infoToolTip = createInfoTooltip();
         
@@ -231,14 +231,14 @@
     function updateAllGraphs(dateString) {
         let offsetDate = applyDateOffset(dateString, 13);
         //updateLineChart(chartData[dateString], getProjections, "projectionline", "#597994", "#597994");
-        
-        updateFloatingPoints(chartData[dateString], getLabel, getReportedCases, "reportedcasesbar", "#2b5280");
+
+        updateFloatingPoints(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getReportedCases, "reportedcasesbar", "#2b5280");
         //updateLineChart(chartData[dateString], getLabel, getReportedCases, "reportedcasesbar", "#2b5280", "#2b5280", "no", true);
-        updateBarChart(chartData[dateString], getLabel, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
-        updateLineChart(chartData[dateString], getLabel, getCases, "caseline", "#35a5ff", "#67b0ff", offsetDate, true);
-        updateLineChart(chartData[dateString], getLabel, getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate, true);
-        draw14DayWindow(getLabel, offsetDate, 13);
-        drawMouseOverRects(getLabel, chartData[dateString]);
+        updateBarChart(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
+        updateLineChart(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getCases, "caseline", "#35a5ff", "#67b0ff", offsetDate, true);
+        updateLineChart(dphSvg, chartData[dateString], dphxScale, getLabel, dphyScale, getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate, true);
+        draw14DayWindow(dphSvg, dphxScale, getLabel, offsetDate, 13, height);
+        drawMouseOverRects(dphSvg, dphxScale, getLabel, chartData[dateString], height);
     }
 
     function getLabel(data) {

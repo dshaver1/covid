@@ -1,24 +1,24 @@
-function updateBarChart(data, xCallback, yCallback, clazz, color, highlightColor) {
-    var selectedData = dphSvg.selectAll("." + clazz).data(data);
+function updateBarChart(svg, data, xScale, xCallback, yScale, yCallback, clazz, color, highlightColor) {
+    var selectedData = svg.selectAll("." + clazz).data(data);
     var enterData = selectedData.enter();
 
     enterData.append("rect")
         .style("shape-rendering", "crispEdges")
         .attr("class", clazz)
         .attr("x", function (d) {
-            return dphxScale(xCallback(d));
+            return xScale(xCallback(d));
         })
         .attr("y", function (d) {
             if (yCallback(d) > 0) {
-                return dphyScale(yCallback(d));
+                return yScale(yCallback(d));
             } else {
-                return dphyScale(0);
+                return yScale(0);
             }
         })
         .attr("height", function (d) {
-            return Math.abs(dphyScale(yCallback(d)) - dphyScale(0));
+            return Math.abs(yScale(yCallback(d)) - yScale(0));
         })
-        .attr("width", dphxScale.bandwidth())
+        .attr("width", xScale.bandwidth())
         .style("fill", function (d) {
             if (yCallback(d) > 0) {
                 return color;
@@ -30,13 +30,13 @@ function updateBarChart(data, xCallback, yCallback, clazz, color, highlightColor
     selectedData.transition().duration(100)
         .attr("y", function (d) {
             if (yCallback(d) > 0) {
-                return dphyScale(yCallback(d));
+                return yScale(yCallback(d));
             } else {
-                return dphyScale(0);
+                return yScale(0);
             }
         })
         .attr("height", function (d) {
-            return Math.abs(dphyScale(yCallback(d)) - dphyScale(0));
+            return Math.abs(yScale(yCallback(d)) - yScale(0));
         })
         .style("fill", function (d) {
             if (yCallback(d) > 0) {
@@ -49,13 +49,13 @@ function updateBarChart(data, xCallback, yCallback, clazz, color, highlightColor
     selectedData.exit().remove();
 
     // Ensure notable dates lines are on top!
-    dphSvg.selectAll("." + clazz).moveToFront();
-    dphSvg.selectAll("line").moveToFront();
-    dphSvg.selectAll('.mouseoverclazz').moveToFront();
+    svg.selectAll("." + clazz).moveToFront();
+    svg.selectAll("line").moveToFront();
+    svg.selectAll('.mouseoverclazz').moveToFront();
 }
 
-function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
-    var selectedData = dphSvg.selectAll("." + clazz).data([data], function (d) {
+function updateLineChart(svg, data, xScale, xCallback, yScale, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
+    var selectedData = svg.selectAll("." + clazz).data([data], function (d) {
         return xCallback(d);
     });
 
@@ -65,14 +65,14 @@ function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColo
         .attr("class", clazz)
         .attr("d", d3.line()
             .x(function (d) {
-                return getLineX(xCallback(d), isBanded);
+                return getLineX(xCallback(d), xScale, isBanded);
             })
             .y(function (d) {
-                return getLineY(yCallback(d));
+                return getLineY(yCallback(d), yScale);
             })
             // Don't draw the line if it's in the preliminary region.
             .defined(function (d) {
-                return isPointDefined(yCallback, d, prelimRegionStart);
+                return isPointDefined(yCallback, d, xScale, prelimRegionStart);
             }))
         .attr("fill", "none")
         .attr("stroke", color)
@@ -85,34 +85,34 @@ function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColo
         .duration(100)
         .attr("d", d3.line()
             .x(function (d) {
-                return getLineX(xCallback(d), isBanded);
+                return getLineX(xCallback(d), xScale, isBanded);
             })
             .y(function (d) {
-                return getLineY(yCallback(d));
+                return getLineY(yCallback(d), yScale);
             })
             // Don't draw the line if it's in the preliminary region.
             .defined(function (d) {
-                return isPointDefined(yCallback, d, prelimRegionStart);
+                return isPointDefined(yCallback, d, xScale, prelimRegionStart);
             }))
 
     var circleClass = clazz + '-circle';
-    var isVisible = "visible" === dphSvg.selectAll('.' + clazz).style("visibility");
-    var selectedCircles = dphSvg.selectAll('.' + circleClass).data(data);
+    var isVisible = "visible" === svg.selectAll('.' + clazz).style("visibility");
+    var selectedCircles = svg.selectAll('.' + circleClass).data(data);
 
     // Initial data
     selectedCircles.enter()
         .append('circle')
         .attr('class', circleClass + " " + clazz)
         .attr('cx', function (d) {
-            return getLineX(xCallback(d), isBanded);
+            return getLineX(xCallback(d), xScale, isBanded);
         })
         .attr('cy', function (d) {
-            return getLineY(yCallback(d));
+            return getLineY(yCallback(d), yScale);
         })
         .attr("stroke", highlightColor)
         .attr("fill", color)
         .attr("opacity", function (d) {
-            return getLineOpacity(yCallback, d, prelimRegionStart);
+            return getLineOpacity(yCallback, d, xScale, prelimRegionStart);
         })
         .attr('r', 2)
         .style("visibility", function (d) {
@@ -129,33 +129,33 @@ function updateLineChart(data, xCallback, yCallback, clazz, color, highlightColo
         .transition()
         .duration(100)
         .attr("opacity", function (d) {
-            return getLineOpacity(yCallback, d, prelimRegionStart);
+            return getLineOpacity(yCallback, d, xScale, prelimRegionStart);
         })
         .attr('cx', function (d) {
-            return getLineX(xCallback(d), isBanded);
+            return getLineX(xCallback(d), xScale, isBanded);
         })
         .attr('cy', function (d) {
-            return getLineY(yCallback(d));
+            return getLineY(yCallback(d), yScale);
         })
 
     // Removed data
     selectedCircles.exit().transition().duration(100).style("opacity", 0).remove();
 
     // Ensure notable dates lines are on top!
-    dphSvg.selectAll("." + clazz).moveToFront();
-    dphSvg.selectAll("line").moveToFront();
-    dphSvg.selectAll('.' + circleClass).moveToFront();
-    dphSvg.selectAll('.mouseoverclazz').moveToFront();
+    svg.selectAll("." + clazz).moveToFront();
+    svg.selectAll("line").moveToFront();
+    svg.selectAll('.' + circleClass).moveToFront();
+    svg.selectAll('.mouseoverclazz').moveToFront();
 }
 
-function updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
-    let selectedData = dphSvg.selectAll("." + clazz).data(data);
+function updateFloatingPoints(svg, data, xScale, xCallback, yScale, yCallback, clazz, color) {
+    let selectedData = svg.selectAll("." + clazz).data(data);
 
     let triangle = d3.symbol()
         .type(d3.symbolDiamond)
         .size(20);
 
-    let existing = dphSvg.selectAll('.' + clazz);
+    let existing = svg.selectAll('.' + clazz);
     let isVisible = true;
     if (existing) {
         try {
@@ -171,10 +171,10 @@ function updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
         .attr("stroke", color)
         .attr("fill", color)
         .attr("opacity", function (d) {
-            return getLineOpacity(yCallback, d, null);
+            return getLineOpacity(yCallback, d, xScale, null);
         })
         .attr("transform", function (d) {
-            return "translate(" + getLineX(xCallback(d), true) + "," + getLineY(yCallback(d)) + ")";
+            return "translate(" + getLineX(xCallback(d), xScale, true) + "," + getLineY(yCallback(d), yScale) + ")";
         })
         .style("visibility", function (d) {
             if (isVisible) {
@@ -187,13 +187,13 @@ function updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
     selectedData.exit().transition().duration(100).style("opacity", 0).remove();
 }
 
-function getLineX(d, isBanded) {
+function getLineX(d, xScale, isBanded) {
 
     if (isBanded) {
-        return dphxScale(d) + (dphxScale.bandwidth() / 2);
+        return xScale(d) + (xScale.bandwidth() / 2);
     }
 
-    return dphxScale(d);
+    return xScale(d);
 }
 
 /**
@@ -205,13 +205,13 @@ function getLineX(d, isBanded) {
  * @param prelimRegionStart The start of the preliminary region. Points after this should not be shown.
  * @returns true if the point should be shown on the graph, false if the point should not be shown.
  */
-function isPointDefined(dataCallback, dataPoint, prelimRegionStart) {
+function isPointDefined(dataCallback, dataPoint, xScale, prelimRegionStart) {
     if (isNaN(dataCallback(dataPoint))) {
         return false;
     }
 
     if (prelimRegionStart) {
-        return dphxScale(dataPoint.label) < dphxScale(prelimRegionStart);
+        return xScale(dataPoint.label) < xScale(prelimRegionStart);
     }
 
     return true;
@@ -220,9 +220,9 @@ function isPointDefined(dataCallback, dataPoint, prelimRegionStart) {
 /**
  * Convenience function to check for NaN's.
  */
-function getLineY(d) {
+function getLineY(d, yScale) {
     if (!isNaN(d)) {
-        return dphyScale(d);
+        return yScale(d);
     }
 
     return 0;
@@ -231,34 +231,32 @@ function getLineY(d) {
 /**
  * Convenience function to set opacity to 0 for NaN, and 0.5 for preliminary region.
  */
-function getLineOpacity(dataCallback, dataPoint, prelimRegionStart) {
+function getLineOpacity(dataCallback, dataPoint, xScale, prelimRegionStart) {
     if (isNaN(dataCallback(dataPoint))) {
         return "0";
     }
 
-    if (prelimRegionStart && dphxScale(dataPoint.label) >= dphxScale(prelimRegionStart)) {
+    if (prelimRegionStart && xScale(dataPoint.label) >= xScale(prelimRegionStart)) {
         return "0.5";
     }
 
     return "1";
 }
 
-function drawMouseOverRects(xCallback, data) {
-    var selectedData = dphSvg.selectAll(".mouseoverclazz").data(data);
+function drawMouseOverRects(svg, xScale, xCallback, data, height) {
+    var selectedData = svg.selectAll(".mouseoverclazz").data(data);
     var enterData = selectedData.enter();
 
     enterData.append("rect")
         .attr("class", "mouseoverclazz")
-        .attr("x", function (d) {
-            return dphxScale(xCallback(d));
-        })
+        .attr("x", d => xScale(xCallback(d)))
         .attr("y", function (d) {
             return 0;
         })
         .attr("height", function (d) {
             return height;
         })
-        .attr("width", dphxScale.bandwidth())
+        .attr("width", xScale.bandwidth())
         .style("fill", "#999")
         .attr("opacity", "0")
         .on("mouseover", function (d, i) {
@@ -271,8 +269,8 @@ function drawMouseOverRects(xCallback, data) {
     selectedData.exit().remove();
 }
 
-function draw14DayWindow(xCallback, offsetDate, offset) {
-    let selectedData = dphSvg.selectAll(".prelim-region").data([offsetDate]);
+function draw14DayWindow(svg, xScale, xCallback, offsetDate, offset, height) {
+    let selectedData = svg.selectAll(".prelim-region").data([offsetDate]);
     let enterData = selectedData.enter();
 
     // draw initial region
@@ -281,7 +279,7 @@ function draw14DayWindow(xCallback, offsetDate, offset) {
         .style("shape-rendering", "crispEdges")
         .attr("class", "prelim-region")
         .attr("x", function (d) {
-            return dphxScale(d);
+            return xScale(d);
         })
         .attr("y", function (d) {
             return 0;
@@ -289,7 +287,7 @@ function draw14DayWindow(xCallback, offsetDate, offset) {
         .attr("height", function (d) {
             return height;
         })
-        .attr("width", dphxScale.bandwidth() * (offset + 1))
+        .attr("width", xScale.bandwidth() * (offset + 1))
         .style("fill", "#c6d1ff")
         .attr("opacity", "0.05");
 
@@ -299,11 +297,11 @@ function draw14DayWindow(xCallback, offsetDate, offset) {
         .transition()
         .duration(100)
         .attr("x", function (d) {
-            return dphxScale(d);
+            return xScale(d);
         });
 
 
-    let boundaryLineSelectedData = dphSvg.selectAll(".prelim-boundary-line").data([offsetDate]);
+    let boundaryLineSelectedData = svg.selectAll(".prelim-boundary-line").data([offsetDate]);
     let boundaryLineEnterData = boundaryLineSelectedData.enter();
 
     // draw initial boundary line
@@ -314,11 +312,11 @@ function draw14DayWindow(xCallback, offsetDate, offset) {
         .style("shape-rendering", "crispEdges")
         .style("stroke-width", 1)
         .attr("x1", function (d) {
-            return dphxScale(d);
+            return xScale(d);
         })
         .attr("y1", 0)
         .attr("x2", function (d) {
-            return dphxScale(d);
+            return xScale(d);
         })
         .attr("y2", height);
 
@@ -328,14 +326,14 @@ function draw14DayWindow(xCallback, offsetDate, offset) {
         .transition()
         .duration(100)
         .attr("x1", function (d) {
-            return dphxScale(d);
+            return xScale(d);
         })
         .attr("x2", function (d) {
-            return dphxScale(d);
+            return xScale(d);
         });
 
     // draw initial text
-    let textSelectedData = dphSvg.selectAll(".prelim-text").data([{date: offsetDate, label: "Preliminary Data"}]);
+    let textSelectedData = svg.selectAll(".prelim-text").data([{date: offsetDate, label: "Preliminary Data"}]);
     let textEnterData = textSelectedData.enter();
 
     textEnterData
@@ -345,7 +343,7 @@ function draw14DayWindow(xCallback, offsetDate, offset) {
             return -80;
         })
         .attr("y", function (d, i) {
-            return dphxScale(d.date) + dphxScale.bandwidth();
+            return xScale(d.date) + xScale.bandwidth();
         })
         .text(function (d) {
             return xCallback(d);
@@ -361,7 +359,7 @@ function draw14DayWindow(xCallback, offsetDate, offset) {
         .transition()
         .duration(100)
         .attr("y", function (d) {
-            return dphxScale(d.date) + dphxScale.bandwidth();
+            return xScale(d.date) + xScale.bandwidth();
         });
 }
 
@@ -515,7 +513,6 @@ function parseCorrelationData(summaryData, caseData, deathData, deathOffset) {
 }
 
 function calcMovingAverage(indexDateLookup, dateIndexLookup, data, currentDate, window) {
-    let windowArray = new Array(window);
     let currentDateIdx = dateIndexLookup[currentDate];
 
     let sum = 0;
@@ -526,20 +523,15 @@ function calcMovingAverage(indexDateLookup, dateIndexLookup, data, currentDate, 
     return sum / window;
 }
 
-function updateAllCharts(data, prelimDate) {
-    console.log("Updating chart for prelim date " + prelimDate);
-
+function make_y_gridlines(yScale) {
+    return d3.axisLeft(yScale).tickValues([0, 100, 200, 300, 400, 500, 600, 700, 800, 900])
 }
 
-function make_y_gridlines() {
-    return d3.axisLeft(dphyScale).tickValues([0, 100, 200, 300, 400, 500, 600, 700, 800, 900])
-}
-
-function drawAxisLines() {
-    dphSvg.selectAll(".grid").remove();
-    dphSvg.append("g")
+function drawAxisLines(svg, yScale) {
+    svg.selectAll(".grid").remove();
+    svg.append("g")
         .attr("class", "grid")
-        .call(make_y_gridlines()
+        .call(make_y_gridlines(yScale)
             .tickSize(-width)
             .tickFormat("")
         );
@@ -657,7 +649,7 @@ function handleDeathMouseOut(d, i, d3This, color) {
     tip.hide(d, i);
 }
 
-function createTooltips(value) {
+function createTooltips(svg, value) {
     tip = d3.tip().attr('class', 'd3-tip').direction('e').offset([0, 5])
         .html(function (d) {
             var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
@@ -672,13 +664,13 @@ function createTooltips(value) {
                     `;
             return content;
         });
-    dphSvg.call(tip);
+    svg.call(tip);
 }
 
-function createLineLegend(legend) {
+function createLineLegend(svg, width, height, legend) {
     let size = 10;
 
-    dphSvg.selectAll(".legend-lines")
+    svg.selectAll(".legend-lines")
         .data(legend)
         .enter()
         .append("line")
@@ -718,7 +710,7 @@ function createLineLegend(legend) {
         circleX.push({yOffset: i, x: d.x + size, color: d.color});
     });
 
-    dphSvg.selectAll(".legend-circles")
+    svg.selectAll(".legend-circles")
         .data(circleX)
         .enter()
         .append('circle')
@@ -746,7 +738,7 @@ function createLineLegend(legend) {
         })
         .attr('r', 2);
 
-    dphSvg.selectAll("mylabels")
+    svg.selectAll("mylabels")
         .data(legend)
         .enter()
         .append("text")
@@ -778,9 +770,9 @@ function createLineLegend(legend) {
         .style("alignment-baseline", "middle")
 }
 
-function createBoxLegend(legend) {
+function createBoxLegend(svg, width, height, legend) {
     let size = 8
-    dphSvg.selectAll("mydots")
+    svg.selectAll("mydots")
         .data(legend)
         .enter()
         .append("rect")
@@ -799,7 +791,7 @@ function createBoxLegend(legend) {
             return d.x
         })
         .attr("y", function (d, i) {
-            return getLegendHeight(size, i);
+            return getLegendHeight(height, size, i);
         })
         .attr("width", size)
         .attr("height", size)
@@ -808,7 +800,7 @@ function createBoxLegend(legend) {
         })
 
 
-    dphSvg.selectAll("mylabels")
+    svg.selectAll("mylabels")
         .data(legend)
         .enter()
         .append("text")
@@ -844,32 +836,20 @@ function createBoxLegend(legend) {
         .style("alignment-baseline", "middle")
 }
 
-function createShapeLegend(legend) {
+function createShapeLegend(svg, width, height, legend) {
     let size = 8;
     let triangle = d3.symbol()
         .type(d3.symbolDiamond)
         .size(20);
-    /*
-        let selectedData = dphSvg.selectAll("." + clazz).data(data);
 
-    selectedData.enter().append("path")
-        .attr("class", clazz)
-        .attr("d", triangle)
-        .attr("stroke", color)
-        .attr("fill", color)
-        .attr("opacity", function (d) {
-            return getLineOpacity(yCallback, d, null);
-        })
-        .attr("transform", function(d) { return "translate(" + getLineX(xCallback(d), true) + "," + getLineY(yCallback(d)) + ")"; });
-     */
-    dphSvg.selectAll("myshapes")
+    svg.selectAll("myshapes")
         .data(legend)
         .enter()
         .append("path")
         //.attr("class", clazz)
         .attr("d", triangle)
         .attr("transform", function (d, i) {
-            return "translate(" + (d.x + 5) + "," + (getLegendHeight(size, i) + 4) + ")";
+            return "translate(" + (d.x + 5) + "," + (getLegendHeight(height, size, i) + 4) + ")";
         })
         .on("click", toggleVisibility)
         .on("mouseover", function (d) {
@@ -890,7 +870,7 @@ function createShapeLegend(legend) {
         });
 
 
-    dphSvg.selectAll("mylabels")
+    svg.selectAll("mylabels")
         .data(legend)
         .enter()
         .append("text")
@@ -926,7 +906,7 @@ function createShapeLegend(legend) {
         .style("alignment-baseline", "middle")
 }
 
-function getLegendHeight(size, i) {
+function getLegendHeight(height, size, i) {
     return height + 81 + (i * ((size + 2) + 5))
 }
 
