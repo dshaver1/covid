@@ -127,6 +127,30 @@ class Epicurve {
         selectedData.exit().transition().duration(100).style("opacity", 0).remove();
     }
 
+    updateCorrelationLine(correlationCoefficient, clazz, color) {
+
+        let selectedLine = this.svg.selectAll('.' + clazz).data([correlationCoefficient]);
+
+        let top = 45;
+        let right = 1800;
+
+        selectedLine.enter()
+            .append("line")
+            .attr("class", clazz)
+            .style("stroke", color)
+            .style("stroke-width", 2)
+            .attr("x1", d => this.xScale(0))
+            .attr("y1", d => this.yScale(top - (top * d)))
+            .attr("x2", d => this.xScale(right))
+            .attr("y2", d => this.yScale(top * d));
+
+        selectedLine.merge(selectedLine)
+            .transition()
+            .duration(100)
+            .attr("y1", d => this.yScale(top - (top * d)))
+            .attr("y2", d => this.yScale(top * d));
+    }
+
     getLineX(d, isBanded) {
 
         if (isBanded) {

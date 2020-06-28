@@ -300,16 +300,19 @@
     function updateAllGraphs(dateString, deathOffset) {
         chartData = epicurve.parseCorrelationData(summaryData, caseData, deathData, deathOffset);
 
-        let confirmedCorrelationCoeff = epicurve.calculateCorrelationCoefficient(chartData[dateString].map(d => d.casesAvg), chartData[dateString].map(d => d.deathsAvg));
         let reportedCorrelationCoeff = epicurve.calculateCorrelationCoefficient(chartData[dateString].map(d => d.reportedCasesAvg), chartData[dateString].map(d => d.reportedDeathsAvg));
+        let confirmedCorrelationCoeff = epicurve.calculateCorrelationCoefficient(chartData[dateString].map(d => d.casesAvg), chartData[dateString].map(d => d.deathsAvg));
 
-        d3.select('p#confirmed-correlation-coeff').text(confirmedCorrelationCoeff);
         d3.select('p#reported-correlation-coeff').text(reportedCorrelationCoeff);
+        d3.select('p#confirmed-correlation-coeff').text(confirmedCorrelationCoeff);
         
         let offsetDate = epicurve.applyDateOffset(dateString, 13);
 
         epicurve.updateLineChart(chartData[dateString], getReportedCasesAvg, getReportedDeathsAvg, "reportedcasesbar", "#2b5280", "#2b5280", "no");
         epicurve.updateLineChart(chartData[dateString], getCasesAvg, getDeathsAvg, "caseline", "#35a5ff", "#35a5ff", offsetDate);
+
+        epicurve.updateCorrelationLine(reportedCorrelationCoeff, "corrLine-reported", "#2b5280");
+        epicurve.updateCorrelationLine(confirmedCorrelationCoeff, "corrLine-confirmed", "#35a5ff");
     }
 
     function getLabel(data) {
