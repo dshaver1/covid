@@ -174,7 +174,7 @@ class Epicurve {
 
         let selectedLine = this.svg.selectAll('.' + clazz).data([rounded]);
 
-        let top = 70;
+        let top = 80;
         let mid = top/2;
         let right = 1800;
 
@@ -200,7 +200,7 @@ class Epicurve {
         selectedText.enter()
             .append("text")
             .attr("class", textClass)
-            .attr("x", d => this.xScale(right - 100))
+            .attr("x", d => this.xScale(right - 130))
             .attr("y", d => this.yScale((mid * d) + mid) - 10)
             .text(d => "r: " + d)
             .attr("text-anchor", "top")
