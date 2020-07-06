@@ -174,9 +174,9 @@ class Epicurve {
 
         let selectedLine = this.svg.selectAll('.' + clazz).data([rounded]);
 
-        let top = 80;
+        let top = 60;
         let mid = top/2;
-        let right = 1800;
+        let right = 2500;
 
         selectedLine.enter()
             .append("line")
