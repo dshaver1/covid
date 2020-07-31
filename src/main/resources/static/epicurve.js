@@ -174,9 +174,9 @@ class Epicurve {
 
         let selectedLine = this.svg.selectAll('.' + clazz).data([rounded]);
 
-        let top = 60;
+        let top = 80;
         let mid = top/2;
-        let right = 2500;
+        let right = 3500;
 
         selectedLine.enter()
             .append("line")
@@ -591,7 +591,7 @@ class Epicurve {
             return 300;
         }
 
-        return 50 + d3.max(data, d => d.reportedCases)
+        return 50 + d3.max(data, d => d.cases)
     }
 
     createTooltips() {
