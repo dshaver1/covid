@@ -187,7 +187,7 @@ public class ReportFactory {
         // Convert to target epicurve object
         Map<String, Epicurve> epicurves = new HashMap<>();
         epicurveDto.getAllEpicurves().asMap().forEach((county, points) -> {
-            Epicurve countyEpicurve = epicurves.computeIfAbsent(county, k -> new Epicurve(county));
+            Epicurve countyEpicurve = epicurves.computeIfAbsent(county.toLowerCase(), k -> new Epicurve(county));
             countyEpicurve.setData(points);
         });
 

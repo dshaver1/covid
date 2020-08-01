@@ -83,6 +83,29 @@ public class ReportControllerV2 {
         }
     }
 
+    @GetMapping(value = "/reports/v2/county/{type}_{county}.csv", produces = "text/csv")
+    public String getCountyCsv(@PathVariable(name = "type") String type,
+                               @PathVariable(name = "county") String county) throws Exception {
+        logger.info("Got request for csv file: " + type + "_" + county);
+
+        switch (type) {
+            case "cases":
+                return csvService.readFile(reportTgtDir, "cases_" + county.toLowerCase() + ".csv");
+            case "caseDeltas":
+                return csvService.readFile(reportTgtDir, "casesDeltas_" + county.toLowerCase() + ".csv");
+            case "caseProjections":
+                return csvService.readFile(reportTgtDir, "caseProjections_" + county.toLowerCase() + ".csv");
+            case "movingAvgs":
+                return csvService.readFile(reportTgtDir, "movingAvgs_" + county.toLowerCase() + ".csv");
+            case "deaths":
+                return csvService.readFile(reportTgtDir, "deaths_" + county.toLowerCase() + ".csv");
+            case "deathDeltas":
+                return csvService.readFile(reportTgtDir, "deathDeltas_" + county.toLowerCase() + ".csv");
+            default:
+                throw new UnsupportedOperationException("Unrecognized filename request: " + type + "_" + county + ".csv");
+        }
+    }
+
     @PostMapping("/reports/v2/generateAllCsvs")
     public String generateCsv() throws Exception {
         logger.info("Got request to generate all csvs!");
@@ -90,6 +113,24 @@ public class ReportControllerV2 {
         boolean success = reportService.generateAllCsvs(reportTgtDir);
 
         return "Done! Success: " + success;
+    }
+
+    @GetMapping("/reports/v2/checkAndRewrite")
+    public String checkAndRewrite(@RequestParam(name = "force", required = false) boolean force) throws Exception {
+        logger.info("Got request to check for new data and rewrite csvs!");
+
+        boolean success = reportService.checkAndRewriteCsvs(reportTgtDir, force);
+
+        return "Done! Success: " + success;
+    }
+
+    @GetMapping("/reports/v2/checkAndAppend")
+    public String checkAndAppend() throws Exception {
+        logger.info("Got request to check for new data and append to csvs!");
+
+        boolean foundNew = reportService.checkAndAppend(reportTgtDir);
+
+        return "Done! Found new: " + foundNew;
     }
 
     @GetMapping("/reports/v2/daily")

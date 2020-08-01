@@ -42,7 +42,7 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
         try {
             URL url = new URL(urlString);
             try (InputStream inputStream = url.openStream()) {
-                RawDataV2 rawData = filter(inputStream, true);
+                RawDataV2 rawData = transform(inputStream, true);
 
                 return rawData;
             } catch (IOException e) {
@@ -55,7 +55,8 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
         return null;
     }
 
-    public RawDataV2 filter(InputStream inputStream, boolean writeToDisk) {
+    @Override
+    public RawDataV2 transform(InputStream inputStream, boolean writeToDisk) {
         logger.info("Filtering supplied inputStream...");
         RawDataV2 rawData = new RawDataV2();
         rawData.setCreateTime(LocalDateTime.now());

@@ -55,9 +55,15 @@ public class RawDataFileRepository {
                     return null;
                 })
                 .filter(Objects::nonNull)
-                .map(file -> rawDataDownloader2.filter(file, false))
+                .map(file -> rawDataDownloader2.transform(file, false))
                 .sorted(Comparator.comparing(RawDataV2::getReportDate))
                 .collect(Collectors.toList());
+    }
+
+    public File getLatestRawDataFile() {
+        List<File> fileList = getAllRawDataFiles();
+
+        return fileList.get(fileList.size()-1);
     }
 
     public List<File> getAllRawDataFiles() {
@@ -101,6 +107,7 @@ public class RawDataFileRepository {
                             if (is1800(extractDate) || lastElement) {
                                 logger.info("Adding " + path.getFileName().toString() + "...");
                                 filteredFiles.add(path.toFile());
+                                break;
                             } else {
                                 logger.info("Skipping " + path.getFileName().toString() + " since there is a later one for this date...");
                             }
@@ -108,6 +115,8 @@ public class RawDataFileRepository {
                     }
                 }
             }
+
+            filteredFiles.sort(Comparator.comparing(File::getName));
 
             return filteredFiles;
         } catch (IOException e) {

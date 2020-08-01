@@ -49,7 +49,7 @@ public class EpicurveExtractorImpl1 extends AbstractExtractor implements Extract
                 }
                 epicurve.setEpicurvePoints(filteredDataPoints);
                 Map<String, Epicurve> tempMap = new HashMap<>();
-                tempMap.put("Georgia", new Epicurve("Georgia", epicurve.getEpicurvePoints()));
+                tempMap.put("georgia", new Epicurve("Georgia", epicurve.getEpicurvePoints()));
                 maybeEpicurve = Optional.of(tempMap);
             }
         } catch (Exception e) {

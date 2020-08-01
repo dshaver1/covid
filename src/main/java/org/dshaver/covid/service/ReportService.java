@@ -4,6 +4,7 @@ import org.dshaver.covid.dao.HistogramReportRepository;
 import org.dshaver.covid.dao.RawDataRepositoryDelegator;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.*;
+import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,11 +13,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.dshaver.covid.service.extractor.EpicurveExtractorImpl2.COUNTY_FILTER;
 
 /**
  * Created by xpdf64 on 2020-04-27.
@@ -59,14 +65,186 @@ public class ReportService {
      */
     @Scheduled(cron = "0 15 * * * *")
     public DownloadResponse checkForData() {
-        // Download
-        RawData data = rawDataDownloader.download(RawDataV2.class);
+        DownloadResponse response = new DownloadResponse();
+        if (checkAndAppend(reportTgtDir)) {
+            // Download
+            RawData data = rawDataDownloader.download(RawDataV2.class);
 
-        DownloadResponse response = saveReportFromRawData(data);
+            response = saveReportFromRawData(data);
 
-        generateAllCsvs(reportTgtDir);
+            generateAllCsvs(reportTgtDir);
+        } else {
+            response.setFoundNew(false);
+        }
 
         return response;
+    }
+
+    public String[] createHeader(List<File> files) {
+        List<String> headerList = new ArrayList<>();
+        headerList.add("id");
+        String[] header = new String[0];
+        try {
+            headerList.addAll(Arrays.stream(new ArrayReport(reportFactory.createReport(rawDataDownloader.transform(files.get(files.size() - 1)), null)).getCurveDates())
+                    .map(LocalDate::toString)
+                    .collect(Collectors.toList()));
+
+            header = headerList.toArray(new String[]{});
+
+        } catch (Exception e) {
+            logger.error("Could not extract header from {}!", files.get(files.size() - 1));
+        }
+
+        return header;
+    }
+
+    public String[] createHeader(File file) {
+        List<String> headerList = new ArrayList<>();
+        headerList.add("id");
+        String[] header = new String[0];
+        try {
+            ArrayReport arrayReport = new ArrayReport(reportFactory.createReport(rawDataDownloader.transform(file), null));
+
+            header = Arrays.stream(arrayReport.getCurveDates()).map(LocalDate::toString).collect(Collectors.toList()).toArray(new String[]{});
+        } catch (Exception e) {
+            logger.error("Could not extract header from {}!", file.getName());
+        }
+
+        return header;
+    }
+
+    /**
+     * Check for new data and rewrite to csvs if needed.
+     */
+    public boolean checkAndRewriteCsvs(String reportTgtDir, boolean force) {
+        logger.info("Saving CSVs with no persistence to database!");
+        boolean success = true;
+
+        File latestFile = rawDataFileRepository.getLatestRawDataFile();
+
+        RawData downloaded = rawDataDownloader.download(RawDataV2.class);
+        HistogramReport histogramReport = histogramReportRepository.findAllByOrderByIdDesc().get(0);
+
+        if (!latestFile.getName().contains(downloaded.getId().replace(":", "")) || force) {
+            logger.info("New data found! Proceeding to update csvs.");
+
+            COUNTY_FILTER.forEach(d -> csvService.delete(reportTgtDir, d));
+
+            List<File> files = rawDataFileRepository.getAllRawDataFiles();
+
+            String[] header = createHeader(files);
+
+            Report previousReport = null;
+            try {
+                RawData currentRawData = rawDataDownloader.transform(files.get(0));
+                previousReport = reportFactory.createReport(currentRawData, null);
+            } catch (Exception e) {
+                logger.error("Error processing previous day's report! " + files.get(0).getName(), e);
+            }
+
+            for (File currentFile : files) {
+                previousReport = write(currentFile, previousReport, header, histogramReport);
+            }
+        } else {
+            logger.info("No new data. Existing file {} has the same id as new file {}!", latestFile.getName(), downloaded.getId());
+        }
+
+        return success;
+    }
+
+    public boolean checkAndAppend(String reportTgtDir) {
+        logger.info("Saving CSVs with no persistence to database!");
+        boolean foundNew = false;
+
+        File latestFile = rawDataFileRepository.getLatestRawDataFile();
+
+        RawData downloaded = rawDataDownloader.download(RawDataV2.class);
+        HistogramReport histogramReport = histogramReportRepository.findAllByOrderByIdDesc().get(0);
+
+        if (!latestFile.getName().contains(downloaded.getId().replace(":", ""))) {
+            foundNew = true;
+            logger.info("New data found! Proceeding to update csvs.");
+
+            List<File> files = rawDataFileRepository.getAllRawDataFiles();
+
+            String[] header = createHeader(files);
+
+            updateAllHeaders(reportTgtDir, files.get(files.size() - 1), header);
+
+            Report previousReport = null;
+            try {
+                RawData currentRawData = rawDataDownloader.transform(files.get(files.size() - 2));
+                previousReport = reportFactory.createReport(currentRawData, null);
+            } catch (Exception e) {
+                logger.error("Error processing previous day's report! " + files.get(files.size() - 2).getName(), e);
+            }
+
+            write(files.get(files.size() - 1), previousReport, header, histogramReport);
+        } else {
+            logger.info("No new data. Existing file {} has the same id as new file {}!", latestFile.getName(), downloaded.getId());
+        }
+
+        return foundNew;
+    }
+
+    public void updateAllHeaders(String dir, File file, String[] header) {
+        try {
+            RawData currentRawData = rawDataDownloader.transform(file);
+            Report report = reportFactory.createReport(currentRawData, null);
+            for (Epicurve epicurve : report.getEpicurves().values()) {
+                csvService.updateHeader(dir, String.format("cases_%s.csv", epicurve.getCounty().toLowerCase()), header);
+                csvService.updateHeader(dir, String.format("caseDeltas_%s.csv", epicurve.getCounty().toLowerCase()), header);
+                //csvService.updateHeader(dir, String.format("caseProjections_%s.csv", epicurve.getCounty().toLowerCase()), header);
+                csvService.updateHeader(dir, String.format("movingAvgs_%s.csv", epicurve.getCounty().toLowerCase()), header);
+                csvService.updateHeader(dir, String.format("deaths_%s.csv", epicurve.getCounty().toLowerCase()), header);
+                csvService.updateHeader(dir, String.format("deathDeltas_%s.csv", epicurve.getCounty().toLowerCase()), header);
+            }
+        } catch (Exception e) {
+            logger.error("Could not update headers in target csvs coming from report file " + file.getName(), e);
+        }
+    }
+
+    public Report write(File currentFile, Report previousReport, String[] header, HistogramReport histogramReport) {
+        if (histogramReport == null) {
+            histogramReport = histogramReportRepository.findAllByOrderByIdDesc().get(0);
+        }
+
+        if (header == null) {
+            header = createHeader(currentFile);
+        }
+
+        Report currentReport = null;
+        RawData currentRawData = null;
+
+        try {
+            logger.info("Creating report from file {}.", currentFile.getName());
+            currentRawData = rawDataDownloader.transform(currentFile);
+            currentReport = reportFactory.createReport(currentRawData, previousReport);
+
+            // Populate VM
+            currentReport = VmCalculator.populateVm(currentReport, previousReport);
+
+            // Extrapolate
+            currentReport = EpicurveExtrapolator.extrapolateCases(currentReport, histogramReport);
+
+            // Calculate moving average
+            currentReport = MovingAverageCalculator.calculate(currentReport, 7);
+
+            for (Epicurve epicurve : currentReport.getEpicurves().values()) {
+                logger.info("Writing csvs for {} on {}.", epicurve.getCounty().toLowerCase(), currentRawData.getReportDate());
+                csvService.appendFile(reportTgtDir, "cases", epicurve.getCounty().toLowerCase(), header, currentReport, ArrayReport::getCases);
+                csvService.appendFile(reportTgtDir, "caseDeltas", epicurve.getCounty().toLowerCase(), header, currentReport, ArrayReport::getCaseDeltas);
+                //csvService.appendFile(reportTgtDir, "caseProjections", epicurve.getCounty().toLowerCase(), header, currentReport, ArrayReport::getCaseProjections);
+                csvService.appendFile(reportTgtDir, "movingAvgs", epicurve.getCounty().toLowerCase(), header, currentReport, ArrayReport::getMovingAvgs);
+                csvService.appendFile(reportTgtDir, "deaths", epicurve.getCounty().toLowerCase(), header, currentReport, ArrayReport::getDeaths);
+                csvService.appendFile(reportTgtDir, "deathDeltas", epicurve.getCounty().toLowerCase(), header, currentReport, ArrayReport::getDeathDeltas);
+                //csvService.writeSummary(reportTgtDir, "summary.csv", filteredReports);
+            }
+        } catch (Exception e) {
+            logger.error("Could not transform file " + currentFile.getName(), e);
+        }
+
+        return currentReport;
     }
 
     public boolean generateAllCsvs(String reportTgtDir) {
@@ -103,7 +281,7 @@ public class ReportService {
         try {
             csvService.writeFile(reportTgtDir, "cases.csv", headerArray, filteredReports, ArrayReport::getCases);
             csvService.writeFile(reportTgtDir, "caseDeltas.csv", headerArray, filteredReports, ArrayReport::getCaseDeltas);
-            csvService.writeFile(reportTgtDir, "caseProjections.csv", headerArray, filteredReports, ArrayReport::getCaseProjections);
+            //csvService.writeFile(reportTgtDir, "caseProjections.csv", headerArray, filteredReports, ArrayReport::getCaseProjections);
             csvService.writeFile(reportTgtDir, "movingAvgs.csv", headerArray, filteredReports, ArrayReport::getMovingAvgs);
             csvService.writeFile(reportTgtDir, "deaths.csv", headerArray, filteredReports, ArrayReport::getDeaths);
             csvService.writeFile(reportTgtDir, "deathDeltas.csv", headerArray, filteredReports, ArrayReport::getDeathDeltas);
@@ -210,16 +388,16 @@ public class ReportService {
             Report report = VmCalculator.populateVm(reportFactory.createReport(data, prevReport), prevReport);
 
             // Save histogram report object
-            HistogramReport histogramReport = new HistogramReport(reportRepository.findAllByOrderByIdAsc());
+/*            HistogramReport histogramReport = new HistogramReport(reportRepository.findAllByOrderByIdAsc());
             try {
                 logger.info("Saving histogram report for {}.", report.getId());
                 histogramReportRepository.save(histogramReport);
             } catch (DuplicateKeyException e) {
                 logger.info("Already saved this histogram report. Skipping... ");
-            }
+            }*/
 
             // Extrapolate
-            report = EpicurveExtrapolator.extrapolateCases(report, histogramReport);
+            //report = EpicurveExtrapolator.extrapolateCases(report, histogramReport);
 
             // Calculate moving average
             report = MovingAverageCalculator.calculate(report, 7);

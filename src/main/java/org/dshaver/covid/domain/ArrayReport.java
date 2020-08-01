@@ -42,6 +42,10 @@ public class ArrayReport {
     }
 
     public ArrayReport(Report report) {
+        this(report, "georgia");
+    }
+
+    public ArrayReport(Report report, String county) {
         this.id = report.getId();
         this.createTime = report.getCreateTime();
         this.reportDate = report.getReportDate();
@@ -56,14 +60,14 @@ public class ArrayReport {
         this.icu = report.getIcu();
         this.icuVm = report.getIcuVm();
 
-        Collection<EpicurvePoint> dataPoints = report.getGeorgiaEpicurve().getData();
+        Collection<EpicurvePoint> dataPoints = report.getEpicurves().get(county.toLowerCase()).getData();
         this.curveDates = dataPoints.stream().map(EpicurvePoint::getLabelDate).toArray(LocalDate[]::new);
-        this.caseDeltas = dataPoints.stream().map(EpicurvePoint::getCasesVm).toArray(Integer[]::new);
-        this.deathDeltas = dataPoints.stream().map(EpicurvePoint::getDeathsVm).toArray(Integer[]::new);
-        this.cases = dataPoints.stream().map(EpicurvePoint::getPositiveCount).toArray(Integer[]::new);
-        this.deaths = dataPoints.stream().map(EpicurvePoint::getDeathCount).toArray(Integer[]::new);
-        this.caseProjections = dataPoints.stream().map(EpicurvePoint::getCasesExtrapolated).toArray(Integer[]::new);
-        this.movingAvgs = dataPoints.stream().map(EpicurvePoint::getMovingAvg).toArray(Integer[]::new);
+        this.caseDeltas = dataPoints.stream().map(EpicurvePoint::getCasesVm).map(i -> i != null ? i : 0).toArray(Integer[]::new);
+        this.deathDeltas = dataPoints.stream().map(EpicurvePoint::getDeathsVm).map(i -> i != null ? i : 0).toArray(Integer[]::new);
+        this.cases = dataPoints.stream().map(EpicurvePoint::getPositiveCount).map(i -> i != null ? i : 0).toArray(Integer[]::new);
+        this.deaths = dataPoints.stream().map(EpicurvePoint::getDeathCount).map(i -> i != null ? i : 0).toArray(Integer[]::new);
+        this.caseProjections = dataPoints.stream().map(EpicurvePoint::getCasesExtrapolated).map(i -> i != null ? i : 0).toArray(Integer[]::new);
+        this.movingAvgs = dataPoints.stream().map(EpicurvePoint::getMovingAvg).map(i -> i != null ? i : 0).toArray(Integer[]::new);
 
         assertReport();
     }

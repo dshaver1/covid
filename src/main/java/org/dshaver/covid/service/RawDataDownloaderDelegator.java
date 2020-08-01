@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +31,10 @@ public class RawDataDownloaderDelegator {
         this.downloaderV2 = downloaderV2;
         this.downloadUrl1 = downloadUrl1;
         this.downloadUrl2 = downloadUrl2;
+    }
+
+    public RawData transform(File file) throws Exception {
+            return downloaderV2.transform(new FileInputStream(file), false);
     }
 
     public RawData download(Class<? extends RawData> rawDataClass) {

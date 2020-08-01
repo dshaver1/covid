@@ -66,4 +66,10 @@ public class RawDataDownloader1 implements RawDataDownloader<RawDataV1> {
         rawData.setLines(downloadedStrings);
         return rawData;
     }
+
+    // TODO
+    @Override
+    public RawDataV1 transform(InputStream inputStream, boolean writeToDisk) {
+        return null;
+    }
 }

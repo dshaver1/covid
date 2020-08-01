@@ -22,6 +22,7 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
     private static final Logger logger = LoggerFactory.getLogger(EpicurveExtractorImpl2.class);
     private static final Pattern epicurvePattern = Pattern.compile("(\\[\\{\"measure\".+?}])");
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
+    public static final List<String> COUNTY_FILTER = Arrays.asList("Georgia", "Cobb", "Fulton", "Gwinnett", "DeKalb", "Carroll", "Unknown");
 
     @Inject
     protected EpicurveExtractorImpl2(ObjectMapper objectMapper) {
@@ -46,15 +47,15 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
                 for (EpicurvePointImpl2 current : epicurvePoints) {
                     LocalDate labelDate = LocalDate.parse(current.getTestDate(), DateTimeFormatter.ISO_DATE);
                     // Next iterate over the points and filter/decorate as needed.
-                    if (labelDate.isAfter(EARLIEST_DATE)) {
+                    if (labelDate.isAfter(EARLIEST_DATE) && COUNTY_FILTER.contains(current.getCounty())) {
                         current.setSource(id);
                         current.setLabel(labelDate.format(DateTimeFormatter.ISO_DATE).toUpperCase());
                         current.setLabelDate(labelDate);
-                        Collection<EpicurvePoint> countyPoints = filteredDataPoints.computeIfAbsent(current.getCounty(), k -> new TreeSet<>());
+                        Collection<EpicurvePoint> countyPoints = filteredDataPoints.computeIfAbsent(current.getCounty().toLowerCase(), k -> new TreeSet<>());
                         countyPoints.add(current);
 
                         // Add to totals. We're doing this to QA the totals DPH is reporting.
-                        if (!current.getCounty().equals("Georgia")) {
+                        if (!current.getCounty().toLowerCase().equals("georgia")) {
                             caseTotals.merge(labelDate, current.getPositiveCount(), Integer::sum);
                             deathTotals.merge(labelDate, current.getDeathCount(), Integer::sum);
                         }
@@ -65,36 +66,12 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
 
                 // Now we construct our target object
                 filteredDataPoints.forEach((county, points) -> {
-                    Epicurve countyEpicurve = countyToCurveMap.computeIfAbsent(county, k -> new Epicurve(county));
+                    Epicurve countyEpicurve = countyToCurveMap.computeIfAbsent(county.toLowerCase(), k -> new Epicurve(county));
                     countyEpicurve.setData(points);
                 });
 
-                Epicurve georgia = countyToCurveMap.values().stream().filter(e -> e.getCounty().equals("Georgia")).findFirst().get();
-
-                georgia.getData()
-                        .stream()
-                        .map(p -> (EpicurvePointImpl2)p)
-                        .forEach(p -> {
-                            p.setManualCaseTotal(caseTotals.get(p.getLabelDate()));
-                            p.setManualDeathTotal(deathTotals.get(p.getLabelDate()));
-
-                            if (!p.getManualCaseTotal().equals(p.getPositiveCount())) {
-                                logger.info("Disparity found between county sum and provided Georgia positive count for report {} on " +
-                                        "{}! Provided positive count: {}, manual county sum: {}", p.getSource(), p.getLabelDate(),
-                                        p.getPositiveCount(), p.getManualCaseTotal());
-                            }
-
-                            if (!p.getManualDeathTotal().equals(p.getDeathCount())) {
-                                logger.info("Disparity found between county sum and provided Georgia deaths count for report {} on " +
-                                                "{}! Provided death count: {}, manual county sum: {}", p.getSource(), p.getLabelDate(),
-                                        p.getDeathCount(), p.getManualDeathTotal());
-                            }
-                        });
-
                 // And put it in an optional to return.
                 epicurve = Optional.of(countyToCurveMap);
-
-
 
             }
         } catch (Exception e) {

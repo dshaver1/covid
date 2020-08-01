@@ -1,9 +1,14 @@
 package org.dshaver.covid.service;
 
 import org.dshaver.covid.domain.ArrayReport;
+import org.dshaver.covid.domain.Report;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CsvService {
+    private static final Logger logger = LoggerFactory.getLogger(CsvService.class);
 
     public String[] createHeader(Collection<ArrayReport> reports) {
         List<String> header = new ArrayList<>();
@@ -78,6 +84,68 @@ public class CsvService {
     public String readFile(String dir, String filename) throws Exception {
         Path path = Paths.get(dir).resolve(filename);
         return String.join("\n", Files.readAllLines(path));
+    }
+
+    public void delete(String dir, String county) {
+        try {
+            Files.deleteIfExists(Paths.get(dir).resolve(String.format("cases_%s.csv", county)));
+            Files.deleteIfExists(Paths.get(dir).resolve(String.format("caseDeltas_%s.csv", county)));
+            //Files.deleteIfExists(Paths.get(dir).resolve(String.format("caseProjections_%s.csv", county)));
+            Files.deleteIfExists(Paths.get(dir).resolve(String.format("movingAvgs_%s.csv", county)));
+            Files.deleteIfExists(Paths.get(dir).resolve(String.format("deaths_%s.csv", county)));
+            Files.deleteIfExists(Paths.get(dir).resolve(String.format("deathDeltas_%s.csv", county)));
+        } catch (IOException e) {
+            logger.error("Could not delete files!", e);
+        }
+    }
+
+    public void appendFile(String dir, String type, String county, String[] header, Report report, Function<ArrayReport, Integer[]> intFunction) throws Exception {
+        Path path = Paths.get(dir).resolve(String.format("%s_%s.csv", type, county));
+
+        ArrayReport arrayReport = new ArrayReport(report, county);
+
+        BufferedWriter writer = null;
+        if (path.toFile().exists()) {
+            writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
+        } else {
+            writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
+            writer.write(String.join(",", header));
+        }
+
+        writer.write("\n");
+
+        List<String> row = new ArrayList<>();
+
+        row.add(report.getId());
+        row.addAll(Arrays.stream(intFunction.apply(arrayReport)).map(Object::toString).collect(Collectors.toList()));
+
+        writer.write(String.join(",", row));
+
+        writer.close();
+    }
+
+    public void updateHeader(String dir, String filename, String[] header) throws Exception {
+        Path path = Paths.get(dir).resolve(filename);
+        List<String> existingRows = new ArrayList<>();
+
+        try (FileReader fileReader = new FileReader(path.toFile()); BufferedReader br = new BufferedReader(fileReader)) {
+            // Skip existing header
+            br.readLine();
+            String currentString;
+            // Save the rest of the file to memory so we can prepend the new header.
+            while ((currentString = br.readLine()) != null) {
+                existingRows.add(currentString);
+            }
+        }
+
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE)) {
+            writer.write(String.join(",", header));
+
+            for (String currentRow : existingRows) {
+                writer.write("\n");
+                writer.write(currentRow);
+            }
+        }
     }
 
     public String writeFile(String dir, String filename, String[] header, Collection<ArrayReport> reports, Function<ArrayReport, Integer[]> intFunction) throws Exception {

@@ -26,7 +26,7 @@ import java.util.Map;
         "top5CaseDeltas", "top5DeathDeltas", "georgiaEpicurve"})
 @Document("reports")
 public class Report {
-    public static final String GEORGIA = "Georgia";
+    public static final String GEORGIA = "georgia";
     private static final Logger logger = LoggerFactory.getLogger(Report.class);
     private static final String dataFolder = "H:\\dev\\covid\\data\\";
 
