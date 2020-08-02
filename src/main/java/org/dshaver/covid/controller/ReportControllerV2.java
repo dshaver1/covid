@@ -92,7 +92,7 @@ public class ReportControllerV2 {
             case "cases":
                 return csvService.readFile(reportTgtDir, "cases_" + county.toLowerCase() + ".csv");
             case "caseDeltas":
-                return csvService.readFile(reportTgtDir, "casesDeltas_" + county.toLowerCase() + ".csv");
+                return csvService.readFile(reportTgtDir, "caseDeltas_" + county.toLowerCase() + ".csv");
             case "caseProjections":
                 return csvService.readFile(reportTgtDir, "caseProjections_" + county.toLowerCase() + ".csv");
             case "movingAvgs":

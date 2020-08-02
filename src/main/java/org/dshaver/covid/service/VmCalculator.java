@@ -71,8 +71,8 @@ public class VmCalculator {
     public static Collection<EpicurvePoint> calculateTopDeltas(Report report, Function<EpicurvePoint, Integer> valueFunction) {
         List<EpicurvePoint> sorted = report.getEpicurves().values()
                 .stream()
-                .filter(epicurve -> !epicurve.getCounty().equals("Georgia"))
-                .filter(epicurve -> !epicurve.getCounty().equals("Unknown"))
+                .filter(epicurve -> !epicurve.getCounty().toLowerCase().equals("georgia"))
+                .filter(epicurve -> !epicurve.getCounty().toLowerCase().equals("unknown"))
                 .flatMap(epicurve -> epicurve.getData().stream())
                 .filter(point -> valueFunction.apply(point) != null)
                 .filter(point -> point.getLabel() != null)
