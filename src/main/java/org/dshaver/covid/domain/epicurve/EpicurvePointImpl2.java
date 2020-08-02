@@ -59,7 +59,7 @@ public class EpicurvePointImpl2 implements EpicurvePoint {
     @Override
     public int compareTo(EpicurvePoint o) {
         int compare = 0;
-        compare = county.compareTo(o.getCounty());
+        compare = county.toLowerCase().compareTo(o.getCounty().toLowerCase());
 
         if (compare == 0) {
             compare = label.compareTo(o.getLabel());

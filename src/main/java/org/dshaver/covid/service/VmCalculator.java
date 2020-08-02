@@ -27,8 +27,8 @@ public class VmCalculator {
         Table<String, LocalDate, Integer> casesVm = getCurveVm(report, previousReport, EpicurvePoint::getPositiveCount);
         Table<String, LocalDate, Integer> deathsVm = getCurveVm(report, previousReport, EpicurvePoint::getDeathCount);
         report.getEpicurves().values().stream().flatMap(epicurve -> epicurve.getData().stream()).forEach(point -> {
-            point.setCasesVm(casesVm.get(point.getCounty(), point.getLabelDate()));
-            point.setDeathsVm(deathsVm.get(point.getCounty(), point.getLabelDate()));
+            point.setCasesVm(casesVm.get(point.getCounty().toLowerCase(), point.getLabelDate()));
+            point.setDeathsVm(deathsVm.get(point.getCounty().toLowerCase(), point.getLabelDate()));
         });
 
         return report;
