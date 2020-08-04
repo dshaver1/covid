@@ -306,7 +306,7 @@ public class ReportService {
             rawDataRepository.deleteAll(RawDataV2.class);
         }
 
-        allData.stream().filter(data -> data.getClass().equals(RawDataV2.class)).forEach(rawDataRepository::save);
+        //allData.stream().filter(data -> data.getClass().equals(RawDataV2.class)).forEach(rawDataRepository::save);
 
         List<Report> candidatePreviousReports = reportRepository.findByReportDateOrderByIdAsc(allData.get(0).getReportDate().minusDays(1));
 
@@ -361,8 +361,8 @@ public class ReportService {
         DownloadResponse response = new DownloadResponse();
         // Save raw data
         try {
-            rawDataRepository.save(data);
-            logger.info("Done saving RawDataV2.");
+            //rawDataRepository.save(data);
+            //logger.info("Done saving RawDataV2.");
         } catch (DuplicateKeyException e) {
             logger.info("Already saved this page. Skipping...");
         }
