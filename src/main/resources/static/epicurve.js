@@ -601,10 +601,12 @@ class Epicurve {
                 content += `
                     <table style="margin-top: 2.5px;">
                             <tr><td>Reported Cases: </td><td style="text-align: right">` + getReportedCases(d) + `</td></tr>
+                            <tr><td>Reported Cases: </td><td style="text-align: right">` + getReportedDeaths(d) + `</td></tr>
                             <tr><td>Confirmed Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
                             <tr><td>Confirmed Deaths: </td><td style="text-align: right">` + getDeaths(d) + `</td></tr>
                             <tr><td>Case Delta: </td><td style="text-align: right">` + getCaseDeltas(d) + `</td></tr>
-                            <tr><td>Moving Average: </td><td style="text-align: right">` + getMovingAvg(d) + `</td></tr>
+                            <tr><td>Death Delta: </td><td style="text-align: right">` + getDeathDeltas(d) + `</td></tr>
+                            <tr><td>Case 7d Avg: </td><td style="text-align: right">` + getMovingAvg(d) + `</td></tr>
                     </table>
                     `;
                 return content;
