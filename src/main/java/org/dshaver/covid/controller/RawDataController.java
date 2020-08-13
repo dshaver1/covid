@@ -1,6 +1,10 @@
 package org.dshaver.covid.controller;
 
 import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.dshaver.covid.dao.ManualRawDataRepository;
 import org.dshaver.covid.dao.RawDataRepositoryV1;
 import org.dshaver.covid.dao.RawDataRepositoryV2;
@@ -73,7 +77,9 @@ public class RawDataController {
     @GetMapping("/rawdata")
     public String getRawData(@RequestParam(name = "reportDate")
                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate,
-                             @RequestParam(name = "filter", required = false) String filter) throws Exception {
+                             @RequestParam(name = "filter", required = false) String filter,
+                             @RequestParam(name = "formatted", required = false) Boolean formatted) throws Exception {
+        boolean defaultedFormatted = formatted == null ? true : formatted;
         logger.info("Got request for raw data: {} with filter {} ", reportDate, filter);
 
         Collection<File> files = fileRepository.getRawDataFiles(reportDate, reportDate);
@@ -91,11 +97,20 @@ public class RawDataController {
             }
 
             if (epicurveString.isPresent()) {
+                if (defaultedFormatted) {
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    JsonParser jp = new JsonParser();
+                    JsonElement je = jp.parse(epicurveString.get());
+                    String prettyJsonString = gson.toJson(je);
+                    return prettyJsonString;
+                }
+
                 return epicurveString.get();
             }
         }
 
-        return String.join("\n", Files.readAllLines(path));
+
+        return String.join("\n", rawStrings);
     }
 
 

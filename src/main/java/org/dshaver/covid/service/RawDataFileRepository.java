@@ -86,7 +86,7 @@ public class RawDataFileRepository {
 
                             return fileDate.toLocalDate();
                         } else {
-                            logger.info("Skipping unrecognized file: " + filename);
+                            logger.debug("Skipping unrecognized file: " + filename);
 
                             return LocalDate.of(1990,1,1);
                         }
@@ -109,7 +109,7 @@ public class RawDataFileRepository {
                                 filteredFiles.add(path.toFile());
                                 break;
                             } else {
-                                logger.info("Skipping " + path.getFileName().toString() + " since there is a later one for this date...");
+                                logger.debug("Skipping " + path.getFileName().toString() + " since there is a later one for this date...");
                             }
                         }
                     }
