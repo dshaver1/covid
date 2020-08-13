@@ -212,10 +212,10 @@
 
     function getDeathsYScale(data) {
         if (deltaEnabled) {
-            return 30;
+            return 10;
         }
 
-        return 30 + d3.max(data, function (d) {
+        return 10 + d3.max(data, function (d) {
             return d.reportedDeaths;
         })
     }
