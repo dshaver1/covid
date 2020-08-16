@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Data
@@ -122,5 +123,31 @@ public class ArrayReport {
         Preconditions.checkArgument(dateCount == this.deaths.length, "Count of deaths does not match count of curveDates for report on " + this.reportDate);
         Preconditions.checkArgument(dateCount == this.caseProjections.length, "Count of caseProjections does not match count of curveDates for report on " + this.reportDate);
         Preconditions.checkArgument(dateCount == this.movingAvgs.length, "Count of movingAvgs does not match count of curveDates for report on " + this.reportDate);
+    }
+
+    public Integer[] getCaseDeltasNormalized() {
+        return getReversedArray(getCaseDeltas(), 100);
+    }
+
+    public Integer[] getDeathDeltasNormalized() {
+        return getReversedArray(getDeathDeltas(), 100);
+    }
+
+    private Integer[] getReversedArray(Integer[] array, int limit) {
+        LinkedList<Integer> stack = new LinkedList<>();
+        Arrays.stream(array).forEach(stack::push);
+
+        Integer[] reversed = new Integer[limit];
+
+        for (int i = 0; i < limit; i++) {
+            if (i < stack.size()) {
+                reversed[i] = stack.get(i);
+            }
+            else {
+                reversed[i] = 0;
+            }
+        }
+
+        return reversed;
     }
 }

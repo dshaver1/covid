@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.dshaver.covid.service.extractor.EpicurveExtractorImpl2.COUNTY_FILTER;
 
@@ -277,6 +278,10 @@ public class ReportService {
         });
 
         String[] headerArray = csvService.createHeader(filteredReports);
+        List<String> distributionList = new ArrayList<>();
+        distributionList.add("id");
+        distributionList.addAll(IntStream.rangeClosed(-99, 0).boxed().map(i -> -i + -99).map(Object::toString).collect(Collectors.toList()));
+        String[] distributionHeader = distributionList.toArray(new String[0]);
 
         try {
             csvService.writeFile(reportTgtDir, "cases.csv", headerArray, filteredReports, ArrayReport::getCases);
@@ -285,6 +290,8 @@ public class ReportService {
             csvService.writeFile(reportTgtDir, "movingAvgs.csv", headerArray, filteredReports, ArrayReport::getMovingAvgs);
             csvService.writeFile(reportTgtDir, "deaths.csv", headerArray, filteredReports, ArrayReport::getDeaths);
             csvService.writeFile(reportTgtDir, "deathDeltas.csv", headerArray, filteredReports, ArrayReport::getDeathDeltas);
+            csvService.writeFile(reportTgtDir, "caseDeltasNormalized.csv", distributionHeader, filteredReports, ArrayReport::getCaseDeltasNormalized);
+            csvService.writeFile(reportTgtDir, "deathDeltasNormalized.csv", distributionHeader, filteredReports, ArrayReport::getDeathDeltasNormalized);
             csvService.writeSummary(reportTgtDir, "summary.csv", filteredReports);
         } catch (Exception e) {
             logger.error("Could not save csvs!", e);
