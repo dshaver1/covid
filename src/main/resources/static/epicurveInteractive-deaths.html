@@ -119,11 +119,11 @@
         d3.csv("reports/v2/deaths.csv"),
         d3.csv("reports/v2/caseDeltas.csv"),
         d3.csv("reports/v2/deathDeltas.csv"),
-        d3.csv("reports/v2/caseProjections.csv"),
+        //d3.csv("reports/v2/caseProjections.csv"),
         d3.csv("reports/v2/movingAvgs.csv")
     ]).then(function (files) {
         summaryData = files[0];
-        chartData = epicurve.parseChartData(summaryData, files[1], files[2], files[3], files[4], files[5], files[6]);
+        chartData = epicurve.parseChartData(summaryData, files[1], files[2], files[3], files[4], null, files[5]);
         let latestSummary = summaryData[summaryData.length - 1];
         let latestDate = latestSummary.reportDate;
 

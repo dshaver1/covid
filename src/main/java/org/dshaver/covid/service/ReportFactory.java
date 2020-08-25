@@ -7,6 +7,7 @@ import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.*;
 import org.dshaver.covid.domain.overview.ReportOverview;
 import org.dshaver.covid.service.extractor.Extractor;
+import org.dshaver.covid.service.extractor.HealthcareWorkerExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,6 +38,7 @@ public class ReportFactory {
     private final ObjectMapper objectMapper;
     private final Extractor<String, ReportOverview> reportOverviewExtractor;
     private final Extractor<String, Map<String, Epicurve>> epicurveExtractor;
+    private final HealthcareWorkerExtractor healthcareWorkerExtractor;
 
     {
         whiteList.add("VAR ");
@@ -52,10 +54,11 @@ public class ReportFactory {
     @Inject
     public ReportFactory(ObjectMapper objectMapper,
                          @Qualifier("reportOverviewExtractorDelegator") Extractor<String, ReportOverview> reportOverviewExtractor,
-                         @Qualifier("epicurveExtractorDelegator") Extractor<String, Map<String, Epicurve>> epicurveExtractor) {
+                         @Qualifier("epicurveExtractorDelegator") Extractor<String, Map<String, Epicurve>> epicurveExtractor, HealthcareWorkerExtractor healthcareWorkerExtractor) {
         this.objectMapper = objectMapper;
         this.reportOverviewExtractor = reportOverviewExtractor;
         this.epicurveExtractor = epicurveExtractor;
+        this.healthcareWorkerExtractor = healthcareWorkerExtractor;
     }
 
     public Report createReport(RawData rawData, Report previousReport) throws Exception {
@@ -116,6 +119,7 @@ public class ReportFactory {
 
     public Report createReport(RawDataV2 rawData, Report previousReport) throws Exception {
         Optional<Map<String, Epicurve>> maybeEpicurve = epicurveExtractor.extract(rawData.getPayload(), rawData.getId());
+        Optional<Map<String, Epicurve>> maybeHealthcareEpicurve = healthcareWorkerExtractor.extract(rawData.getPayload(), rawData.getId());
 
         if (!maybeEpicurve.isPresent()) {
             throw new IllegalStateException("Could not find Epicurve within raw data!");
@@ -128,6 +132,12 @@ public class ReportFactory {
         }
 
         Map<String, Epicurve> epicurves = maybeEpicurve.get();
+
+        if (maybeHealthcareEpicurve.isPresent()) {
+            logger.info("Found healthcare epicurve!");
+            epicurves.put("healthcare", maybeHealthcareEpicurve.get().get("healthcare"));
+        }
+
         ReportOverview overview = maybeOverview.get();
         Report report = new Report(LocalDateTime.now(),
                 rawData.getId(),

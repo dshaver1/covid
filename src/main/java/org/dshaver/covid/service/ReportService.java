@@ -130,6 +130,7 @@ public class ReportService {
             logger.info("New data found! Proceeding to update csvs.");
 
             COUNTY_FILTER.forEach(d -> csvService.delete(reportTgtDir, d));
+            csvService.delete(reportTgtDir, "healthcare");
 
             List<File> files = rawDataFileRepository.getAllRawDataFiles();
 
@@ -145,6 +146,11 @@ public class ReportService {
 
             for (File currentFile : files) {
                 previousReport = write(currentFile, previousReport, header, histogramReport);
+            }
+
+            if (previousReport != null) {
+                previousReport.getEpicurves().keySet().forEach(county ->
+                        csvService.writeSummary(reportTgtDir, "summary_" + county + ".csv", getFilteredReports(county)));
             }
         } else {
             logger.info("No new data. Existing file {} has the same id as new file {}!", latestFile.getName(), downloaded.getId());
@@ -239,7 +245,6 @@ public class ReportService {
                 csvService.appendFile(reportTgtDir, "movingAvgs", epicurve.getCounty().toLowerCase(), header, currentReport, ArrayReport::getMovingAvgs);
                 csvService.appendFile(reportTgtDir, "deaths", epicurve.getCounty().toLowerCase(), header, currentReport, ArrayReport::getDeaths);
                 csvService.appendFile(reportTgtDir, "deathDeltas", epicurve.getCounty().toLowerCase(), header, currentReport, ArrayReport::getDeathDeltas);
-                //csvService.writeSummary(reportTgtDir, "summary.csv", filteredReports);
             }
         } catch (Exception e) {
             logger.error("Could not transform file " + currentFile.getName(), e);
@@ -251,31 +256,8 @@ public class ReportService {
     public boolean generateAllCsvs(String reportTgtDir) {
         logger.info("Saving CSVs!");
         boolean success = true;
-        LocalDate defaultedStartDate = LocalDate.of(2020, 1, 1);
-        LocalDate defaultedEndDate = LocalDate.of(2030, 1, 1);
 
-        Map<LocalDate, List<ArrayReport>> groupedReports =
-                reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate).stream()
-                        .map(ArrayReport::new)
-                        .collect(Collectors.groupingBy(ArrayReport::getReportDate));
-
-        TreeSet<ArrayReport> filteredReports = new TreeSet<>(Comparator.comparing(ArrayReport::getId));
-        groupedReports.forEach((reportDate, reports) -> {
-            ArrayReport selectedReport = reports.get(0);
-
-            for (ArrayReport currentReport : reports) {
-                int selectedDiff = Math.abs(LocalDateTime.parse(selectedReport.getId()).getHour() - TARGET_HOUR);
-                int currentDiff = Math.abs(LocalDateTime.parse(currentReport.getId()).getHour() - TARGET_HOUR);
-
-                selectedReport = currentDiff < selectedDiff ? currentReport : selectedReport;
-
-                if (currentDiff == 0) {
-                    break;
-                }
-            }
-
-            filteredReports.add(selectedReport);
-        });
+        Set<ArrayReport> filteredReports = getFilteredReports("georgia");
 
         String[] headerArray = csvService.createHeader(filteredReports);
         List<String> distributionList = new ArrayList<>();
@@ -300,6 +282,41 @@ public class ReportService {
         }
 
         return success;
+    }
+
+    public Set<ArrayReport> getFilteredReports(String county) {
+        LocalDate defaultedStartDate = LocalDate.of(2020, 1, 1);
+        LocalDate defaultedEndDate = LocalDate.of(2030, 1, 1);
+
+        return getFilteredReports(county, defaultedStartDate, defaultedEndDate);
+    }
+
+    public Set<ArrayReport> getFilteredReports(String county, LocalDate startDate, LocalDate endDate) {
+        Map<LocalDate, List<ArrayReport>> groupedReports =
+                reportRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate).stream()
+                        .filter(r -> r.getEpicurves().get(county) != null)
+                        .map(r -> new ArrayReport(r, county))
+                        .collect(Collectors.groupingBy(ArrayReport::getReportDate));
+
+        TreeSet<ArrayReport> filteredReports = new TreeSet<>(Comparator.comparing(ArrayReport::getId));
+        groupedReports.forEach((reportDate, reports) -> {
+            ArrayReport selectedReport = reports.get(0);
+
+            for (ArrayReport currentReport : reports) {
+                int selectedDiff = Math.abs(LocalDateTime.parse(selectedReport.getId()).getHour() - TARGET_HOUR);
+                int currentDiff = Math.abs(LocalDateTime.parse(currentReport.getId()).getHour() - TARGET_HOUR);
+
+                selectedReport = currentDiff < selectedDiff ? currentReport : selectedReport;
+
+                if (currentDiff == 0) {
+                    break;
+                }
+            }
+
+            filteredReports.add(selectedReport);
+        });
+
+        return filteredReports;
     }
 
     public void bulkProcess(LocalDate startDate, LocalDate endDate, boolean deleteFirst) {

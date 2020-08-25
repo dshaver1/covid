@@ -415,21 +415,21 @@ class Epicurve {
             reportedDeathsData[d.reportDate] = d.deathsVm;
         });
 
-        for (let i = 0; i < summaryData.length; i++) {
+        for (let i = 0; i < caseData.length; i++) {
             let currentSummaryData = summaryData[i];
             let currentCaseData = caseData[i];
             let currentDeathData = deathData[i];
             let currentCaseDeltaData = caseDeltaData[i];
             let currentDeathDeltaData = deathDeltaData[i];
-            let currentCaseProjectionData = caseProjectionData[i];
+            //let currentCaseProjectionData = caseProjectionData[i];
             let currentMovingAvgData = movingAvgData[i];
             let currentReportDates = Object.keys(currentCaseData).filter(function (d) {
                 return d !== 'id'
             });
-            let currentTimeseries = tempChartData[currentSummaryData.id];
+            let currentTimeseries = tempChartData[currentCaseData.id];
             if (!currentTimeseries) {
                 currentTimeseries = [];
-                tempChartData[currentSummaryData.id] = currentTimeseries;
+                tempChartData[currentCaseData.id] = currentTimeseries;
             }
             currentReportDates
                 .filter(function (d) {
@@ -442,7 +442,7 @@ class Epicurve {
                         deaths: +currentDeathData[d],
                         casesDelta: +currentCaseDeltaData[d],
                         deathsDelta: +currentDeathDeltaData[d],
-                        casesProjection: +currentCaseProjectionData[d],
+                        //casesProjection: +currentCaseProjectionData[d],
                         movingAvg: +currentMovingAvgData[d],
                         reportedCases: +reportedCasesData[d],
                         reportedDeaths: +reportedDeathsData[d]
@@ -946,6 +946,10 @@ function handleDeathMouseOut(d, i, d3This, color) {
         .style("fill", color)
         .attr("opacity", "0");
     tip.hide(d, i);
+}
+
+function sumTimeSeries(data) {
+    return Object.values(data).map(d => +d).filter(d => !isNaN(d)).reduce((d1,d2) => d1+d2)
 }
 
 d3.selection.prototype.moveToFront = function () {

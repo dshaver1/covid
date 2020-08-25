@@ -9,9 +9,15 @@ import java.util.Comparator;
 
 public class MovingAverageCalculator {
     public static Report calculate(Report report, int numDays) {
-        Collection<EpicurvePoint> lookupCurve = new ArrayList<>(report.getGeorgiaEpicurve().getData());
+        report.getEpicurves().keySet().forEach(county -> calculate(report, numDays, county));
 
-        report.getGeorgiaEpicurve().getData().forEach(p -> {
+        return report;
+    }
+
+    public static Report calculate(Report report, int numDays, String county) {
+        Collection<EpicurvePoint> lookupCurve = new ArrayList<>(report.getEpicurves().get(county).getData());
+
+        report.getEpicurves().get(county).getData().forEach(p -> {
             p.setMovingAvg((int) lookupCurve.stream()
                     .filter(lookupPoint -> !p.getLabelDate().isBefore(lookupPoint.getLabelDate()))
                     .sorted(Comparator.comparing(EpicurvePoint::getLabelDate).reversed())

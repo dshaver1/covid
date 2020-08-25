@@ -214,7 +214,7 @@
         "label": "Stay-At-Home Order Expired"
     }]
 
-    var keys = ["Confirmed Cases", "Deaths"];
+    var keys = ["Onset Cases", "Deaths"];
     var colors = ["#8a89a6", "#ff8c00", "#504aff", "#b81200", "#c2c1d9", "#565668", "#68677d"];
 
     // set the dimensions of the canvas
@@ -521,7 +521,7 @@
                 var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
                 content += `
                     <table style="margin-top: 2.5px;">
-                            <tr><td>Confirmed Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
+                            <tr><td>Onset Cases: </td><td style="text-align: right">` + getCases(d) + `</td></tr>
                             <tr><td>Projected Cases: </td><td style="text-align: right">` + getProjections(d) + `</td></tr>
                             <tr><td>Confirmed Deaths: </td><td style="text-align: right">` + getDeaths(d) + `</td></tr>
                     </table>

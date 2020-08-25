@@ -101,6 +101,8 @@ public class ReportControllerV2 {
                 return csvService.readFile(reportTgtDir, "deaths_" + county.toLowerCase() + ".csv");
             case "deathDeltas":
                 return csvService.readFile(reportTgtDir, "deathDeltas_" + county.toLowerCase() + ".csv");
+            case "summary":
+                return csvService.readFile(reportTgtDir, "summary_" + county.toLowerCase() + ".csv");
             default:
                 throw new UnsupportedOperationException("Unrecognized filename request: " + type + "_" + county + ".csv");
         }

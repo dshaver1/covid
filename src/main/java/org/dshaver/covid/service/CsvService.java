@@ -40,45 +40,58 @@ public class CsvService {
         return header.toArray(new String[]{});
     }
 
-    public String writeSummary(String dir, String filename, Collection<ArrayReport> reports) throws Exception {
+    public String writeSummary(String dir, String filename, Collection<ArrayReport> reports) {
         Path path = Paths.get(dir).resolve(filename);
-        Files.deleteIfExists(path);
-        BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
+        List<String> result = new ArrayList<>();
 
-        String[] header = new String[]{"id", "createTime", "reportDate", "totalTests", "totalTestVm",
-                "totalConfirmedCases", "totalDeaths", "confirmedCasesVm", "hospitalized", "hospitalizedVm", "deathsVm",
-                "icu", "icuVm", "casesVsDeathsCorrelation"};
-
-        writer.write(String.join(",", header));
-
-        List<String> row = new ArrayList<>();
-        for (ArrayReport report : reports) {
-            writer.write("\n");
-
-            row.add(report.getId());
-            row.add(report.getCreateTime().toString());
-            row.add(report.getReportDate().toString());
-            row.add("" + report.getTotalTests());
-            row.add("" + report.getTotalTestsVm());
-            row.add("" + report.getTotalConfirmedCases());
-            row.add("" + report.getTotalDeaths());
-            row.add("" + report.getConfirmedCasesVm());
-            row.add("" + report.getHospitalized());
-            row.add("" + report.getHospitalizedVm());
-            row.add("" + report.getDeathsVm());
-            row.add("" + report.getIcu());
-            row.add("" + report.getIcuVm());
-
-            writer.write(String.join(",", row));
-
-            writer.flush();
-
-            row.clear();
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            logger.error("Error deleting old summary csv " + path);
         }
 
-        writer.close();
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE)) {
+            String[] header = new String[]{"id", "createTime", "reportDate", "totalTests", "totalTestVm",
+                    "totalConfirmedCases", "totalDeaths", "confirmedCasesVm", "hospitalized", "hospitalizedVm", "deathsVm",
+                    "icu", "icuVm", "casesVsDeathsCorrelation"};
 
-        return String.join("\n", Files.readAllLines(path));
+            writer.write(String.join(",", header));
+
+            List<String> row = new ArrayList<>();
+            for (ArrayReport report : reports) {
+                writer.write("\n");
+
+                row.add(report.getId());
+                row.add(report.getCreateTime().toString());
+                row.add(report.getReportDate().toString());
+                row.add("" + report.getTotalTests());
+                row.add("" + report.getTotalTestsVm());
+                row.add("" + report.getTotalConfirmedCases());
+                row.add("" + report.getTotalDeaths());
+                row.add("" + report.getConfirmedCasesVm());
+                row.add("" + report.getHospitalized());
+                row.add("" + report.getHospitalizedVm());
+                row.add("" + report.getDeathsVm());
+                row.add("" + report.getIcu());
+                row.add("" + report.getIcuVm());
+
+                writer.write(String.join(",", row));
+
+                writer.flush();
+
+                row.clear();
+            }
+        } catch (IOException e) {
+            logger.error("Error writing summary csv: " + filename, e);
+        }
+
+        try {
+            result = Files.readAllLines(path);
+        } catch (IOException e) {
+            logger.error("Error reading back summary file: " + filename, e);
+        }
+
+        return String.join("\n", result);
     }
 
     public String readFile(String dir, String filename) throws Exception {

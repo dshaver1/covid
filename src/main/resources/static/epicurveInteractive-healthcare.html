@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GA Cases Epicurve</title>
+    <title>GA Cases Epicurve for Healthcare Workers</title>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-2"></div>
             <div class="masthead clearfix col-md-8">
-                <h3 class="masthead-brand">Historical COVID-19 Cases Epicurve for Georgia</h3>
+                <h3 class="masthead-brand">Historical COVID-19 Cases Epicurve for Georgia Healthcare Workers</h3>
             </div>
             <div class="col-md-2"></div>
         </div>
@@ -61,10 +61,10 @@
             <p>
                 Data dumps (CSV)<br/>
             <ul>
-                <li><a href="/reports/v2/cases.csv">Cases Per Day</a></li>
-                <li><a href="/reports/v2/deaths.csv">Deaths Per Day</a></li>
-                <li><a href="/reports/v2/caseDeltas.csv">Case Deltas Per Day</a></li>
-                <li><a href="/reports/v2/movingAvgs.csv">Case Moving Averages</a></li>
+                <li><a href="/reports/v2/cases_healthcare.csv">Cases Per Day</a></li>
+                <li><a href="/reports/v2/deaths_healthcare.csv">Deaths Per Day</a></li>
+                <li><a href="/reports/v2/caseDeltas_healthcare.csv">Case Deltas Per Day</a></li>
+                <li><a href="/reports/v2/movingAvgs_healthcare.csv">Case Moving Averages</a></li>
                 <li><a href="/reports/v2/summary.csv">Summary Data</a></li>
             </ul>
             </p>
@@ -114,13 +114,13 @@
     epicurve = new Epicurve(dphSvg, width, height, dphxScale, dphyScale, dphxAxis, dphyAxis);
 
     Promise.all([
-        d3.csv("reports/v2/summary.csv"),
-        d3.csv("reports/v2/cases.csv"),
-        d3.csv("reports/v2/deaths.csv"),
-        d3.csv("reports/v2/caseDeltas.csv"),
-        d3.csv("reports/v2/deathDeltas.csv"),
+        d3.csv("reports/v2/county/summary_healthcare.csv"),
+        d3.csv("reports/v2/county/cases_healthcare.csv"),
+        d3.csv("reports/v2/county/deaths_healthcare.csv"),
+        d3.csv("reports/v2/county/caseDeltas_healthcare.csv"),
+        d3.csv("reports/v2/county/deathDeltas_healthcare.csv"),
         //d3.csv("reports/v2/caseProjections.csv"),
-        d3.csv("reports/v2/movingAvgs.csv")
+        d3.csv("reports/v2/county/movingAvgs_healthcare.csv")
     ]).then(function (files) {
         summaryData = files[0];
         chartData = epicurve.parseChartData(summaryData, files[1], files[2], files[3], files[4], null, files[5]);
@@ -158,7 +158,7 @@
         dphxScale.domain(getLastElement(chartData).map(function (d) {
             return d.label;
         }));
-        dphyScale.domain([-100, epicurve.getYScale(getLastElement(chartData))]);
+        dphyScale.domain([-20, epicurve.getYScale(getLastElement(chartData))]);
         //drawAxisLines();
 
         // add DPH axis
@@ -230,7 +230,7 @@
         return infoToolTip;
     }
 
-    function updateAllGraphs(dateString) {
+    function updateAllGraphs(dateString, ) {
         let offsetDate = epicurve.applyDateOffset(dateString, 13);
 
         epicurve.updateFloatingPoints(chartData[dateString], getLabel, getReportedCases, "reportedcasesbar", "#2b5280");
