@@ -113,7 +113,12 @@ public class CsvService {
     }
 
     public void appendFile(String dir, String type, String county, String[] header, Report report, Function<ArrayReport, Integer[]> intFunction) throws Exception {
-        Path path = Paths.get(dir).resolve(String.format("%s_%s.csv", type, county));
+        String filteredCounty = county.replace(" ", "-");
+        filteredCounty = filteredCounty.replace("/", "");
+        filteredCounty = filteredCounty.replace("\\", "");
+        filteredCounty = filteredCounty.replace("unknown-state", "");
+        filteredCounty = filteredCounty.replace("non-ga-resident", "non-georgia-resident");
+        Path path = Paths.get(dir).resolve(String.format("%s_%s.csv", type, filteredCounty));
 
         ArrayReport arrayReport = new ArrayReport(report, county);
 

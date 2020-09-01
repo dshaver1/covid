@@ -22,7 +22,7 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
     private static final Logger logger = LoggerFactory.getLogger(EpicurveExtractorImpl2.class);
     private static final Pattern epicurvePattern = Pattern.compile("(\\[\\{\"measure\".+?}])");
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
-    public static final List<String> COUNTY_FILTER = Arrays.asList("georgia", "cobb", "fulton", "gwinnett", "dekalb", "carroll", "bibb", "unknown");
+    public static final List<String> COUNTY_FILTER = Arrays.asList("georgia", "cobb", "fulton", "gwinnett", "dekalb", "carroll", "bibb", "unknown", "resident", "non-georgia-resident");
 
     @Inject
     protected EpicurveExtractorImpl2(ObjectMapper objectMapper) {
@@ -47,7 +47,7 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
                 for (EpicurvePointImpl2 current : epicurvePoints) {
                     LocalDate labelDate = LocalDate.parse(current.getTestDate(), DateTimeFormatter.ISO_DATE);
                     // Next iterate over the points and filter/decorate as needed.
-                    if (labelDate.isAfter(EARLIEST_DATE) && COUNTY_FILTER.contains(current.getCounty().toLowerCase())) {
+                    if (labelDate.isAfter(EARLIEST_DATE) && anyContains(COUNTY_FILTER, current.getCounty().toLowerCase())) {
                         current.setSource(id);
                         current.setLabel(labelDate.format(DateTimeFormatter.ISO_DATE).toUpperCase());
                         current.setLabelDate(labelDate);
@@ -79,6 +79,23 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
         }
 
         return epicurve;
+    }
+
+    /**
+     * Returns true if the query string matches any part of the supplied list, OR if any of the supplied list match part of the query string.
+     */
+    public boolean anyContains(List<String> listToSearch, String query) {
+        for (String current : listToSearch) {
+            if (current.contains(query)) {
+                return true;
+            }
+
+            if (query.contains(current)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
