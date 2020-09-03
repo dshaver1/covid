@@ -1,152 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GA Epicurve Tools</title>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-    
-    <link href="epicurveInteractive.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>Daniel Shaver</title>
 
-</head>
-<body>
-<script src="d3-simple-slider.min.js"></script>
-<script src="d3-tip.js"></script>
+    <!-- Bootstrap core CSS -->
+<link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"/>
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
 
-<div class="site-wrapper">
-    <div class="container theme-showcase" role="main">
-        <div class="row"></div>
-        <div class="row">
-            <div class="col-8">
-                <h3>Historical COVID-19 Epicurve Tools for Georgia</h3>
-                <hr style="border-top: 1px solid #859cb1"/>
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="cover.css" rel="stylesheet">
+  </head>
+  <body class="text-center">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+      <header class="masthead mb-auto">
+        <div class="inner">
+          <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand active" href="#">Georgia COVID-19 Data Archive</a>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+              <div class="navbar-nav">
+                <a class="nav-link" href="covid/covid.html">Data <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="epicurveInteractive-cases.html" data-toggle="tooltip" data-placement="bottom" title="Visualize how cases have shifted over time">Cases</a>
+                <a class="nav-link" href="epicurveInteractive-deaths.html" data-toggle="tooltip" data-placement="bottom" title="Visualize how deaths have shifted over time">Deaths</a>
+                <a class="nav-link" href="epicurveInteractive-healthcare.html" data-toggle="tooltip" data-placement="bottom" title="Visualize how cases have shifted over time for healthcare workers">Healthcare</a>
+                <a class="nav-link" href="epicurveInteractive-correlation.html" data-toggle="tooltip" data-placement="bottom" title="Visualize the correlation between cases and deaths">Case/Death Correlation</a>
+              </div>
             </div>
+          </nav>
         </div>
-        
-        <div class="row">
-            <div class="col-6"><a href="/epicurveInteractive-cases.html">Historical COVID-19 Cases</a><span
-                    style="font-family: Consolas, serif">: visualize how cases have shifted over time</span></div>
-        </div>
-        <div class="row">
-            <div class="col-6"><a href="/epicurveInteractive-deaths.html">Historical COVID-19 Deaths</a><span
-                    style="font-family: Consolas, serif">: visualize how deaths have shifted over time</span></div>
-        </div>
-        <div class="row">
-            <div class="col-6"><a href="/epicurveInteractive-correlation.html">Correlation of cases vs. deaths</a><span
-                    style="font-family: Consolas, serif">: visualize the correlation between cases and deaths</span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-6"><a href="/epicurveInteractive-healthcare.html">Historical COVID-19 Cases for Healthcare Workers</a><span
-                    style="font-family: Consolas, serif">: visualize how cases have shifted over time for healthcare workers</span>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-6"><p>&nbsp;</p></div>
-        </div>
-        <div class="row">
-            <div class="col-6">
-                <p>
-                <h5>Data dumps (CSV)</h5><br/>
-                <ul>
-                    <li><a href="/reports/v2/cases.csv">Cases Per Day</a></li>
-                    <li><a href="/reports/v2/deaths.csv">Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/caseDeltas.csv">Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/movingAvgs.csv">Case Moving Averages</a></li>
-                    <li><a href="/reports/v2/summary.csv">Summary Data</a></li>
-                </ul>
-                Bibb County<br/>
-                <ul>
-                    <li><a href="/reports/v2/county/cases_bibb.csv">Bibb: Cases Per Day</a></li>
-                    <li><a href="/reports/v2/county/deaths_bibb.csv">Bibb: Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/county/caseDeltas_bibb.csv">Bibb: Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/county/movingAvgs_bibb.csv">Bibb: Case Moving Averages</a></li>
-                </ul>
-                Carroll County<br/>
-                <ul>
-                    <li><a href="/reports/v2/county/cases_carroll.csv">Carroll: Cases Per Day</a></li>
-                    <li><a href="/reports/v2/county/deaths_carroll.csv">Carroll: Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/county/caseDeltas_carroll.csv">Carroll: Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/county/movingAvgs_carroll.csv">Carroll: Case Moving Averages</a></li>
-                </ul>
-                Cobb County<br/>
-                <ul>
-                    <li><a href="/reports/v2/county/cases_cobb.csv">Cobb: Cases Per Day</a></li>
-                    <li><a href="/reports/v2/county/deaths_cobb.csv">Cobb: Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/county/caseDeltas_cobb.csv">Cobb: Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/county/movingAvgs_cobb.csv">Cobb: Case Moving Averages</a></li>
-                </ul>
-                DeKalb County<br/>
-                <ul>
-                    <li><a href="/reports/v2/county/cases_dekalb.csv">DeKalb: Cases Per Day</a></li>
-                    <li><a href="/reports/v2/county/deaths_dekalb.csv">DeKalb: Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/county/caseDeltas_dekalb.csv">DeKalb: Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/county/movingAvgs_dekalb.csv">DeKalb: Case Moving Averages</a></li>
-                </ul>
-                Fulton County<br/>
-                <ul>
-                    <li><a href="/reports/v2/county/cases_fulton.csv">Fulton: Cases Per Day</a></li>
-                    <li><a href="/reports/v2/county/deaths_fulton.csv">Fulton: Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/county/caseDeltas_fulton.csv">Fulton: Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/county/movingAvgs_fulton.csv">Fulton: Case Moving Averages</a></li>
-                </ul>
-                Gwinnett County<br/>
-                <ul>
-                    <li><a href="/reports/v2/county/cases_gwinnett.csv">Gwinnett: Cases Per Day</a></li>
-                    <li><a href="/reports/v2/county/deaths_gwinnett.csv">Gwinnett: Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/county/caseDeltas_gwinnett.csv">Gwinnett: Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/county/movingAvgs_gwinnett.csv">Gwinnett: Case Moving Averages</a></li>
-                </ul>
-                "Unknown" County<br/>
-                <ul>
-                    <li><a href="/reports/v2/county/cases_unknown.csv">Unknown: Cases Per Day</a></li>
-                    <li><a href="/reports/v2/county/deaths_unknown.csv">Unknown: Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/county/caseDeltas_unknown.csv">Unknown: Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/county/movingAvgs_unknown.csv">Unknown: Case Moving Averages</a></li>
-                </ul>
-                "Non-GA Residents"<br/>
-                <ul>
-                    <li><a href="/reports/v2/county/cases_non-georgia-resident.csv">Non-GA Residents: Cases Per Day</a></li>
-                    <li><a href="/reports/v2/county/deaths_non-georgia-resident.csv">Non-GA Residents: Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/county/caseDeltas_non-georgia-resident.csv">Non-GA Residents: Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/county/movingAvgs_non-georgia-resident.csv">Non-GA Residents: Case Moving Averages</a></li>
-                </ul>
-                Healthcare Workers<br/>
-                <ul>
-                    <li><a href="/reports/v2/county/cases_healthcare.csv">Healthcare Workers: Cases Per Day</a></li>
-                    <li><a href="/reports/v2/county/deaths_healthcare.csv">Healthcare Workers: Deaths Per Day</a></li>
-                    <li><a href="/reports/v2/county/caseDeltas_healthcare.csv">Healthcare Workers: Case Deltas Per Day</a></li>
-                    <li><a href="/reports/v2/county/movingAvgs_healthcare.csv">Healthcare Workers: Case Moving Averages</a></li>
-                </ul>
-                </p>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-6"><p>&nbsp;</p></div>
-        </div>
-        <div class="row">
-            <div class="col-8">
-                <hr style="border-top: 1px solid #859cb1"/>
-            </div>
-        </div>
-        <div class="footer">
-            <p>All data sourced from <a
-                    href="https://ga-covid19.ondemand.sas.com/">https://ga-covid19.ondemand.sas.com/</a></p>
-            <p>Source code available on <a href="https://github.com/dshaver1/covid">github</a></p>
-            <p>I'd be happy to hear any feedback you might have - <a href="https://twitter.com/xionnova">@xionnova</a>
-            </p>
-        </div>
-    
+      </header>
+
+  <main role="main" class="inner cover">
+    <h1 class="cover-heading"></h1>
+    <p class="lead">I'm just a software guy who made a software that does some stuff.</p>
+    <p>
+      <a href="https://www.cdc.gov/foodsafety/outbreaks/investigating-outbreaks/epi-curves.html">Here's a cool link on what an epicurve is</a>.
+    </p>
+  </main>
+
+  <footer class="mastfoot mt-auto">
+    <div class="inner">
+      <p>All COVID-19 data sourced from <a
+              href="https://ga-covid19.ondemand.sas.com/">https://ga-covid19.ondemand.sas.com/</a></p>
+      <p>Source code available on <a href="https://github.com/dshaver1/covid">github</a></p>
+      <p>I'd be happy to hear any feedback you might have - <a href="https://twitter.com/xionnova">@xionnova</a>
+      </p>
     </div>
+  </footer>
 </div>
-
 </body>
 </html>

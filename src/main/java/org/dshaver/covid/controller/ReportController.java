@@ -55,7 +55,7 @@ public class ReportController {
         this.objectMapper = objectMapper;
     }
 
-    @GetMapping("/reports/histogram")
+    @GetMapping("/covid/api/reports/histogram")
     public HistogramReport getHistogramReport(@RequestParam(name = "startDate", required = false)
                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                               @RequestParam(name = "endDate", required = false)
@@ -75,7 +75,7 @@ public class ReportController {
         return reports.stream().findFirst().get();
     }
 
-    @GetMapping("/reports/daily")
+    @GetMapping("/covid/api/reports/daily")
     public Collection<Report> getReports(@RequestParam(name = "startDate", required = false)
                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                          @RequestParam(name = "endDate", required = false)
@@ -91,7 +91,7 @@ public class ReportController {
         return reportList;
     }
 
-    @GetMapping("/reports/aggregate")
+    @GetMapping("/covid/api/reports/aggregate")
     public AggregateReport aggregateReport(@RequestParam(name = "startDate", required = false)
                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                                    LocalDate startDate,
@@ -104,12 +104,12 @@ public class ReportController {
         return new AggregateReport(reports);
     }
 
-    @PostMapping("/reports/downloadLatest")
+    @PostMapping("/covid/api/reports/downloadLatest")
     public DownloadResponse downloadLatest() {
         return reportService.checkForData();
     }
 
-    @PostMapping("/reports/copyRawData")
+    @PostMapping("/covid/api/reports/copyRawData")
     public void downloadLatest(@RequestParam(name = "idToCopy") String idToCopy,
                                @RequestParam(name = "targetId") String targetId,
                                @RequestParam(name = "reportDate")
@@ -121,7 +121,7 @@ public class ReportController {
         rawDataRepository.save(rawDataV2.get());
     }
 
-    @GetMapping("/reports")
+    @GetMapping("/covid/api/reports")
     public Collection<Report> getReports(@RequestParam(name = "reportDate", required = false)
                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
         TreeSet<Report> reports = new TreeSet<>(Comparator.comparing(Report::getId));
@@ -135,7 +135,7 @@ public class ReportController {
         return reports;
     }
 
-    @GetMapping("/reports/latest")
+    @GetMapping("/covid/api/reports/latest")
     public Report getLatestReport() {
         TreeSet<Report> reports = new TreeSet<>(Comparator.comparing(Report::getId));
         reports.addAll(reportRepository.findAll());
@@ -143,12 +143,12 @@ public class ReportController {
         return reports.last();
     }
 
-    @GetMapping("/reports/{id}")
+    @GetMapping("/covid/api/reports/{id}")
     public Optional<Report> getReportById(@PathVariable("id") String id) {
         return reportRepository.findById(id);
     }
 
-    @PostMapping("/reports/reprocess")
+    @PostMapping("/covid/api/reports/reprocess")
     public void reprocessAll() {
         LocalDate defaultStartDate = LocalDate.of(2020, 1, 1);
         LocalDate defaultEndDate = LocalDate.of(2030, 1, 1);
@@ -157,7 +157,7 @@ public class ReportController {
         //reportService.bulkProcess(defaultStartDate, defaultEndDate, false, RawDataV2.class);
     }
 
-    @PostMapping("/reports/insertManualData")
+    @PostMapping("/covid/api/reports/insertManualData")
     public void insertManualData(@RequestBody List<ManualReportRequest> requests) throws Exception {
         LocalDate defaultStartDate = LocalDate.of(2020, 1, 1);
         LocalDate defaultEndDate = LocalDate.of(2030, 1, 1);

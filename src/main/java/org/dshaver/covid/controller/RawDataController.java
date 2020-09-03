@@ -64,7 +64,7 @@ public class RawDataController {
         this.rawDir = rawDir;
     }
 
-    @GetMapping("/rawdata/metadata")
+    @GetMapping("/covid/api/rawdata/metadata")
     public Collection<RawData> getRawDataMetadata(@RequestParam(name = "reportDate")
                                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
         TreeSet<RawData> rawData = new TreeSet<>(Comparator.comparing(RawData::getId));
@@ -74,7 +74,7 @@ public class RawDataController {
         return rawData;
     }
 
-    @GetMapping("/rawdata")
+    @GetMapping("/covid/api/rawdata")
     public String getRawData(@RequestParam(name = "reportDate")
                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate,
                              @RequestParam(name = "filter", required = false) String filter,
@@ -114,7 +114,7 @@ public class RawDataController {
     }
 
 
-    @PostMapping("/rawdata/writeFiles")
+    @PostMapping("/covid/api/rawdata/writeFiles")
     public void writeRawData(@RequestParam(name = "startDate")
                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                              @RequestParam(name = "endDate")

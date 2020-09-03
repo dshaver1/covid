@@ -58,8 +58,7 @@ public class ReportControllerV2 {
         this.csvService = csvService;
     }
 
-    @CrossOrigin(origins = "http://rectangular-deposit.glitch.me")
-    @GetMapping(value = "/reports/v2/{file}.csv", produces = "text/csv")
+    @GetMapping(value = "/covid/api/reports/v2/{file}.csv", produces = "text/csv")
     public String getCsv(@PathVariable(name = "file") String file) throws Exception {
         logger.info("Got request for csv file: " + file);
 
@@ -83,7 +82,7 @@ public class ReportControllerV2 {
         }
     }
 
-    @GetMapping(value = "/reports/v2/county/{type}_{county}.csv", produces = "text/csv")
+    @GetMapping(value = "/covid/api/reports/v2/county/{type}_{county}.csv", produces = "text/csv")
     public String getCountyCsv(@PathVariable(name = "type") String type,
                                @PathVariable(name = "county") String county) throws Exception {
         logger.info("Got request for csv file: " + type + "_" + county);
@@ -108,7 +107,7 @@ public class ReportControllerV2 {
         }
     }
 
-    @PostMapping("/reports/v2/generateAllCsvs")
+    @PostMapping("/covid/api/reports/v2/generateAllCsvs")
     public String generateCsv() throws Exception {
         logger.info("Got request to generate all csvs!");
 
@@ -117,7 +116,7 @@ public class ReportControllerV2 {
         return "Done! Success: " + success;
     }
 
-    @GetMapping("/reports/v2/checkAndRewrite")
+    @GetMapping("/covid/api/reports/v2/checkAndRewrite")
     public String checkAndRewrite(@RequestParam(name = "force", required = false) boolean force) throws Exception {
         logger.info("Got request to check for new data and rewrite csvs!");
 
@@ -126,7 +125,7 @@ public class ReportControllerV2 {
         return "Done! Success: " + success;
     }
 
-    @GetMapping("/reports/v2/checkAndAppend")
+    @GetMapping("/covid/api/reports/v2/checkAndAppend")
     public String checkAndAppend() throws Exception {
         logger.info("Got request to check for new data and append to csvs!");
 
@@ -135,7 +134,7 @@ public class ReportControllerV2 {
         return "Done! Found new: " + foundNew;
     }
 
-    @GetMapping("/reports/v2/daily")
+    @GetMapping("/covid/api/reports/v2/daily")
     public Collection<ArrayReport> getReports(@RequestParam(name = "startDate", required = false)
                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                               @RequestParam(name = "endDate", required = false)
@@ -153,7 +152,7 @@ public class ReportControllerV2 {
         return reportList;
     }
 
-    @GetMapping("/reports/v2/latest")
+    @GetMapping("/covid/api/reports/v2/latest")
     public ArrayReport getLatestReport() {
         logger.info("Got request for latest v2 report");
         TreeSet<Report> reports = new TreeSet<>(Comparator.comparing(Report::getId));
