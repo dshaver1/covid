@@ -1,6 +1,6 @@
 sudo pkill java
 
-sudo unzip /mnt/data/tmp/*.zip
+sudo unzip /mnt/data/tmp/*.zip -d /mnt/data/tmp/
 sudo mv /mnt/data/tmp/covid/*.jar /mnt/data/covid
 sudo cp -r /mnt/data/tmp/covid/static/* /mnt/data/apache/www/html/
 

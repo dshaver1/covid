@@ -9,51 +9,42 @@
     <!-- Bootstrap core CSS -->
     <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-    </style>
     <!-- Custom styles for this template -->
     <link href="cover.css" rel="stylesheet">
 </head>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="assets/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
 <body class="text-center">
 <div class="container mx-auto flex-column" style="text-align: left">
     <header class="masthead mb-auto">
         <div class="inner">
             <nav class="navbar navbar-expand-lg">
                 <a class="navbar-brand" href="#">Georgia COVID-19 Data Archive</a>
-                <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse"
-                        data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
-                        aria-label="Toggle navigation">
+                <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon navbar-dark"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <a class="nav-link" href="covid/index.html">Data</a> <a class="nav-link"
-                                                                                href="covid/epicurveInteractive-cases.html"
-                                                                                data-toggle="tooltip"
-                                                                                data-placement="bottom"
-                                                                                title="Visualize how cases have shifted over time">Cases</a>
-                        <a class="nav-link" href="covid/epicurveInteractive-deaths.html" data-toggle="tooltip"
-                           data-placement="bottom" title="Visualize how deaths have shifted over time">Deaths</a> <a
-                            class="nav-link" href="covid/epicurveInteractive-healthcare.html" data-toggle="tooltip"
-                            data-placement="bottom"
-                            title="Visualize how cases have shifted over time for healthcare workers">Healthcare</a> <a
-                            class="nav-link" href="covid/epicurveInteractive-correlation.html" data-toggle="tooltip"
-                            data-placement="bottom" title="Visualize the correlation between cases and deaths">Case/Death
-                        Correlation</a>
+                        <a class="nav-link" href="covid/index.html">Data</a>
+                        <a class="nav-link" href="covid/epicurveInteractive-cases.html" data-toggle="tooltip" data-placement="bottom"
+                           title="Visualize how cases have shifted over time">Cases
+                        </a>
+                        <a class="nav-link" href="covid/epicurveInteractive-deaths.html" data-toggle="tooltip" data-placement="bottom"
+                           title="Visualize how deaths have shifted over time">Deaths
+                        </a>
+                        <a class="nav-link" href="covid/epicurveInteractive-healthcare.html" data-toggle="tooltip" data-placement="bottom"
+                           title="Visualize how cases have shifted over time for healthcare workers">Healthcare
+                        </a>
+                        <a class="nav-link" href="covid/epicurveInteractive-correlation.html" data-toggle="tooltip" data-placement="bottom"
+                           title="Visualize the correlation between cases and deaths">Case/Death Correlation
+                        </a>
                     </div>
                 </div>
             </nav>
@@ -74,8 +65,9 @@
                 <h1 class="cover-heading"></h1>
                 <p class="lead">I'm just a software guy who made a software that does some stuff.</p>
                 <p>
-                    <a href="https://www.cdc.gov/foodsafety/outbreaks/investigating-outbreaks/epi-curves.html">Here's a
-                        cool link on what an epicurve is</a>. </p>
+                    <a href="https://www.cdc.gov/foodsafety/outbreaks/investigating-outbreaks/epi-curves.html">Here's a cool link on what an epicurve is</a>
+                    .
+                </p>
             </div>
         </div>
         <div class="row">
@@ -85,11 +77,14 @@
         </div>
     </main>
     
-    <footer class="footer fixed-bottom container">
+    <footer id="footer-wrap" class="footer fixed-bottom container">
         <div class="inner" style="text-align: center">
-            <p>All COVID-19 data sourced from <a href="https://ga-covid19.ondemand.sas.com/">https://ga-covid19.ondemand.sas.com/</a>.
-                Source code available on <a href="https://github.com/dshaver1/covid">github</a>. I'd be happy to hear
-                any feedback you might have - <a href="https://twitter.com/xionnova">@xionnova</a>
+            <p>All COVID-19 data sourced from
+                <a href="https://ga-covid19.ondemand.sas.com/">https://ga-covid19.ondemand.sas.com/</a>
+                . Source code available on
+                <a href="https://github.com/dshaver1/covid">github</a>
+                . I'd be happy to hear any feedback you might have -
+                <a href="https://twitter.com/xionnova">@xionnova</a>
             </p>
         </div>
     </footer>

@@ -31,3 +31,14 @@
 2020-09-03 16:22:02.888  INFO 21116 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 2.999 seconds (JVM running for 3.946)
 2020-09-03 16:22:03.131  INFO 21116 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
 2020-09-03 16:22:03.132  INFO 21116 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-09-03 17:30:45.534  INFO 18712 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 18712 (started by xpdf64 in H:\dev\covid)
+2020-09-03 17:30:45.535  INFO 18712 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
+2020-09-03 17:30:46.045  INFO 18712 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2020-09-03 17:30:46.130  INFO 18712 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 80ms. Found 5 MongoDB repository interfaces.
+2020-09-03 17:30:46.885  INFO 18712 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2020-09-03 17:30:47.732  INFO 18712 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-09-03 17:30:47.832  INFO 18712 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-09-03 17:30:48.090  INFO 18712 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-09-03 17:30:48.151  INFO 18712 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 2.937 seconds (JVM running for 3.76)
+2020-09-03 17:30:48.391  INFO 18712 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-09-03 17:30:48.392  INFO 18712 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
