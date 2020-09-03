@@ -12,21 +12,31 @@
 
 </head>
 <body class="text-center">
-<div class="container d-flex mx-auto flex-column" style="text-align: left">
+<div id="wrap" class="container mx-auto flex-column" style="text-align: left; overflow: hidden" >
     <header class="masthead mb-auto justify-content-center">
         <div class="inner">
             <nav class="navbar navbar-expand-lg">
                 <a class="navbar-brand" href="#">Georgia COVID-19 Data Archive</a>
-                <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation" style="border-color: #e3f2fd;">
+                <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse"
+                        data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                        aria-label="Toggle navigation" style="border-color: #e3f2fd;">
                     <span class="navbar-toggler-icon navbar-dark"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <a class="nav-link" href="covid.html">Data</a>
-                        <a class="nav-link active" href="#" data-toggle="tooltip" data-placement="bottom" title="Visualize how cases have shifted over time">Cases <span class="sr-only">(current)</span></a>
-                        <a class="nav-link" href="epicurveInteractive-deaths.html" data-toggle="tooltip" data-placement="bottom" title="Visualize how deaths have shifted over time">Deaths</a>
-                        <a class="nav-link" href="epicurveInteractive-healthcare.html" data-toggle="tooltip" data-placement="bottom" title="Visualize how cases have shifted over time for healthcare workers">Healthcare</a>
-                        <a class="nav-link" href="epicurveInteractive-correlation.html" data-toggle="tooltip" data-placement="bottom" title="Visualize the correlation between cases and deaths">Case/Death Correlation</a>
+                        <a class="nav-link" href="index.html">Data</a> <a class="nav-link active" href="#"
+                                                                          data-toggle="tooltip" data-placement="bottom"
+                                                                          title="Visualize how cases have shifted over time">Cases
+                        <span class="sr-only">(current)</span></a> <a class="nav-link"
+                                                                      href="epicurveInteractive-deaths.html"
+                                                                      data-toggle="tooltip" data-placement="bottom"
+                                                                      title="Visualize how deaths have shifted over time">Deaths</a>
+                        <a class="nav-link" href="epicurveInteractive-healthcare.html" data-toggle="tooltip"
+                           data-placement="bottom"
+                           title="Visualize how cases have shifted over time for healthcare workers">Healthcare</a> <a
+                            class="nav-link" href="epicurveInteractive-correlation.html" data-toggle="tooltip"
+                            data-placement="bottom" title="Visualize the correlation between cases and deaths">Case/Death
+                        Correlation</a>
                     </div>
                 </div>
             </nav>
@@ -51,34 +61,33 @@
         </div>
     </main>
     
-    <div id="graphContent"></div>
+    <div id="graphWrapper" style="overflow: hidden">
+        <div id="graphContent" style="clear: left; display: block; "></div>
+        <span style="clear: left; display: block; "></span>
+    </div>
     
-    <div class="footer">
-        <div class="row">
-            <p>
-                Data dumps (CSV)<br/>
-            <ul>
-                <li><a href="/reports/v2/cases.csv">Cases Per Day</a></li>
-                <li><a href="/reports/v2/deaths.csv">Deaths Per Day</a></li>
-                <li><a href="/reports/v2/caseDeltas.csv">Case Deltas Per Day</a></li>
-                <li><a href="/reports/v2/movingAvgs.csv">Case Moving Averages</a></li>
-                <li><a href="/reports/v2/summary.csv">Summary Data</a></li>
-            </ul>
+    <footer class="footer fixed-bottom container">
+        <div class="inner" style="text-align: center">
+            <p>All COVID-19 data sourced from <a href="https://ga-covid19.ondemand.sas.com/">https://ga-covid19.ondemand.sas.com/</a>.
+                Source code available on <a href="https://github.com/dshaver1/covid">github</a>. I'd be happy to hear
+                any feedback you might have - <a href="https://twitter.com/xionnova">@xionnova</a>
             </p>
         </div>
-    </div>
+    </footer>
 </div>
 
 <script src="d3-simple-slider.min.js"></script>
 <script src="d3-tip.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
 <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js" charset="utf-8"></script>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script src="epicurve.js"></script>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
 </script>
