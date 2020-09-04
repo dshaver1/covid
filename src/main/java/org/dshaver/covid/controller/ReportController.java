@@ -11,7 +11,6 @@ import org.dshaver.covid.service.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,7 +65,7 @@ public class ReportController {
         try {
             logger.info("Saving histogram report for dates {} - {}.", startDate, endDate);
             histogramReportRepository.save(histogramReport);
-        } catch (DuplicateKeyException e) {
+        } catch (Exception e) {
             logger.info("Already saved this histogram report. Skipping... ");
         }
 

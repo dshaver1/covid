@@ -2,17 +2,28 @@ package org.dshaver.covid.dao;
 
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV2;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
 /**
  * Created by xpdf64 on 2020-04-27.
  */
-public interface RawDataRepositoryV2 extends MongoRepository<RawDataV2, String> {
+@Repository
+public class RawDataRepositoryV2 extends BaseFileDao<RawDataV2> {
 
-    List<RawData> findByReportDateBetweenOrderByIdAsc(LocalDate startDate, LocalDate endDate);
+    public List<RawData> findByReportDateBetweenOrderByIdAsc(LocalDate startDate, LocalDate endDate) {
+        return null;
+    }
 
-    List<RawData> findByReportDateOrderByIdAsc(LocalDate reportDate);
+    public List<RawData> findByReportDateOrderByIdAsc(LocalDate reportDate) {
+        return null;
+    }
+
+    @Override
+    public Path getPath() {
+        return null;
+    }
 }

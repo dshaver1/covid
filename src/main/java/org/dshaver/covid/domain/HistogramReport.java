@@ -2,8 +2,6 @@ package org.dshaver.covid.domain;
 
 import lombok.Data;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -18,11 +16,9 @@ import java.util.stream.Collectors;
  * Histogram of how many days prior to topday new cases or deaths are added.
  */
 @Data
-@Document("histogramreports")
 public class HistogramReport {
     private static final MathContext DECIMALS_4 = new MathContext(4);
 
-    @Id
     String id;
 
     Map<Integer, Integer> casesHist, deathsHist, casesMedianHist, deathsMedianHist;

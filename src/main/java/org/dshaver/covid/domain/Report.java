@@ -8,8 +8,6 @@ import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,13 +22,11 @@ import java.util.Map;
 @JsonPropertyOrder(value = {"id", "createTime", "reportDate", "totalTests", "totalTestsVm", "confirmedCases",
         "confirmedCasesVm", "deaths", "deathsVm", "hospitalized", "hospitalizedVm", "icu", "icuVm",
         "top5CaseDeltas", "top5DeathDeltas", "georgiaEpicurve"})
-@Document("reports")
 public class Report {
     public static final String GEORGIA = "georgia";
     private static final Logger logger = LoggerFactory.getLogger(Report.class);
     private static final String dataFolder = "H:\\dev\\covid\\data\\";
 
-    @Id
     private String id;
     private LocalDateTime createTime;
     private LocalDate reportDate;

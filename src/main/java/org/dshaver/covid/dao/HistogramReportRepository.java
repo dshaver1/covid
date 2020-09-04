@@ -1,12 +1,23 @@
 package org.dshaver.covid.dao;
 
 import org.dshaver.covid.domain.HistogramReport;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
+import java.nio.file.Path;
 import java.util.List;
 
-public interface HistogramReportRepository extends MongoRepository<HistogramReport, String> {
-    List<HistogramReport> findAllByOrderByIdDesc();
+@Repository
+public class HistogramReportRepository extends BaseFileDao<HistogramReport> {
+    public List<HistogramReport> findAllByOrderByIdDesc() {
+        return null;
+    }
 
-    List<HistogramReport> findAllByOrderByIdAsc();
+    public List<HistogramReport> findAllByOrderByIdAsc() {
+        return null;
+    }
+
+    @Override
+    public Path getPath() {
+        return null;
+    }
 }

@@ -8,7 +8,6 @@ import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -365,8 +364,6 @@ public class ReportService {
                         reportRepository.save(report);
                         prevReport = report;
                         break;
-                    } catch (DuplicateKeyException e) {
-                        logger.info("Already saved this report. Skipping...");
                     } catch (Exception e) {
                         logger.error("Could not create report! " + currentData, e);
                     }
@@ -376,7 +373,7 @@ public class ReportService {
 
         try {
             histogramReportRepository.save(new HistogramReport(reportRepository.findAllByOrderByIdAsc()));
-        } catch (DuplicateKeyException e) {
+        } catch (Exception e) {
             logger.info("Already saved this histogram report. Skipping... ");
         }
     }
@@ -387,7 +384,7 @@ public class ReportService {
         try {
             //rawDataRepository.save(data);
             //logger.info("Done saving RawDataV2.");
-        } catch (DuplicateKeyException e) {
+        } catch (Exception e) {
             logger.info("Already saved this page. Skipping...");
         }
 
@@ -433,8 +430,6 @@ public class ReportService {
             reportRepository.save(report);
 
             logger.info("Done saving report");
-        } catch (DuplicateKeyException e) {
-            logger.info("Already saved this report. Skipping... ");
         } catch (Exception e) {
             logger.info("Could not create report from rawData! " + data, e);
         }

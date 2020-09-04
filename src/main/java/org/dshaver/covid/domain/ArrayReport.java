@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.ToString;
 import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,10 +17,8 @@ import java.util.stream.Stream;
 
 @Data
 @ToString(exclude = {"curveDates", "caseDeltas", "deathDeltas", "cases", "deaths", "caseProjections", "movingAvgs"})
-@Document("arrayreports")
 public class ArrayReport {
     private static final LocalDate MIN_DATE = LocalDate.of(2020,2,17);
-    @Id
     private String id;
     private LocalDateTime createTime;
     private LocalDate reportDate;
