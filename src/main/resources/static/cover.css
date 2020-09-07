@@ -29,13 +29,6 @@
   border: .05rem solid #fff;
 }
 
-#graphContent {
-  position:fixed;
-  left: 20px;
-  top: 200px;
-}
-
-
 /*
  * Base structure
  */
@@ -157,6 +150,10 @@ a:visited {
 /*
  * Cover
  */
+div#main-container {
+  width: 100%;
+}
+
 .cover {
   padding: 0 1.5rem;
 }
@@ -170,7 +167,7 @@ html, body {
 }
 
 #wrap {
-  min-height: 100%;
+  /*min-height: 100%;*/
 }
 
 main {
@@ -188,12 +185,12 @@ main {
   margin-top: -150px; /* negative value of footer height */
   height: 150px;
   clear:both;
-  padding-top:20px;
+  padding-top:50px;
 }
 
 #footer-wrap {
   background-color: #103052;
-  padding-top: 10px;
+  margin-top: 50px;
 }
 
 /*
@@ -250,4 +247,21 @@ main {
   padding: 6px;
   color: #222;
   font-size: 12px;
+}
+
+.svg-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  /*padding-bottom: 100%;  aspect ratio */
+  vertical-align: top;
+  overflow: hidden;
+  z-index: 10;
+}
+.svg-content-responsive {
+  display: inline-block;
+  position: absolute;
+  top: 10px;
+  left: 0;
+  z-index: 10;
 }
