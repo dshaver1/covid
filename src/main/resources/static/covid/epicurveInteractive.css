@@ -79,6 +79,7 @@ div {
 /*
  * Tooltip
  */
+.d3-tip span,
 .d3-tip {
     line-height: 1;
     padding: 6px;
@@ -88,6 +89,7 @@ div {
     font-size: 12px;
 }
 
+.d3-tip-text span,
 .d3-tip-text {
     padding: 6px;
     color: #222;
