@@ -25,7 +25,8 @@
                     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                         <div class="navbar-nav">
                             <a class="nav-link" href="index.html">Data</a>
-                            <a class="nav-link" href="epicurveInteractive-cases.html" data-toggle="tooltip" data-placement="bottom" title="Visualize how cases have shifted over time">
+                            <a class="nav-link" href="epicurveInteractive-cases.html" data-toggle="tooltip" data-placement="bottom"
+                               title="Visualize how cases have shifted over time">
                                 Cases
                             </a>
                             <a class="nav-link active" href="#" data-toggle="tooltip" data-placement="bottom"
@@ -106,6 +107,9 @@
         width = Math.max(window.innerWidth - margin.left - margin.right - tipWidth, 600),
         height = 600 - margin.top - margin.bottom
 
+    var totalWidth = width + margin.left + margin.right;
+    var totalHeight = height + margin.top + margin.bottom;
+
     // set the ranges
     var dphxScale = d3.scaleBand().rangeRound([0, width]);
 
@@ -115,11 +119,17 @@
     var dphxAxis = d3.axisBottom(dphxScale);
 
     var dphyAxis = d3.axisLeft(dphyScale).ticks(10);
-
-    var dphSvg = d3.select("#graphContent").append("svg")
+    
+    var dphSvg = d3.select("#graphContent")
+        .append("div")
+        .classed("svg-container", true)
+        .append("svg")
+        // .attr("preserveAspectRatio", "xMinYMin meet")
+        // .attr("viewBox", "0 0 " + totalWidth + " " + totalHeight)
+        // .classed("svg-content-responsive", true)
         .attr("id", "dphSvg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", totalWidth)
+        .attr("height", totalHeight)
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");

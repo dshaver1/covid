@@ -1,8 +1,8 @@
-2020-09-04 15:01:21.953  INFO 7576 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 7576 (started by xpdf64 in H:\dev\covid)
-2020-09-04 15:01:21.957  INFO 7576 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
-2020-09-04 15:01:23.078  INFO 7576 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
-2020-09-04 15:01:23.157  INFO 7576 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
-2020-09-04 15:01:23.456  INFO 7576 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
-2020-09-04 15:01:23.507  INFO 7576 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 1.877 seconds (JVM running for 2.769)
-2020-09-04 15:01:23.757  INFO 7576 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
-2020-09-04 15:01:23.758  INFO 7576 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-09-07 11:40:29.671  INFO 22596 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 22596 (started by xpdf64 in H:\dev\covid)
+2020-09-07 11:40:29.675  INFO 22596 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
+2020-09-07 11:40:30.874  INFO 22596 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-09-07 11:40:30.955  INFO 22596 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-09-07 11:40:31.240  INFO 22596 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-09-07 11:40:31.283  INFO 22596 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 1.955 seconds (JVM running for 2.833)
+2020-09-07 11:40:31.542  INFO 22596 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-09-07 11:40:31.543  INFO 22596 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
