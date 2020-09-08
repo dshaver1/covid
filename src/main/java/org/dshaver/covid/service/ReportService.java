@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,7 +35,7 @@ public class ReportService {
     private final RawDataDownloaderDelegator rawDataDownloader;
     private final ReportFactory reportFactory;
     private final ReportRepository reportRepository;
-    private final HistogramReportRepository histogramReportRepository;
+    private final HistogramReportRepository histogramReportDao;
     private final CsvService csvService;
     private final String reportTgtDir;
 
@@ -47,15 +45,15 @@ public class ReportService {
                          RawDataRepositoryDelegator rawDataRepository,
                          RawDataDownloaderDelegator rawDataDownloader,
                          ReportRepository reportRepository,
-                         HistogramReportRepository histogramReportRepository,
+                         HistogramReportRepository histogramReportDao,
                          CsvService csvService,
-                         @Value("${covid.report.target.v2.dir}") String reportTgtDir) {
+                         @Value("${covid.dirs.report.target.v2}") String reportTgtDir) {
         this.rawDataFileRepository = rawDataFileRepository;
         this.reportFactory = reportFactory;
         this.rawDataRepository = rawDataRepository;
         this.rawDataDownloader = rawDataDownloader;
         this.reportRepository = reportRepository;
-        this.histogramReportRepository = histogramReportRepository;
+        this.histogramReportDao = histogramReportDao;
         this.csvService = csvService;
         this.reportTgtDir = reportTgtDir;
     }
@@ -70,9 +68,9 @@ public class ReportService {
             // Download
             RawData data = rawDataDownloader.download(RawDataV2.class);
 
-            response = saveReportFromRawData(data);
+            //response = saveReportFromRawData(data);
 
-            generateAllCsvs(reportTgtDir);
+            //generateAllCsvs(reportTgtDir);
         } else {
             response.setFoundNew(false);
         }
@@ -123,7 +121,7 @@ public class ReportService {
         File latestFile = rawDataFileRepository.getLatestRawDataFile();
 
         RawData downloaded = rawDataDownloader.download(RawDataV2.class);
-        HistogramReport histogramReport = histogramReportRepository.findAllByOrderByIdDesc().get(0);
+        HistogramReport histogramReport = histogramReportDao.findAllByOrderByIdDesc().get(0);
 
         if (!latestFile.getName().contains(downloaded.getId().replace(":", "")) || force) {
             logger.info("New data found! Proceeding to update csvs.");
@@ -165,7 +163,7 @@ public class ReportService {
         File latestFile = rawDataFileRepository.getLatestRawDataFile();
 
         RawData downloaded = rawDataDownloader.download(RawDataV2.class);
-        HistogramReport histogramReport = histogramReportRepository.findAllByOrderByIdDesc().get(0);
+        HistogramReport histogramReport = histogramReportDao.findAllByOrderByIdDesc().get(0);
 
         if (!latestFile.getName().contains(downloaded.getId().replace(":", ""))) {
             foundNew = true;
@@ -212,7 +210,7 @@ public class ReportService {
 
     public Report write(File currentFile, Report previousReport, String[] header, HistogramReport histogramReport) {
         if (histogramReport == null) {
-            histogramReport = histogramReportRepository.findAllByOrderByIdDesc().get(0);
+            histogramReport = histogramReportDao.findAllByOrderByIdDesc().get(0);
         }
 
         if (header == null) {
@@ -292,7 +290,7 @@ public class ReportService {
 
     public Set<ArrayReport> getFilteredReports(String county, LocalDate startDate, LocalDate endDate) {
         Map<LocalDate, List<ArrayReport>> groupedReports =
-                reportRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate).stream()
+                reportRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate)
                         .filter(r -> r.getEpicurves().get(county) != null)
                         .map(r -> new ArrayReport(r, county))
                         .collect(Collectors.groupingBy(ArrayReport::getReportDate));
@@ -331,11 +329,11 @@ public class ReportService {
 
         //allData.stream().filter(data -> data.getClass().equals(RawDataV2.class)).forEach(rawDataRepository::save);
 
-        List<Report> candidatePreviousReports = reportRepository.findByReportDateOrderByIdAsc(allData.get(0).getReportDate().minusDays(1));
+        List<Report> candidatePreviousReports = reportRepository.findByReportDateOrderByIdAsc(allData.get(0).getReportDate().minusDays(1)).collect(Collectors.toList());
 
         Report prevReport = candidatePreviousReports.size() > 0 ? candidatePreviousReports.stream().skip(candidatePreviousReports.size() - 1).findFirst().get() : null;
 
-        HistogramReport histogramReport = histogramReportRepository.findAllByOrderByIdDesc().get(0);
+        HistogramReport histogramReport = histogramReportDao.findAllByOrderByIdDesc().get(0);
 
         Map<LocalDate, List<RawData>> groupedByReportDate = allData.stream().collect(Collectors.groupingBy(RawData::getReportDate));
 
@@ -372,7 +370,7 @@ public class ReportService {
         }
 
         try {
-            histogramReportRepository.save(new HistogramReport(reportRepository.findAllByOrderByIdAsc()));
+            histogramReportDao.save(new HistogramReport(reportRepository.findAllByOrderByIdAsc().collect(Collectors.toList())));
         } catch (Exception e) {
             logger.info("Already saved this histogram report. Skipping... ");
         }
@@ -390,7 +388,7 @@ public class ReportService {
 
         try {
             // Get previous report
-            List<Report> lastFewReports = reportRepository.findByReportDateBetweenOrderByIdAsc(data.getReportDate().minusDays(2), data.getReportDate());
+            List<Report> lastFewReports = reportRepository.findByReportDateBetweenOrderByIdAsc(data.getReportDate().minusDays(2), data.getReportDate()).collect(Collectors.toList());
             Report prevReport = lastFewReports.get(lastFewReports.size() - 1);
 
             // If previous report is on the same date, but the downloaded report is newer, delete the previous report.

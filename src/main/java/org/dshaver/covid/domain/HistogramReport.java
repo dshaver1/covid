@@ -5,6 +5,7 @@ import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -16,10 +17,12 @@ import java.util.stream.Collectors;
  * Histogram of how many days prior to topday new cases or deaths are added.
  */
 @Data
-public class HistogramReport {
+public class HistogramReport implements Identifiable {
     private static final MathContext DECIMALS_4 = new MathContext(4);
 
     String id;
+    LocalDate reportDate;
+    Path filePath;
 
     Map<Integer, Integer> casesHist, deathsHist, casesMedianHist, deathsMedianHist;
     Map<Integer, BigDecimal> casesPercentageHist, deathsPercentageHist, casesPercentageCumulative, deathsPercentageCumulative;
@@ -30,6 +33,7 @@ public class HistogramReport {
 
     public HistogramReport(Collection<Report> dailyReports) {
         id = dailyReports.stream().skip(dailyReports.size() - 1).map(Report::getId).findFirst().get();
+        reportDate = dailyReports.stream().skip(dailyReports.size() - 1).map(Report::getReportDate).findFirst().get();
         casesHist = new HashMap<>();
         deathsHist = new HashMap<>();
         casesMedianHist = new HashMap<>();

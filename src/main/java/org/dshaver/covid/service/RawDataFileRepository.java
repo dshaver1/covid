@@ -37,7 +37,7 @@ public class RawDataFileRepository {
     @Inject
     public RawDataFileRepository(
             RawDataDownloader2 rawDataDownloader2,
-            @Value("${covid.raw.dir}") String rawDir) {
+            @Value("${covid.dirs.raw}") String rawDir) {
         this.rawDataDownloader2 = rawDataDownloader2;
         this.rawDir = rawDir;
     }

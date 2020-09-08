@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by xpdf64 on 2020-04-28.
@@ -32,24 +33,24 @@ public class ReportController {
     private final ReportRepository reportRepository;
     private final RawDataRepositoryV2 rawDataRepository;
     private final ManualRawDataRepository manualRawDataRepository;
-    private final HistogramReportRepository histogramReportRepository;
+    private final HistogramReportRepository histogramReportDao;
     private final ReportService reportService;
     private final ObjectMapper objectMapper;
     private final String reportTgtDir;
 
     @Inject
-    public ReportController(@Value("${covid.report.target.dir}") String reportTgtDir,
+    public ReportController(@Value("${covid.dirs.report.target}") String reportTgtDir,
                             ReportRepository reportRepository,
                             RawDataRepositoryV2 rawDataRepository,
                             ManualRawDataRepository manualRawDataRepository,
-                            HistogramReportRepository histogramReportRepository,
+                            HistogramReportRepository histogramReportDao,
                             ReportService reportService,
                             ObjectMapper objectMapper) {
         this.reportTgtDir = reportTgtDir;
         this.reportRepository = reportRepository;
         this.rawDataRepository = rawDataRepository;
         this.manualRawDataRepository = manualRawDataRepository;
-        this.histogramReportRepository = histogramReportRepository;
+        this.histogramReportDao = histogramReportDao;
         this.reportService = reportService;
         this.objectMapper = objectMapper;
     }
@@ -61,15 +62,15 @@ public class ReportController {
                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
 
         // Save histogram report object
-        HistogramReport histogramReport = new HistogramReport(reportRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate));
+        HistogramReport histogramReport = new HistogramReport(reportRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate).collect(Collectors.toList()));
         try {
             logger.info("Saving histogram report for dates {} - {}.", startDate, endDate);
-            histogramReportRepository.save(histogramReport);
+            histogramReportDao.save(histogramReport);
         } catch (Exception e) {
             logger.info("Already saved this histogram report. Skipping... ");
         }
 
-        Collection<HistogramReport> reports = histogramReportRepository.findAllByOrderByIdDesc();
+        Collection<HistogramReport> reports = histogramReportDao.findAllByOrderByIdDesc();
 
         return reports.stream().findFirst().get();
     }
@@ -82,7 +83,7 @@ public class ReportController {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
 
-        List<Report> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate);
+        List<Report> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate).collect(Collectors.toList());
 
         File file = Paths.get(reportTgtDir, "daily").toFile();
         objectMapper.writeValue(file, reportList);
@@ -112,7 +113,7 @@ public class ReportController {
     public void downloadLatest(@RequestParam(name = "idToCopy") String idToCopy,
                                @RequestParam(name = "targetId") String targetId,
                                @RequestParam(name = "reportDate")
-                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
+                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) throws Exception {
         Optional<RawDataV2> rawDataV2 = rawDataRepository.findById(idToCopy);
         rawDataV2.get().setId(targetId);
         rawDataV2.get().setReportDate(reportDate);
@@ -126,9 +127,9 @@ public class ReportController {
         TreeSet<Report> reports = new TreeSet<>(Comparator.comparing(Report::getId));
 
         if (reportDate == null) {
-            reports.addAll(reportRepository.findAll());
+            reports.addAll(reportRepository.findAll().collect(Collectors.toList()));
         } else {
-            reports.addAll(reportRepository.findByReportDateOrderByIdAsc(reportDate));
+            reports.addAll(reportRepository.findByReportDateOrderByIdAsc(reportDate).collect(Collectors.toList()));
         }
 
         return reports;
@@ -137,7 +138,7 @@ public class ReportController {
     @GetMapping("/covid/api/reports/latest")
     public Report getLatestReport() {
         TreeSet<Report> reports = new TreeSet<>(Comparator.comparing(Report::getId));
-        reports.addAll(reportRepository.findAll());
+        reports.addAll(reportRepository.findAll().collect(Collectors.toList()));
 
         return reports.last();
     }

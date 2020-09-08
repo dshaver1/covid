@@ -53,7 +53,7 @@ public class RawDataController {
                              ManualRawDataRepository manualRawDataRepository,
                              RawDataWriter rawDataWriter,
                              RawDataFileRepository fileRepository,
-                             EpicurveExtractorImpl1 extractorImpl1, EpicurveExtractorImpl2 extractorImpl2, @Value("${covid.raw.dir}") String rawDir) {
+                             EpicurveExtractorImpl1 extractorImpl1, EpicurveExtractorImpl2 extractorImpl2, @Value("${covid.dirs.raw}") String rawDir) {
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.rawDataRepositoryV2 = rawDataRepositoryV2;
         this.manualRawDataRepository = manualRawDataRepository;

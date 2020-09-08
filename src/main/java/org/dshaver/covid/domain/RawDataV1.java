@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,8 @@ public class RawDataV1 implements RawData {
     private LocalDateTime createTime;
 
     private LocalDate reportDate;
+
+    private Path filePath;
 
     private List<String> lines;
 

@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static org.dshaver.covid.service.RawDataFileRepository.filenamePrefix;
 import static org.dshaver.covid.service.RawDataFileRepository.timeFormatter;
@@ -39,7 +40,7 @@ public class RawDataWriter {
     public RawDataWriter(RawDataRepositoryV1 rawDataRepositoryV1,
                          RawDataRepositoryV2 rawDataRepositoryV2,
                          ManualRawDataRepository manualRawDataRepository,
-                         @Value("${covid.raw.dir}") String rawDir) {
+                         @Value("${covid.dirs.raw}") String rawDir) {
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.rawDataRepositoryV2 = rawDataRepositoryV2;
         this.manualRawDataRepository = manualRawDataRepository;
@@ -72,9 +73,9 @@ public class RawDataWriter {
     public void exportDataBetweenDates(LocalDate startDate, LocalDate endDate) throws Exception {
         TreeSet<RawData> rawData = new TreeSet<>(Comparator.comparing(RawData::getId));
 
-        rawData.addAll(rawDataRepositoryV1.findByReportDateBetweenOrderByIdAsc(startDate, endDate));
-        rawData.addAll(rawDataRepositoryV2.findByReportDateBetweenOrderByIdAsc(startDate, endDate));
-        rawData.addAll(manualRawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate));
+        rawData.addAll(rawDataRepositoryV1.findByReportDateBetweenOrderByIdAsc(startDate, endDate).collect(Collectors.toList()));
+        rawData.addAll(rawDataRepositoryV2.findByReportDateBetweenOrderByIdAsc(startDate, endDate).collect(Collectors.toList()));
+        rawData.addAll(manualRawDataRepository.findByReportDateBetweenOrderByIdAsc(startDate, endDate).collect(Collectors.toList()));
 
         for (RawData currentData : rawData) {
             if (currentData.getPayload().size() > 1) {

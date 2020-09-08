@@ -1,13 +1,28 @@
 {
   "properties": [
     {
-      "name": "covid.report.target.dir",
+      "name": "covid.dirs.report.target",
       "type": "java.lang.String",
-      "description": "Description for covid.report.target.dir."
+      "description": "Description for covid.dirs.report.target."
     },
     {
-      "name": "covid.report.target.v2.dir",
+      "name": "covid.dirs.report.target.v2",
       "type": "java.lang.String",
-      "description": "Description for covid.report.target.v2.dir."
+      "description": "Description for covid.dirs.report.target.v2."
+    },
+    {
+      "name": "covid.index.path",
+      "type": "java.lang.String",
+      "description": "Description for covid.index.path."
+    },
+    {
+      "name": "covid.download.url",
+      "type": "java.lang.String",
+      "description": "Description for covid.download.url."
+    },
+    {
+      "name": "covid.download.url2",
+      "type": "java.lang.String",
+      "description": "Description for covid.download.url2."
     }
   ] }

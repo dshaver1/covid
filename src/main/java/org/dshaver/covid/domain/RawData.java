@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface RawData {
+public interface RawData extends Identifiable {
     String getId();
 
     LocalDateTime getCreateTime();

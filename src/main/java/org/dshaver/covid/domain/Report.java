@@ -9,6 +9,7 @@ import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -22,7 +23,7 @@ import java.util.Map;
 @JsonPropertyOrder(value = {"id", "createTime", "reportDate", "totalTests", "totalTestsVm", "confirmedCases",
         "confirmedCasesVm", "deaths", "deathsVm", "hospitalized", "hospitalizedVm", "icu", "icuVm",
         "top5CaseDeltas", "top5DeathDeltas", "georgiaEpicurve"})
-public class Report {
+public class Report implements Identifiable {
     public static final String GEORGIA = "georgia";
     private static final Logger logger = LoggerFactory.getLogger(Report.class);
     private static final String dataFolder = "H:\\dev\\covid\\data\\";
@@ -30,6 +31,7 @@ public class Report {
     private String id;
     private LocalDateTime createTime;
     private LocalDate reportDate;
+    private Path filePath;
     private Map<String, Epicurve> epicurves;
     private Collection<EpicurvePoint> top5CaseDeltas;
     private Collection<EpicurvePoint> top5DeathDeltas;

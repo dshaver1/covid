@@ -33,7 +33,7 @@ public class ReportControllerV2 {
     private final ReportRepository reportRepository;
     private final RawDataRepositoryV2 rawDataRepository;
     private final ManualRawDataRepository manualRawDataRepository;
-    private final HistogramReportRepository histogramReportRepository;
+    private final HistogramReportRepository histogramReportDao;
     private final ReportService reportService;
     private final ObjectMapper objectMapper;
     private final String reportTgtDir;
@@ -43,15 +43,15 @@ public class ReportControllerV2 {
     public ReportControllerV2(ReportRepository reportRepository,
                               RawDataRepositoryV2 rawDataRepository,
                               ManualRawDataRepository manualRawDataRepository,
-                              HistogramReportRepository histogramReportRepository,
+                              HistogramReportRepository histogramReportDao,
                               ReportService reportService,
                               ObjectMapper objectMapper,
-                              @Value("${covid.report.target.v2.dir}") String reportTgtDir,
+                              @Value("${covid.dirs.report.target.v2}") String reportTgtDir,
                               CsvService csvService) {
         this.reportRepository = reportRepository;
         this.rawDataRepository = rawDataRepository;
         this.manualRawDataRepository = manualRawDataRepository;
-        this.histogramReportRepository = histogramReportRepository;
+        this.histogramReportDao = histogramReportDao;
         this.reportService = reportService;
         this.objectMapper = objectMapper;
         this.reportTgtDir = reportTgtDir;
@@ -144,7 +144,7 @@ public class ReportControllerV2 {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
 
-        List<ArrayReport> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate).stream().map(ArrayReport::new).collect(Collectors.toList());
+        List<ArrayReport> reportList = reportRepository.findByReportDateBetweenOrderByIdAsc(defaultedStartDate, defaultedEndDate).map(ArrayReport::new).collect(Collectors.toList());
 
         //File file = Paths.get(REPORT_TGT_DIR, "daily").toFile();
         //objectMapper.writeValue(file, reportList);
@@ -156,7 +156,7 @@ public class ReportControllerV2 {
     public ArrayReport getLatestReport() {
         logger.info("Got request for latest v2 report");
         TreeSet<Report> reports = new TreeSet<>(Comparator.comparing(Report::getId));
-        reports.addAll(reportRepository.findAll());
+        reports.addAll(reportRepository.findAll().collect(Collectors.toList()));
 
         return new ArrayReport(reports.last());
     }
