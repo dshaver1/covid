@@ -10,8 +10,8 @@ covid:
   index.path: /mnt/data/covid/index.json
   dirs:
     report.target: /mnt/data/reports/
-    report.target.csv: /mnt/data/reports/csv/
-    report.target.json: /mnt/data/reports/json/
+    report.target.csv: /mnt/data/reports/v2/csv/
+    report.target.json: /mnt/data/reports/v2/json/
     raw.v2: /mnt/data/raw/v2
     raw.v1: /mnt/data/raw/v1
     raw.manual: /mnt/data/raw/manual

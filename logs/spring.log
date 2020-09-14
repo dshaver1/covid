@@ -16,3 +16,21 @@
 2020-09-13 21:23:28.465  INFO 18940 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 1.796 seconds (JVM running for 2.629)
 2020-09-13 21:23:28.674  INFO 18940 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
 2020-09-13 21:23:28.675  INFO 18940 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-09-13 21:43:26.742  INFO 7944 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 7944 (started by xpdf64 in H:\dev\covid)
+2020-09-13 21:43:26.742  INFO 7944 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
+2020-09-13 21:43:27.534  INFO 7944 --- [main] org.dshaver.covid.service.FileRegistry   : Found index file H:\dev\workingdir\covid\index.json!
+2020-09-13 21:43:27.899  INFO 7944 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-09-13 21:43:28.021  INFO 7944 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-09-13 21:43:28.236  INFO 7944 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-09-13 21:43:28.275  INFO 7944 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 1.857 seconds (JVM running for 2.689)
+2020-09-13 21:43:28.475  INFO 7944 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-09-13 21:43:28.476  INFO 7944 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-09-13 21:48:14.538  INFO 23996 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 23996 (started by xpdf64 in H:\dev\covid)
+2020-09-13 21:48:14.540  INFO 23996 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
+2020-09-13 21:48:15.324  INFO 23996 --- [main] org.dshaver.covid.service.FileRegistry   : Found index file H:\dev\workingdir\covid\index.json!
+2020-09-13 21:48:15.709  INFO 23996 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-09-13 21:48:15.845  INFO 23996 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-09-13 21:48:16.073  INFO 23996 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-09-13 21:48:16.120  INFO 23996 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 1.939 seconds (JVM running for 2.804)
+2020-09-13 21:48:16.343  INFO 23996 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-09-13 21:48:16.344  INFO 23996 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
