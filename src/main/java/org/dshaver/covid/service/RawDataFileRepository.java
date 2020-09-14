@@ -37,7 +37,7 @@ public class RawDataFileRepository {
     @Inject
     public RawDataFileRepository(
             RawDataDownloader2 rawDataDownloader2,
-            @Value("${covid.dirs.raw}") String rawDir) {
+            @Value("${covid.dirs.raw.v2}") String rawDir) {
         this.rawDataDownloader2 = rawDataDownloader2;
         this.rawDir = rawDir;
     }
@@ -62,6 +62,10 @@ public class RawDataFileRepository {
 
     public File getLatestRawDataFile() {
         List<File> fileList = getAllRawDataFiles();
+
+        if (fileList == null || fileList.isEmpty()) {
+            return null;
+        }
 
         return fileList.get(fileList.size()-1);
     }

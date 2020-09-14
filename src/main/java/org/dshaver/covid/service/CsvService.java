@@ -40,8 +40,7 @@ public class CsvService {
         return header.toArray(new String[]{});
     }
 
-    public String writeSummary(String dir, String filename, Collection<ArrayReport> reports) {
-        Path path = Paths.get(dir).resolve(filename);
+    public String writeSummary(Path path, Collection<ArrayReport> reports) {
         List<String> result = new ArrayList<>();
 
         try {
@@ -82,13 +81,13 @@ public class CsvService {
                 row.clear();
             }
         } catch (IOException e) {
-            logger.error("Error writing summary csv: " + filename, e);
+            logger.error("Error writing summary csv: " + path, e);
         }
 
         try {
             result = Files.readAllLines(path);
         } catch (IOException e) {
-            logger.error("Error reading back summary file: " + filename, e);
+            logger.error("Error reading back summary file: " + path, e);
         }
 
         return String.join("\n", result);
@@ -112,14 +111,7 @@ public class CsvService {
         }
     }
 
-    public void appendFile(String dir, String type, String county, String[] header, Report report, Function<ArrayReport, Integer[]> intFunction) throws Exception {
-        String filteredCounty = county.replace(" ", "-");
-        filteredCounty = filteredCounty.replace("/", "");
-        filteredCounty = filteredCounty.replace("\\", "");
-        filteredCounty = filteredCounty.replace("unknown-state", "");
-        filteredCounty = filteredCounty.replace("non-ga-resident", "non-georgia-resident");
-        Path path = Paths.get(dir).resolve(String.format("%s_%s.csv", type, filteredCounty));
-
+    public void appendFile(Path path, String county, String[] header, Report report, Function<ArrayReport, Integer[]> intFunction) throws Exception {
         ArrayReport arrayReport = new ArrayReport(report, county);
 
         BufferedWriter writer = null;
@@ -142,8 +134,7 @@ public class CsvService {
         writer.close();
     }
 
-    public void updateHeader(String dir, String filename, String[] header) throws Exception {
-        Path path = Paths.get(dir).resolve(filename);
+    public void updateHeader(Path path, String[] header) throws Exception {
         List<String> existingRows = new ArrayList<>();
 
         try (FileReader fileReader = new FileReader(path.toFile()); BufferedReader br = new BufferedReader(fileReader)) {

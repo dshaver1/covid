@@ -20,7 +20,7 @@ public class ReportRepository extends BaseFileRepository<Report> {
     public final FileRegistry fileRegistry;
 
     @Inject
-    public ReportRepository(@Value("covid.dirs.report.target.v2") String path,
+    public ReportRepository(@Value("${covid.dirs.report.target.json}") String path,
                                FileRegistry fileRegistry,
                                ObjectMapper objectMapper) {
         super(objectMapper, fileRegistry, Paths.get(path));

@@ -40,7 +40,7 @@ public class RawDataWriter {
     public RawDataWriter(RawDataRepositoryV1 rawDataRepositoryV1,
                          RawDataRepositoryV2 rawDataRepositoryV2,
                          ManualRawDataRepository manualRawDataRepository,
-                         @Value("${covid.dirs.raw}") String rawDir) {
+                         @Value("${covid.dirs.raw.v2}") String rawDir) {
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.rawDataRepositoryV2 = rawDataRepositoryV2;
         this.manualRawDataRepository = manualRawDataRepository;

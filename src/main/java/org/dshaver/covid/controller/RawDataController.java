@@ -5,9 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import org.dshaver.covid.dao.ManualRawDataRepository;
-import org.dshaver.covid.dao.RawDataRepositoryV1;
-import org.dshaver.covid.dao.RawDataRepositoryV2;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
 import org.dshaver.covid.service.RawDataFileRepository;
@@ -16,7 +13,6 @@ import org.dshaver.covid.service.extractor.EpicurveExtractorImpl1;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,30 +34,19 @@ import static org.dshaver.covid.service.RawDataParsingTools.find;
 @RestController
 public class RawDataController {
     private static final Logger logger = LoggerFactory.getLogger(RawDataController.class);
-    private final RawDataRepositoryV1 rawDataRepositoryV1;
-    private final RawDataRepositoryV2 rawDataRepositoryV2;
-    private final ManualRawDataRepository manualRawDataRepository;
     private final RawDataWriter rawDataWriter;
     private final RawDataFileRepository fileRepository;
     private final EpicurveExtractorImpl1 extractorImpl1;
     private final EpicurveExtractorImpl2 extractorImpl2;
-    private final String rawDir;
 
     @Inject
-    public RawDataController(RawDataRepositoryV1 rawDataRepositoryV1,
-                             RawDataRepositoryV2 rawDataRepositoryV2,
-                             ManualRawDataRepository manualRawDataRepository,
-                             RawDataWriter rawDataWriter,
+    public RawDataController(RawDataWriter rawDataWriter,
                              RawDataFileRepository fileRepository,
-                             EpicurveExtractorImpl1 extractorImpl1, EpicurveExtractorImpl2 extractorImpl2, @Value("${covid.dirs.raw}") String rawDir) {
-        this.rawDataRepositoryV1 = rawDataRepositoryV1;
-        this.rawDataRepositoryV2 = rawDataRepositoryV2;
-        this.manualRawDataRepository = manualRawDataRepository;
+                             EpicurveExtractorImpl1 extractorImpl1, EpicurveExtractorImpl2 extractorImpl2) {
         this.rawDataWriter = rawDataWriter;
         this.fileRepository = fileRepository;
         this.extractorImpl1 = extractorImpl1;
         this.extractorImpl2 = extractorImpl2;
-        this.rawDir = rawDir;
     }
 
     @GetMapping("/covid/api/rawdata/metadata")

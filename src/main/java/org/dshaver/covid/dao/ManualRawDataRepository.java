@@ -20,7 +20,7 @@ public class ManualRawDataRepository extends BaseFileRepository<ManualRawData> {
     public final FileRegistry fileRegistry;
 
     @Inject
-    public ManualRawDataRepository(@Value("covid.dirs.raw.manual") String path,
+    public ManualRawDataRepository(@Value("${covid.dirs.raw.manual}") String path,
                                      FileRegistry fileRegistry,
                                      ObjectMapper objectMapper) {
         super(objectMapper, fileRegistry, Paths.get(path));

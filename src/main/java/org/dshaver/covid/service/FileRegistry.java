@@ -28,25 +28,14 @@ public class FileRegistry {
     private static final Logger logger = LoggerFactory.getLogger(FileRegistry.class);
 
     private final ObjectMapper objectMapper;
-    private final RawDataFileRepository rawDataFileRepository;
-    private final HistogramReportRepository histogramReportDao;
-    private final RawDataDownloader2 rawDataDownloader2;
     private final String indexPath;
-    private final String rawDir;
     private final MultiFileIndex fileIndex;
 
     @Inject
     public FileRegistry(ObjectMapper objectMapper,
-                        RawDataFileRepository rawDataFileRepository,
-                        HistogramReportRepository histogramReportDao,
-                        RawDataDownloader2 rawDataDownloader2,
                         @Value("${covid.index.path}") String indexPath,
-                        @Value("${covid.dirs.raw}") String rawDir) {
+                        @Value("${covid.dirs.raw.v2}") String rawDir) {
         this.objectMapper = objectMapper;
-        this.rawDataFileRepository = rawDataFileRepository;
-        this.histogramReportDao = histogramReportDao;
-        this.rawDataDownloader2 = rawDataDownloader2;
-        this.rawDir = rawDir;
         this.indexPath = indexPath;
         Optional<MultiFileIndex> fileIndex = Optional.empty();
         try {
@@ -118,39 +107,6 @@ public class FileRegistry {
 
     public Optional<Path> getPath(Class<? extends Identifiable> clazz, LocalDate reportDate) {
         return Optional.ofNullable(getIndex(clazz).getReportDateToPath().get(reportDate));
-    }
-
-    public MultiFileIndex scanAllDirectories() {
-        MultiFileIndex multiFileIndex = new MultiFileIndex(LocalDateTime.now());
-
-        try {
-            // Do raw data first
-            FileIndex rawDataFileIndex = new FileIndex(LocalDateTime.now(), RawData.class);
-            Files.list(Paths.get(rawDir));
-            List<File> files = rawDataFileRepository.getRawDataFiles(LocalDate.MIN, LocalDate.MAX);
-            for (File file : files) {
-                RawData rawData = rawDataDownloader2.transform(new FileInputStream(file), false);
-                if (rawData != null && rawData.getId() != null && rawData.getReportDate() != null) {
-                    rawDataFileIndex.getIdToPath().put(rawData.getId(), file.toPath());
-                    rawDataFileIndex.getReportDateToPath().put(rawData.getReportDate(), file.toPath());
-                }
-            }
-            
-            multiFileIndex.getMultimap().put(RawData.class, rawDataFileIndex);
-
-            // Histogram reports
-            FileIndex histogramFileIndex = new FileIndex(LocalDateTime.now(), HistogramReport.class);
-            histogramReportDao.findAll().forEach(histogramReport -> {
-                histogramFileIndex.getIdToPath().put(histogramReport.getId(), histogramReport.getFilePath());
-                histogramFileIndex.getReportDateToPath().put(histogramReport.getReportDate(), histogramReport.getFilePath());
-            });
-            multiFileIndex.getMultimap().put(HistogramReport.class, histogramFileIndex);
-
-        } catch (IOException e) {
-            logger.error("Error scanning data directories...", e);
-        }
-
-        return multiFileIndex;
     }
 
     private Optional<MultiFileIndex> readIndex() {

@@ -43,6 +43,8 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
                 logger.error("Error creating directory! " + this.path, e);
             }
         }
+
+        fileRegistry.putIndex(this.getClazz(), new FileIndex(LocalDateTime.now(), getClazz()));
     }
 
     @Override
@@ -65,9 +67,9 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
     public FileIndex scanDirectory() {
         FileIndex fileIndex = new FileIndex(LocalDateTime.now(), getClazz());
         try {
-            streamAll().forEach(histogramReport -> {
-                fileIndex.getIdToPath().put(histogramReport.getId(), histogramReport.getFilePath());
-                fileIndex.getReportDateToPath().put(histogramReport.getReportDate(), histogramReport.getFilePath());
+            streamAll().forEach(entity -> {
+                fileIndex.getIdToPath().put(entity.getId(), entity.getFilePath());
+                fileIndex.getReportDateToPath().put(entity.getReportDate(), entity.getFilePath());
             });
         } catch (IOException e) {
             logger.error("Could not scan directory!", e);

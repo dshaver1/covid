@@ -46,7 +46,7 @@ public class ReportControllerV2 {
                               HistogramReportRepository histogramReportDao,
                               ReportService reportService,
                               ObjectMapper objectMapper,
-                              @Value("${covid.dirs.report.target.v2}") String reportTgtDir,
+                              @Value("${covid.dirs.report.target.csv}") String reportTgtDir,
                               CsvService csvService) {
         this.reportRepository = reportRepository;
         this.rawDataRepository = rawDataRepository;
