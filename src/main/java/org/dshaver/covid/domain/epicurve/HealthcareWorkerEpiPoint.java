@@ -87,7 +87,7 @@ public class HealthcareWorkerEpiPoint implements EpicurvePoint {
 
     public void setLabel(String label) {
         this.label = label;
-        if (labelDate == null) {
+        if (labelDate == null && label != null) {
             this.labelDate = LocalDate.parse(getLabel(), DateTimeFormatter.ISO_LOCAL_DATE);
         }
     }

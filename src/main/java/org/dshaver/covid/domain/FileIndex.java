@@ -17,6 +17,9 @@ public class FileIndex {
     private final Map<String, Path> idToPath = new HashMap<>();
     private final Map<LocalDate,Path> reportDateToPath = new HashMap<>();
 
+    public FileIndex() {
+    }
+
     public void add(Identifiable entity) {
         idToPath.put(entity.getId(), entity.getFilePath());
         reportDateToPath.put(entity.getReportDate(), entity.getFilePath());

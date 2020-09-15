@@ -29,7 +29,7 @@ public class ManualRawDataRepository extends BaseFileRepository<ManualRawData> {
 
     @Override
     public String createFilename(ManualRawData entity) {
-        return String.format("MANUAL_RAW_%s.json", timeFormatter.format(entity.getReportDate()));
+        return String.format("MANUAL_RAW_%s.json", reportDateFormatter.format(entity.getReportDate()));
     }
 
     @Override

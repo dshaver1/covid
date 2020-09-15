@@ -3,8 +3,10 @@ package org.dshaver.covid.service;
 import org.dshaver.covid.dao.ManualRawDataRepository;
 import org.dshaver.covid.dao.RawDataRepositoryV1;
 import org.dshaver.covid.dao.RawDataRepositoryV2;
+import org.dshaver.covid.domain.BasicFile;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
+import org.dshaver.covid.domain.RawDataV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,33 +36,42 @@ public class RawDataWriter {
     private final RawDataRepositoryV1 rawDataRepositoryV1;
     private final RawDataRepositoryV2 rawDataRepositoryV2;
     private final ManualRawDataRepository manualRawDataRepository;
+    private final FileRegistry fileRegistry;
     private final String rawDir;
 
     @Inject
     public RawDataWriter(RawDataRepositoryV1 rawDataRepositoryV1,
                          RawDataRepositoryV2 rawDataRepositoryV2,
                          ManualRawDataRepository manualRawDataRepository,
+                         FileRegistry fileRegistry,
                          @Value("${covid.dirs.raw.v2}") String rawDir) {
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.rawDataRepositoryV2 = rawDataRepositoryV2;
         this.manualRawDataRepository = manualRawDataRepository;
+        this.fileRegistry = fileRegistry;
         this.rawDir = rawDir;
     }
 
-    public void write(RawData rawData) {
-        write(filenamePrefix + rawData.getId().replace(":","") + ".js", rawData.getPayload());
+    public void write(BasicFile basicFile) {
+        String filteredId = filenamePrefix + basicFile.getId().replace(":","");
+        Path path = Paths.get(rawDir, filteredId + ".js");
+        write(path, basicFile.getPayload());
+        basicFile.setFilePath(path);
+        basicFile.setId(filteredId);
+        fileRegistry.addEntity(RawDataV2.class, basicFile);
     }
 
-    public void write(String filename, List<String> lines) {
+    public void write(Path path, List<String> lines) {
         try {
-            Files.write(Paths.get(rawDir, filename), lines, StandardOpenOption.CREATE);
+            Files.write(path, lines, StandardOpenOption.CREATE);
         } catch (IOException e) {
-            throw new RuntimeException("Could not write raw data file " + filename, e);
+            throw new RuntimeException("Could not write raw data file " + path.toAbsolutePath().toString(), e);
         }
     }
 
     public void write(LocalDateTime reportTime, List<String> lines) {
-        write(filenamePrefix + timeFormatter.format(reportTime) + ".js", lines);
+        Path path = Paths.get(rawDir, filenamePrefix + timeFormatter.format(reportTime) + ".js");
+        write(path, lines);
     }
 
     public void exportAllData() throws Exception {

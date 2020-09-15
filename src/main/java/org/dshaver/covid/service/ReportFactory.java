@@ -3,9 +3,13 @@ package org.dshaver.covid.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.dshaver.covid.dao.EpicurveDtoRepository;
+import org.dshaver.covid.dao.HealthcareDtoRepository;
 import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.*;
 import org.dshaver.covid.domain.overview.ReportOverview;
+import org.dshaver.covid.service.extractor.EpicurveExtractorImpl1;
+import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.dshaver.covid.service.extractor.Extractor;
 import org.dshaver.covid.service.extractor.HealthcareWorkerExtractor;
 import org.slf4j.Logger;
@@ -36,8 +40,11 @@ public class ReportFactory {
     private final List<String> whiteList = new ArrayList<>();
     private final String filter = "\"dataPoints\" : ";
     private final ObjectMapper objectMapper;
+    private final EpicurveDtoRepository epicurveDtoRepository;
+    private final HealthcareDtoRepository healthcareDtoRepository;
     private final Extractor<String, ReportOverview> reportOverviewExtractor;
-    private final Extractor<String, Map<String, Epicurve>> epicurveExtractor;
+    private final EpicurveExtractorImpl1 epicurveExtractor1;
+    private final EpicurveExtractorImpl2 epicurveExtractor2;
     private final HealthcareWorkerExtractor healthcareWorkerExtractor;
 
     {
@@ -53,11 +60,18 @@ public class ReportFactory {
 
     @Inject
     public ReportFactory(ObjectMapper objectMapper,
+                         EpicurveDtoRepository epicurveDtoRepository,
+                         HealthcareDtoRepository healthcareDtoRepository,
                          @Qualifier("reportOverviewExtractorDelegator") Extractor<String, ReportOverview> reportOverviewExtractor,
-                         @Qualifier("epicurveExtractorDelegator") Extractor<String, Map<String, Epicurve>> epicurveExtractor, HealthcareWorkerExtractor healthcareWorkerExtractor) {
+                         EpicurveExtractorImpl1 epicurveExtractor1,
+                         EpicurveExtractorImpl2 epicurveExtractor2,
+                         HealthcareWorkerExtractor healthcareWorkerExtractor) {
         this.objectMapper = objectMapper;
+        this.epicurveDtoRepository = epicurveDtoRepository;
+        this.healthcareDtoRepository = healthcareDtoRepository;
         this.reportOverviewExtractor = reportOverviewExtractor;
-        this.epicurveExtractor = epicurveExtractor;
+        this.epicurveExtractor1 = epicurveExtractor1;
+        this.epicurveExtractor2 = epicurveExtractor2;
         this.healthcareWorkerExtractor = healthcareWorkerExtractor;
     }
 
@@ -118,11 +132,22 @@ public class ReportFactory {
     }
 
     public Report createReport(RawDataV2 rawData, Report previousReport) throws Exception {
-        Optional<Map<String, Epicurve>> maybeEpicurve = epicurveExtractor.extract(rawData.getPayload(), rawData.getId());
-        Optional<Map<String, Epicurve>> maybeHealthcareEpicurve = healthcareWorkerExtractor.extract(rawData.getPayload(), rawData.getId());
+        Optional<EpicurvePointImpl2Container> epicurveContainer = epicurveDtoRepository.findById(rawData.getId());
+        Optional<HealthcareWorkerEpiPointContainer> healthcareContainer = healthcareDtoRepository.findById(rawData.getId());
+
+        if (!epicurveContainer.isPresent()) {
+            throw new IllegalStateException("Could not find main epicurve within raw data!");
+        }
+
+        if (!healthcareContainer.isPresent()) {
+            throw new IllegalStateException("Could not find healthcare epicurve within raw data!");
+        }
+
+        Optional<Map<String, Epicurve>> maybeEpicurve = epicurveExtractor2.extract(epicurveContainer.get().getPayload(), rawData.getId());
+        Optional<Map<String, Epicurve>> maybeHealthcareEpicurve = healthcareWorkerExtractor.extract(healthcareContainer.get().getPayload(), rawData.getId());
 
         if (!maybeEpicurve.isPresent()) {
-            throw new IllegalStateException("Could not find Epicurve within raw data!");
+            throw new IllegalStateException("Could not extract epicurve from !");
         }
 
         Optional<ReportOverview> maybeOverview = reportOverviewExtractor.extract(rawData.getPayload(), rawData.getId());

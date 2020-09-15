@@ -1,5 +1,7 @@
 package org.dshaver.covid.service;
 
+import org.apache.commons.text.WordUtils;
+import org.dshaver.covid.domain.BasicFile;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV2;
 import org.slf4j.Logger;
@@ -70,7 +72,7 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
         try {
             br = new BufferedReader(new InputStreamReader(inputStream));
             while ((line = br.readLine()) != null) {
-                downloadedStrings.add(line);
+                downloadedStrings.add(WordUtils.wrap(line, 1000));
                 Matcher timeMatcher = timePattern.matcher(line);
                 if (timeMatcher.matches()) {
                     String dateTimeString = timeMatcher.group(1);
@@ -96,7 +98,7 @@ public class RawDataDownloader2 implements RawDataDownloader<RawDataV2> {
         }
 
         if (writeToDisk) {
-            rawDataWriter.write(dateObj, downloadedStrings);
+            rawDataWriter.write(new BasicFile<>(rawData.getReportDate(), rawData.getId(), null, downloadedStrings));
         }
 
         rawData.setPayload(filteredStrings);

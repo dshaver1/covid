@@ -18,6 +18,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -25,7 +27,10 @@ import java.util.stream.Stream;
  */
 public abstract class BaseFileRepository<T extends Identifiable> implements FileRepository<T> {
     private static final Logger logger = LoggerFactory.getLogger(BaseFileRepository.class);
-    public static final DateTimeFormatter timeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().parseLenient().appendPattern("uuuu-MM-dd").toFormatter();
+    public static final Pattern reportDateFilenamePattern = Pattern.compile(".*(\\d{4}-\\d{2}-\\d{2})");
+    public static final Pattern idFilenamePattern = Pattern.compile(".*(\\d{4}-\\d{2}-\\d{2}T\\d{6})");
+    public static final DateTimeFormatter reportDateFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().parseLenient().appendPattern("uuuu-MM-dd").toFormatter();
+    public static final DateTimeFormatter idFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().parseLenient().appendPattern("uuuu-MM-dd'T'HHmmss").toFormatter();
 
     private final ObjectMapper objectMapper;
     private final FileRegistry fileRegistry;
@@ -44,7 +49,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
             }
         }
 
-        fileRegistry.putIndex(this.getClazz(), new FileIndex(LocalDateTime.now(), getClazz()));
+        fileRegistry.putIndex(this.getClazz(), scanDirectory());
     }
 
     @Override
@@ -67,9 +72,14 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
     public FileIndex scanDirectory() {
         FileIndex fileIndex = new FileIndex(LocalDateTime.now(), getClazz());
         try {
-            streamAll().forEach(entity -> {
-                fileIndex.getIdToPath().put(entity.getId(), entity.getFilePath());
-                fileIndex.getReportDateToPath().put(entity.getReportDate(), entity.getFilePath());
+            Files.list(getPath()).forEach(path -> {
+                if (!fileRegistry.isKnown(getClazz(), path)) {
+                    String id = getIdFromFilename(path);
+                    LocalDate reportDate = getReportDateFromFilename(path);
+
+                    fileIndex.getIdToPath().put(id, path);
+                    fileIndex.getReportDateToPath().put(reportDate, path);
+                }
             });
         } catch (IOException e) {
             logger.error("Could not scan directory!", e);
@@ -117,7 +127,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
         try {
             if (regFile.isPresent()) {
                 // Cache hit! Read file directly without searching.
-                entity = Optional.ofNullable(objectMapper.readValue(regFile.get().toFile(), getClazz()));
+                entity = Optional.ofNullable(readFile(regFile.get()));
             } else {
                 // Cache miss. Look on disk.
                 return streamAll().filter(o -> o.getReportDate().equals(reportDate)).findFirst();
@@ -144,8 +154,13 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
         return Stream.empty();
     }
 
+    @Override
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
     private Stream<T> streamAll() throws IOException {
-        return Files.list(getPath())
+        return streamPaths()
                 .map(path -> {
                     try {
                         T entity = objectMapper.readValue(path.toFile(), getClazz());
@@ -188,5 +203,25 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
     @Override
     public Path getPath() {
         return this.path;
+    }
+
+    private String getIdFromFilename(Path path) {
+        Matcher matcher = idFilenamePattern.matcher(path.getFileName().toString());
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
+    }
+
+    private LocalDate getReportDateFromFilename(Path path) {
+        Matcher matcher = reportDateFilenamePattern.matcher(path.getFileName().toString());
+
+        if (matcher.find()) {
+            return LocalDate.parse(matcher.group(1), reportDateFormatter);
+        } else {
+            return null;
+        }
     }
 }

@@ -46,7 +46,7 @@ public class ReportControllerV2 {
                               HistogramReportRepository histogramReportDao,
                               ReportService reportService,
                               ObjectMapper objectMapper,
-                              @Value("${covid.dirs.report.target.csv}") String reportTgtDir,
+                              @Value("${covid.dirs.reports.csv}") String reportTgtDir,
                               CsvService csvService) {
         this.reportRepository = reportRepository;
         this.rawDataRepository = rawDataRepository;
@@ -107,32 +107,6 @@ public class ReportControllerV2 {
         }
     }
 
-    @PostMapping("/covid/api/reports/v2/generateAllCsvs")
-    public String generateCsv() throws Exception {
-        logger.info("Got request to generate all csvs!");
-
-        boolean success = reportService.generateAllCsvs(reportTgtDir);
-
-        return "Done! Success: " + success;
-    }
-
-    @GetMapping("/covid/api/reports/v2/checkAndRewrite")
-    public String checkAndRewrite(@RequestParam(name = "force", required = false) boolean force) throws Exception {
-        logger.info("Got request to check for new data and rewrite csvs!");
-
-        boolean success = reportService.checkAndRewriteCsvs(reportTgtDir, force);
-
-        return "Done! Success: " + success;
-    }
-
-    @GetMapping("/covid/api/reports/v2/checkAndAppend")
-    public String checkAndAppend() throws Exception {
-        logger.info("Got request to check for new data and append to csvs!");
-
-        boolean foundNew = reportService.checkAndAppend(reportTgtDir);
-
-        return "Done! Found new: " + foundNew;
-    }
 
     @GetMapping("/covid/api/reports/v2/daily")
     public Collection<ArrayReport> getReports(@RequestParam(name = "startDate", required = false)

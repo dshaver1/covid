@@ -8,5 +8,6 @@ import lombok.Data;
 @Data
 public class DownloadResponse {
     private boolean foundNew;
-    private Report report;
+    private String previousLatestId;
+    private String newLatestId;
 }

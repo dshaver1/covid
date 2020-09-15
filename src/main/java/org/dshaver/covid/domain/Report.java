@@ -2,10 +2,12 @@ package org.dshaver.covid.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 import lombok.ToString;
 import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
+import org.dshaver.covid.domain.epicurve.EpicurvePointImpl2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,11 @@ public class Report implements Identifiable {
     private LocalDate reportDate;
     private Path filePath;
     private Map<String, Epicurve> epicurves;
+
+    @JsonDeserialize(contentAs = EpicurvePointImpl2.class)
     private Collection<EpicurvePoint> top5CaseDeltas;
+
+    @JsonDeserialize(contentAs = EpicurvePointImpl2.class)
     private Collection<EpicurvePoint> top5DeathDeltas;
     private int totalTests;
     private int totalTestsVm;
@@ -83,6 +89,7 @@ public class Report implements Identifiable {
         this.icuVm = icuVm;
     }
 
+    @JsonIgnore
     public Epicurve getGeorgiaEpicurve() {
         return epicurves.get(GEORGIA);
     }
@@ -93,8 +100,6 @@ public class Report implements Identifiable {
         // do nothing...
     }
 
-    // Don't print ALL epicurves to json as that would be too large.
-    @JsonIgnore
     public Map<String, Epicurve> getEpicurves() {
         return epicurves;
     }

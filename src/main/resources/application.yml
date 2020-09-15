@@ -9,12 +9,17 @@ spring.profiles: cloud
 covid:
   index.path: /mnt/data/covid/index.json
   dirs:
-    report.target: /mnt/data/reports/
-    report.target.csv: /mnt/data/reports/v2/csv/
-    report.target.json: /mnt/data/reports/v2/json/
-    raw.v2: /mnt/data/raw/v2
-    raw.v1: /mnt/data/raw/v1
-    raw.manual: /mnt/data/raw/manual
+    reports:
+      root: /mnt/data/reports/
+      csv: /mnt/data/reports/v2/csv/
+      json: /mnt/data/reports/v2/json/
+    raw:
+      v2: /mnt/data/raw/v2
+      v1: /mnt/data/raw/v1
+      manual: /mnt/data/raw/manual
+    filtered:
+      epicurve: /mnt/data/filteredjson/epicurve
+      healthcare: /mnt/data/filteredjson/healthcare
     histogram: /mnt/data/histogram
 server.port: 8080
 logging.file.path: /mnt/data/covid/logs/
@@ -25,12 +30,17 @@ spring.profiles: local
 covid:
   index.path: H:\dev\workingdir\covid\index.json
   dirs:
-    report.target: H:\dev\workingdir\covid\reports
-    report.target.csv: H:\dev\workingdir\covid\reports\csv
-    report.target.json: H:\dev\workingdir\covid\reports\json
-    raw.v2: H:\dev\workingdir\covid\raw\v2
-    raw.v1: H:\dev\workingdir\covid\raw\v1
-    raw.manual: H:\dev\workingdir\covid\raw\manual
+    reports:
+      root: H:\dev\workingdir\covid\reports
+      csv: H:\dev\workingdir\covid\reports\csv
+      json: H:\dev\workingdir\covid\reports\json
+    raw:
+      v2: H:\dev\workingdir\covid\raw\v2
+      v1: H:\dev\workingdir\covid\raw\v1
+      manual: H:\dev\workingdir\covid\raw\manual
+    filtered:
+      epicurve: H:\dev\workingdir\covid\filtered\epicurve
+      healthcare: H:\dev\workingdir\covid\filtered\healthcare
     histogram: H:\dev\workingdir\covid\histogram
 server.port: 8080
 logging.file.path: H:\dev\covid\logs\

@@ -1,14 +1,14 @@
 {
   "properties": [
     {
-      "name": "covid.dirs.report.target",
+      "name": "covid.dirs.reports",
       "type": "java.lang.String",
-      "description": "Description for covid.dirs.report.target."
+      "description": "Description for covid.dirs.reports."
     },
     {
-      "name": "covid.dirs.report.target.v2",
+      "name": "covid.dirs.reports.v2",
       "type": "java.lang.String",
-      "description": "Description for covid.dirs.report.target.v2."
+      "description": "Description for covid.dirs.reports.v2."
     },
     {
       "name": "covid.index.path",

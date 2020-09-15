@@ -32,7 +32,7 @@ public class HistogramReportRepository extends BaseFileRepository<HistogramRepor
 
     @Override
     public String createFilename(HistogramReport report) {
-        return String.format("histogram_%s.json", timeFormatter.format(report.getReportDate()));
+        return String.format("histogram_%s.json", reportDateFormatter.format(report.getReportDate()));
     }
 
     @Override

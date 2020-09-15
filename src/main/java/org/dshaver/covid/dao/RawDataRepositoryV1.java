@@ -29,7 +29,7 @@ public class RawDataRepositoryV1 extends BaseFileRepository<RawDataV1> {
 
     @Override
     public String createFilename(RawDataV1 entity) {
-        return String.format("RAW_V1_%s.json", timeFormatter.format(entity.getReportDate()));
+        return String.format("RAW_V1_%s.json", reportDateFormatter.format(entity.getReportDate()));
     }
 
     @Override

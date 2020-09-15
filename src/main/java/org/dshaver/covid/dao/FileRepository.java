@@ -1,9 +1,11 @@
 package org.dshaver.covid.dao;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.dshaver.covid.domain.FileIndex;
 import org.dshaver.covid.domain.Identifiable;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -44,4 +46,14 @@ public interface FileRepository<T extends Identifiable> {
     Stream<T> findByReportDateOrderByIdAsc(LocalDate reportDate);
 
     Stream<T> findAllByOrderByIdAsc();
+
+    ObjectMapper getObjectMapper();
+
+    default T readFile(Path path) throws IOException {
+        return getObjectMapper().readValue(path.toFile(), getClazz());
+    }
+
+    default Stream<Path> streamPaths() throws IOException {
+        return Files.list(getPath());
+    }
 }

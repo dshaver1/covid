@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 /**
  * Created by xpdf64 on 2020-04-27.
@@ -20,7 +21,7 @@ public class ReportRepository extends BaseFileRepository<Report> {
     public final FileRegistry fileRegistry;
 
     @Inject
-    public ReportRepository(@Value("${covid.dirs.report.target.json}") String path,
+    public ReportRepository(@Value("${covid.dirs.reports.json}") String path,
                                FileRegistry fileRegistry,
                                ObjectMapper objectMapper) {
         super(objectMapper, fileRegistry, Paths.get(path));
@@ -29,7 +30,7 @@ public class ReportRepository extends BaseFileRepository<Report> {
 
     @Override
     public String createFilename(Report entity) {
-        return String.format("REPORT_V2_%s.json", timeFormatter.format(entity.getReportDate()));
+        return String.format("REPORT_V2_%s.json", idFormatter.format(LocalDateTime.parse(entity.getId().replace(":", ""), idFormatter)));
     }
 
     @Override

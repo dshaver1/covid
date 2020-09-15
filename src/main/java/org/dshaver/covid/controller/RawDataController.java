@@ -1,32 +1,22 @@
 package org.dshaver.covid.controller;
 
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import org.dshaver.covid.domain.DownloadResponse;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
 import org.dshaver.covid.service.RawDataFileRepository;
 import org.dshaver.covid.service.RawDataWriter;
+import org.dshaver.covid.service.ReportService;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl1;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.*;
-
-import static org.dshaver.covid.service.RawDataParsingTools.find;
 
 /**
  * Created by xpdf64 on 2020-06-12.
@@ -38,73 +28,35 @@ public class RawDataController {
     private final RawDataFileRepository fileRepository;
     private final EpicurveExtractorImpl1 extractorImpl1;
     private final EpicurveExtractorImpl2 extractorImpl2;
+    private final ReportService reportService;
 
     @Inject
     public RawDataController(RawDataWriter rawDataWriter,
                              RawDataFileRepository fileRepository,
-                             EpicurveExtractorImpl1 extractorImpl1, EpicurveExtractorImpl2 extractorImpl2) {
+                             EpicurveExtractorImpl1 extractorImpl1,
+                             EpicurveExtractorImpl2 extractorImpl2,
+                             ReportService reportService) {
         this.rawDataWriter = rawDataWriter;
         this.fileRepository = fileRepository;
         this.extractorImpl1 = extractorImpl1;
         this.extractorImpl2 = extractorImpl2;
+        this.reportService = reportService;
     }
 
-    @GetMapping("/covid/api/rawdata/metadata")
-    public Collection<RawData> getRawDataMetadata(@RequestParam(name = "reportDate")
-                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
-        TreeSet<RawData> rawData = new TreeSet<>(Comparator.comparing(RawData::getId));
-
-        rawData.addAll(fileRepository.findByReportDateBetweenOrderByIdAsc(reportDate, reportDate));
-
-        return rawData;
+    @PostMapping("/covid/api/poll")
+    public DownloadResponse checkForData() throws Exception {
+        return reportService.checkForData();
     }
 
-    @GetMapping("/covid/api/rawdata")
-    public String getRawData(@RequestParam(name = "reportDate")
-                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate,
-                             @RequestParam(name = "filter", required = false) String filter,
-                             @RequestParam(name = "formatted", required = false) Boolean formatted) throws Exception {
-        boolean defaultedFormatted = formatted == null ? true : formatted;
-        logger.info("Got request for raw data: {} with filter {} ", reportDate, filter);
+    @PostMapping("/covid/api/reprocess")
+    public void reprocess(@RequestParam(name = "startDate", required = false)
+                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                          @RequestParam(name = "endDate", required = false)
+                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
+        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
+        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
 
-        Collection<File> files = fileRepository.getRawDataFiles(reportDate, reportDate);
-
-        Preconditions.checkArgument(files.size() == 1, "Should have only found 1 raw data file for date " + reportDate);
-
-        Path path = files.stream().map(File::toPath).findFirst().get();
-
-        List<String> rawStrings = Files.readAllLines(path);
-
-        if (filter != null && filter.equals("epicurve")) {
-            Optional<String> epicurveString = find(rawStrings, extractorImpl2.getPattern());
-            if (!epicurveString.isPresent()) {
-                epicurveString = find(rawStrings, extractorImpl1.getPattern());
-            }
-
-            if (epicurveString.isPresent()) {
-                if (defaultedFormatted) {
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                    JsonParser jp = new JsonParser();
-                    JsonElement je = jp.parse(epicurveString.get());
-                    String prettyJsonString = gson.toJson(je);
-                    return prettyJsonString;
-                }
-
-                return epicurveString.get();
-            }
-        }
-
-
-        return String.join("\n", rawStrings);
-    }
-
-
-    @PostMapping("/covid/api/rawdata/writeFiles")
-    public void writeRawData(@RequestParam(name = "startDate")
-                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                             @RequestParam(name = "endDate")
-                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
-        rawDataWriter.exportAllData();
+        reportService.processRange(defaultedStartDate, defaultedEndDate);
     }
 
     private String getExtension(RawData data) {
