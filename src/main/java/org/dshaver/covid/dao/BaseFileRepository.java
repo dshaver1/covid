@@ -139,6 +139,24 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
         return entity;
     }
 
+    public Optional<T> getLatest() {
+        Optional<T> latest = Optional.empty();
+        Optional<String> latestId = fileRegistry.getLatestId(getClazz());
+
+        if (latestId.isPresent()) {
+            Optional<Path> regFile = fileRegistry.getPath(getClazz(), latestId.get());
+            if (regFile.isPresent()) {
+                try {
+                    latest = Optional.ofNullable(readFile(regFile.get()));
+                } catch (IOException e) {
+                    logger.error("Error reading latest " + getClazz() + " file: " + getPath(), e);
+                }
+            }
+        }
+
+        return latest;
+    }
+
     @Override
     public Stream<T> findByReportDateBetweenOrderByIdAsc(LocalDate startDate, LocalDate endDate) {
         return Stream.empty();

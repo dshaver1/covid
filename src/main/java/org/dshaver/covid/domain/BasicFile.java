@@ -11,9 +11,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BasicFile<T> implements Identifiable {
+public class BasicFile implements Identifiable {
     private LocalDate reportDate;
     private String id;
     private Path filePath;
-    private List<T> payload;
+    private List<String> payload;
 }

@@ -1,41 +1,11 @@
 package org.dshaver.covid.domain.epicurve;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-@Data
-@EqualsAndHashCode
-public class EpicurvePointImpl2 implements EpicurvePoint {
-    LocalDate labelDate;
-    String label;
-    String source;
-    @JsonProperty("county")
-    String county;
-    @JsonProperty("test_date")
-    String testDate;
-    @JsonProperty("positives")
-    Integer positiveCount;
-    @JsonProperty("deathcnt")
-    Integer deathCount;
-    @JsonProperty("positives_cum")
-    Integer positivesCumulative;
-    @JsonProperty("death_cum")
-    Integer deathsCumulative;
-    Integer casesVm;
-    Integer deathsVm;
-    Integer casesExtrapolated;
-    Integer medianCaseDelta;
-    Integer movingAvg;
-    @JsonIgnore
-    Integer manualCaseTotal;
-    @JsonIgnore
-    Integer manualDeathTotal;
+public class EpicurvePointImpl2 extends BaseEpicurvePoint {
 
     public EpicurvePointImpl2() {
 
@@ -56,35 +26,63 @@ public class EpicurvePointImpl2 implements EpicurvePoint {
         this.casesExtrapolated = original.getCasesExtrapolated();
     }
 
-    @Override
-    public int compareTo(EpicurvePoint o) {
-        int compare = 0;
-        compare = county.toLowerCase().compareTo(o.getCounty().toLowerCase());
-
-        if (compare == 0) {
-            compare = label.compareTo(o.getLabel());
-        }
-
-        return compare;
+    @JsonGetter("county")
+    public String getCounty() {
+        return county;
     }
 
-    @JsonIgnore
-    public LocalDate getLabelDate() {
-        return labelDate;
+    @JsonSetter("county")
+    public void setCounty(String county) {
+        this.county = county;
     }
 
-    public void setLabelDate(LocalDate labelDate) {
-        this.labelDate = labelDate;
+    @JsonGetter("test_date")
+    public String getTestDate() {
+        return testDate;
     }
 
-    public String getLabel() {
-        return label;
+    @JsonSetter("test_date")
+    public void setTestDate(String testDate) {
+        this.testDate = testDate;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-        if (labelDate == null && label != null) {
-            this.labelDate = LocalDate.parse(getLabel(), DateTimeFormatter.ISO_LOCAL_DATE);
-        }
+    @JsonGetter("positives")
+    public Integer getPositiveCount() {
+        return positiveCount;
+    }
+
+    @JsonSetter("positives")
+    public void setPositiveCount(Integer positiveCount) {
+        this.positiveCount = positiveCount;
+    }
+
+    @JsonGetter("deathcnt")
+    public Integer getDeathCount() {
+        return deathCount;
+    }
+
+    @JsonSetter("deathcnt")
+    public void setDeathCount(Integer deathCount) {
+        this.deathCount = deathCount;
+    }
+
+    @JsonGetter("positives_cum")
+    public Integer getPositivesCumulative() {
+        return positivesCumulative;
+    }
+
+    @JsonSetter("positives_cum")
+    public void setPositivesCumulative(Integer positivesCumulative) {
+        this.positivesCumulative = positivesCumulative;
+    }
+
+    @JsonGetter("death_cum")
+    public Integer getDeathsCumulative() {
+        return deathsCumulative;
+    }
+
+    @JsonSetter("death_cum")
+    public void setDeathsCumulative(Integer deathsCumulative) {
+        this.deathsCumulative = deathsCumulative;
     }
 }

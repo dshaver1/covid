@@ -1,5 +1,9 @@
 package org.dshaver.covid.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Streams;
+import org.apache.commons.lang3.StringUtils;
+import org.dshaver.covid.domain.BasicFile;
 import org.dshaver.covid.domain.DownloadResponse;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
@@ -16,7 +20,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.dshaver.covid.dao.BaseFileRepository.idFormatter;
 
 /**
  * Created by xpdf64 on 2020-06-12.
@@ -28,6 +42,7 @@ public class RawDataController {
     private final RawDataFileRepository fileRepository;
     private final EpicurveExtractorImpl1 extractorImpl1;
     private final EpicurveExtractorImpl2 extractorImpl2;
+    private final ObjectMapper objectMapper;
     private final ReportService reportService;
 
     @Inject
@@ -35,11 +50,13 @@ public class RawDataController {
                              RawDataFileRepository fileRepository,
                              EpicurveExtractorImpl1 extractorImpl1,
                              EpicurveExtractorImpl2 extractorImpl2,
+                             ObjectMapper objectMapper,
                              ReportService reportService) {
         this.rawDataWriter = rawDataWriter;
         this.fileRepository = fileRepository;
         this.extractorImpl1 = extractorImpl1;
         this.extractorImpl2 = extractorImpl2;
+        this.objectMapper = objectMapper;
         this.reportService = reportService;
     }
 
@@ -57,6 +74,40 @@ public class RawDataController {
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
 
         reportService.processRange(defaultedStartDate, defaultedEndDate);
+    }
+
+    @PostMapping("/covid/api/transformRaw")
+    public void transformRaw() throws Exception {
+        String v1PathString = "H:\\dev\\workingdir\\covid\\raw\\v1";
+        String v2PathString = "H:\\dev\\workingdir\\covid\\raw\\v2";
+        Path outputDir = Paths.get("H:\\dev\\workingdir\\covid\\raw\\output");
+        List<Path> paths = Streams.concat(Files.list(Paths.get(v1PathString)), Files.list(Paths.get(v2PathString))).collect(Collectors.toList());
+
+        for (Path path : paths) {
+            String originalFilename = path.getFileName().toString();
+            String outputFilename = originalFilename.substring(0, originalFilename.indexOf("."));
+            Path fullOutputPath = outputDir.resolve(outputFilename + ".json");
+            try (BufferedReader reader = Files.newBufferedReader(path);
+                 BufferedWriter writer = Files.newBufferedWriter(fullOutputPath)) {
+                final int bufferSize = 1024;
+                final char[] buffer = new char[bufferSize];
+                final StringBuilder out = new StringBuilder();
+                int charsRead;
+                while ((charsRead = reader.read(buffer, 0, buffer.length)) > 0) {
+                    out.append(buffer, 0, charsRead);
+                }
+                String id = outputFilename.substring(outputFilename.indexOf("2"));
+
+                LocalDate reportDate = LocalDateTime.parse(id, idFormatter).toLocalDate();
+
+                List<String> payload = new ArrayList<>();
+                payload.add(StringUtils.deleteWhitespace(out.toString()));
+
+                BasicFile file = new BasicFile(reportDate, id, path, payload);
+
+                objectMapper.writeValue(writer, file);
+            }
+        }
     }
 
     private String getExtension(RawData data) {

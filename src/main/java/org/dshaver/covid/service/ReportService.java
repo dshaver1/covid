@@ -2,6 +2,7 @@ package org.dshaver.covid.service;
 
 import org.dshaver.covid.dao.*;
 import org.dshaver.covid.domain.*;
+import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -66,7 +70,7 @@ public class ReportService {
         DownloadResponse response = new DownloadResponse();
 
         // Check disk
-        Optional<String> diskLatestId = fileRegistry.getLatestId(BasicFile.class);
+        Optional<String> diskLatestId = fileRegistry.getLatestId(RawDataV2.class);
 
         diskLatestId.ifPresent(response::setPreviousLatestId);
 
@@ -75,15 +79,15 @@ public class ReportService {
 
         String downloadLatestId = data.getId();
 
-        if (data.getId() != null) {
-            response.setNewLatestId(data.getId());
-        }
+        diskLatestId.ifPresent(response::setPreviousLatestId);
 
         if (diskLatestId.isPresent() && downloadLatestId != null && !diskLatestId.get().equals(downloadLatestId)) {
+            response.setNewLatestId(data.getId());
             response.setFoundNew(true);
+            process(data);
+        } else {
+            logger.info("No new data found! Latest id: {}", diskLatestId.get());
         }
-
-        process(data);
 
         return response;
     }
@@ -105,6 +109,65 @@ public class ReportService {
                 .forEach(this::process);
     }
 
+    public void appendCsvs(Report report) {
+        String[] header = csvService.createHeader(report);
+
+        for (Epicurve epicurve : report.getEpicurves().values()) {
+            String county = epicurve.getCounty().toLowerCase();
+            logger.info("Writing csvs for {} on {}.", county, report.getReportDate());
+
+            try {
+                csvService.appendFile(getCountyPath(reportTgtDir, "cases", county), county, header, report, ArrayReport::getCases);
+                csvService.appendFile(getCountyPath(reportTgtDir, "caseDeltas", county), county, header, report, ArrayReport::getCaseDeltas);
+                csvService.appendFile(getCountyPath(reportTgtDir, "movingAvgs", county), county, header, report, ArrayReport::getMovingAvgs);
+                csvService.appendFile(getCountyPath(reportTgtDir, "deaths", county), county, header, report, ArrayReport::getDeaths);
+                csvService.appendFile(getCountyPath(reportTgtDir, "deathDeltas", county), county, header, report, ArrayReport::getDeathDeltas);
+            } catch (Exception e) {
+                logger.error("Could not write csvs for county " + county);
+            }
+        }
+    }
+
+    public void updateAllHeaders(String dir, Report report, String[] header) {
+        try {
+            for (Epicurve epicurve : report.getEpicurves().values()) {
+                String county = epicurve.getCounty().toLowerCase();
+                csvService.updateHeader(getCountyPath(dir, "cases", county), header);
+                csvService.updateHeader(getCountyPath(dir, "caseDeltas", county), header);
+                csvService.updateHeader(getCountyPath(dir, "movingAvgs", county), header);
+                csvService.updateHeader(getCountyPath(dir, "deaths", county), header);
+                csvService.updateHeader(getCountyPath(dir, "deathDeltas", county), header);
+            }
+        } catch (Exception e) {
+            logger.error("Could not update headers in target csvs coming from report file", e);
+        }
+    }
+
+    public void rewriteCsvs() {
+
+    }
+
+    private Path getCountyPath(String dir, String type, String county) {
+        Path path = Paths.get(dir).resolve(String.format("%s.csv", type));
+        if (county != null) {
+            String filteredCounty = county.replace(" ", "-");
+            filteredCounty = filteredCounty.replace("/", "");
+            filteredCounty = filteredCounty.replace("\\", "");
+            filteredCounty = filteredCounty.replace("unknown-state", "");
+            filteredCounty = filteredCounty.replace("non-ga-resident", "non-georgia-resident");
+
+            path = Paths.get(dir, county).resolve(String.format("%s_%s.csv", type, filteredCounty));
+        }
+
+        try {
+            Files.createDirectories(path.getParent());
+        } catch (IOException e) {
+            logger.error("Error creating county csv path!", e);
+        }
+
+        return path;
+    }
+
     private void process(RawData data) {
         // Save intermediate filtered json
         intermediaryDataService.saveAll(data);
@@ -113,17 +176,15 @@ public class ReportService {
         Report prevReport = reportRepository.findByReportDate(data.getReportDate().minusDays(1)).orElse(null);
 
         // Create report
+        Optional<Report> optionalReport = Optional.empty();
         try {
             Report report = reportFactory.createReport(data, prevReport);
-
-            // Populate VM
-            report = VmCalculator.populateVm(report, prevReport);
 
             // Calculate moving average
             report = MovingAverageCalculator.calculate(report, 7);
 
             // Save
-            reportRepository.save(report);
+            optionalReport = Optional.of(reportRepository.save(report));
         } catch (IOException ioe) {
             logger.error("Error saving report " + data.getId(), ioe);
         } catch (Exception e) {
@@ -132,11 +193,7 @@ public class ReportService {
 
         // Ensure index is up to date
         fileRegistry.checkAndSaveIndex();
-    }
 
-    private boolean is1800(String dateString) {
-        int diff = 18 - LocalDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME).getHour();
-
-        return diff <= 0;
+        optionalReport.ifPresent(this::appendCsvs);
     }
 }

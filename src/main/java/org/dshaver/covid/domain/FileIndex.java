@@ -21,12 +21,16 @@ public class FileIndex {
     }
 
     public void add(Identifiable entity) {
-        idToPath.put(entity.getId(), entity.getFilePath());
+        idToPath.put(conformId(entity.getId()), entity.getFilePath());
         reportDateToPath.put(entity.getReportDate(), entity.getFilePath());
     }
 
     public void remove(Identifiable entity) {
-        idToPath.remove(entity.getId());
+        idToPath.remove(conformId(entity.getId()));
         reportDateToPath.remove(entity.getReportDate());
+    }
+
+    private String conformId(String id) {
+        return id.toUpperCase().replace(":","");
     }
 }

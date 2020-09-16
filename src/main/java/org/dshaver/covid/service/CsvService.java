@@ -40,6 +40,24 @@ public class CsvService {
         return header.toArray(new String[]{});
     }
 
+    public String[] createHeader(Report report) {
+        List<String> headerList = new ArrayList<>();
+        headerList.add("id");
+        String[] header = new String[0];
+        try {
+            headerList.addAll(Arrays.stream(new ArrayReport(report).getCurveDates())
+                    .map(LocalDate::toString)
+                    .collect(Collectors.toList()));
+
+            header = headerList.toArray(new String[]{});
+
+        } catch (Exception e) {
+            logger.error("Could not extract header from report with id {}!", report.getId());
+        }
+
+        return header;
+    }
+
     public String writeSummary(Path path, Collection<ArrayReport> reports) {
         List<String> result = new ArrayList<>();
 

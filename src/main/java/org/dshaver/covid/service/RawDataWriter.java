@@ -1,5 +1,6 @@
 package org.dshaver.covid.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.dshaver.covid.dao.ManualRawDataRepository;
 import org.dshaver.covid.dao.RawDataRepositoryV1;
 import org.dshaver.covid.dao.RawDataRepositoryV2;
@@ -38,27 +39,34 @@ public class RawDataWriter {
     private final ManualRawDataRepository manualRawDataRepository;
     private final FileRegistry fileRegistry;
     private final String rawDir;
+    private final ObjectMapper objectMapper;
 
     @Inject
     public RawDataWriter(RawDataRepositoryV1 rawDataRepositoryV1,
                          RawDataRepositoryV2 rawDataRepositoryV2,
                          ManualRawDataRepository manualRawDataRepository,
                          FileRegistry fileRegistry,
-                         @Value("${covid.dirs.raw.v2}") String rawDir) {
+                         @Value("${covid.dirs.raw.v2}") String rawDir,
+                         ObjectMapper objectMapper) {
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.rawDataRepositoryV2 = rawDataRepositoryV2;
         this.manualRawDataRepository = manualRawDataRepository;
         this.fileRegistry = fileRegistry;
         this.rawDir = rawDir;
+        this.objectMapper = objectMapper;
     }
 
     public void write(BasicFile basicFile) {
-        String filteredId = filenamePrefix + basicFile.getId().replace(":","");
-        Path path = Paths.get(rawDir, filteredId + ".js");
-        write(path, basicFile.getPayload());
+        String filteredId = filenamePrefix + basicFile.getId();
+        Path path = Paths.get(rawDir, filteredId + ".json");
         basicFile.setFilePath(path);
-        basicFile.setId(filteredId);
-        fileRegistry.addEntity(RawDataV2.class, basicFile);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            objectMapper.writeValue(writer, basicFile);
+            fileRegistry.addEntity(RawDataV2.class, basicFile);
+        } catch (IOException e) {
+            logger.error("Could not write raw data! ", e);
+        }
     }
 
     public void write(Path path, List<String> lines) {

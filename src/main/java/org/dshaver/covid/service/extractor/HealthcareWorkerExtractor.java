@@ -1,6 +1,7 @@
 package org.dshaver.covid.service.extractor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.dshaver.covid.dao.BaseFileRepository;
 import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.dshaver.covid.domain.epicurve.HealthcareWorkerEpiPoint;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -36,7 +38,7 @@ public class HealthcareWorkerExtractor extends AbstractExtractor implements Extr
 
         try {
             Map<String, Collection<EpicurvePoint>> filteredDataPoints = new HashMap<>();
-            Map<String, List<EpicurvePoint>> groupedByDate = raw.stream().collect(Collectors.groupingBy(EpicurvePoint::getTestDate));
+            Map<String, List<EpicurvePoint>> groupedByDate = fillMissing(raw.stream().collect(Collectors.groupingBy(EpicurvePoint::getTestDate)),EARLIEST_DATE, LocalDateTime.parse(id, BaseFileRepository.idFormatter).toLocalDate());
             epicurvePoints = groupedByDate.values().stream().map(list -> list.stream().reduce(new HealthcareWorkerEpiPoint("healthcare"), (o1, o2) -> {
                 o1.setTestDate(o2.getTestDate());
                 o1.setLabel(o2.getTestDate());
@@ -79,6 +81,28 @@ public class HealthcareWorkerExtractor extends AbstractExtractor implements Extr
         }
 
         return epicurve;
+    }
+
+    private Map<String, List<EpicurvePoint>> fillMissing(Map<String, List<EpicurvePoint>> epicurvePoints, LocalDate startDate, LocalDate endDate) {
+        LocalDate current = startDate;
+        while (!current.isAfter(endDate)) {
+            List<EpicurvePoint> currentPointList = epicurvePoints.get(current.toString());
+
+            if (currentPointList == null || currentPointList.isEmpty()) {
+                List<EpicurvePoint> newPointList = new ArrayList<>();
+                HealthcareWorkerEpiPoint newPoint = new HealthcareWorkerEpiPoint();
+                newPoint.setCounty("Georgia");
+                newPoint.setTestDate(current.toString());
+                newPoint.setPositiveCount(0);
+                newPoint.setDeathCount(0);
+                newPointList.add(newPoint);
+                epicurvePoints.put(current.toString(), newPointList);
+            }
+
+            current = current.plusDays(1);
+        }
+
+        return epicurvePoints;
     }
 
     @Override
