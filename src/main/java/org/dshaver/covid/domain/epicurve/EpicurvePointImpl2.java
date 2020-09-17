@@ -6,6 +6,13 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.Data;
 
 public class EpicurvePointImpl2 extends BaseEpicurvePoint {
+    @JsonProperty("pcrtest")
+    Integer pcrTest;
+    @JsonProperty("pcrpos")
+    Integer pcrPos;
+    @JsonProperty("day7_per_pcrpos")
+    Double day7PerPcrPos;
+    Double day14PerPcrPos;
 
     public EpicurvePointImpl2() {
 
@@ -84,5 +91,45 @@ public class EpicurvePointImpl2 extends BaseEpicurvePoint {
     @JsonSetter("death_cum")
     public void setDeathsCumulative(Integer deathsCumulative) {
         this.deathsCumulative = deathsCumulative;
+    }
+
+    @JsonProperty("pcrtest")
+    public Integer getPcrTest() {
+        return pcrTest;
+    }
+
+    @JsonProperty("pcrtest")
+    public void setPcrTest(int pcrTest) {
+        this.pcrTest = pcrTest;
+    }
+
+    @JsonProperty("pcrpos")
+    public Integer getPcrPos() {
+        return pcrPos;
+    }
+
+    @JsonProperty("pcrpos")
+    public void setPcrPos(int pcrPos) {
+        this.pcrPos = pcrPos;
+    }
+
+    @JsonProperty("day7_per_pcrpos")
+    public Double getDay7PerPcrPos() {
+        return day7PerPcrPos;
+    }
+
+    @JsonProperty("day7_per_pcrpos")
+    public void setDay7PerPcrPos(double day7PerPcrPos) {
+        this.day7PerPcrPos = day7PerPcrPos;
+    }
+
+    @JsonProperty("day14_per_pcrpos")
+    public Double getDay14PerPcrPos() {
+        return day14PerPcrPos;
+    }
+
+    @JsonProperty("day14_per_pcrpos")
+    public void setDay14PerPcrPos(double day14PerPcrPos) {
+        this.day14PerPcrPos = day14PerPcrPos;
     }
 }

@@ -123,6 +123,8 @@ public class ReportService {
                 csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "movingAvgs", county), county, header, report, ArrayReport::getMovingAvgs);
                 csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "deaths", county), county, header, report, ArrayReport::getDeaths);
                 csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "deathDeltas", county), county, header, report, ArrayReport::getDeathDeltas);
+                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "pcrTests", county), county, header, report, ArrayReport::getPcrTest);
+                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "pcrPositives", county), county, header, report, ArrayReport::getPcrPos);
                 csvService.appendSummary(csvService.getCountyFilePath(reportTgtDir, "summary", county), county, report);
 
             } catch (Exception e) {
@@ -142,6 +144,8 @@ public class ReportService {
                 csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "movingAvgs", county), header);
                 csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "deaths", county), header);
                 csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "deathDeltas", county), header);
+                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "pcrTests", county), header);
+                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "pcrPositives", county), header);
             }
         } catch (Exception e) {
             logger.error("Could not update headers in target csvs coming from report file", e);

@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Data
-@ToString(exclude = {"curveDates", "caseDeltas", "deathDeltas", "cases", "deaths", "caseProjections", "movingAvgs"})
+@ToString(exclude = {"curveDates", "caseDeltas", "deathDeltas", "cases", "deaths", "caseProjections", "movingAvgs", "pcrTest", "pcrPos"})
 public class ArrayReport {
     private static final LocalDate MIN_DATE = LocalDate.of(2020,2,17);
     private String id;
@@ -39,6 +39,8 @@ public class ArrayReport {
     private Integer[] deaths;
     private Integer[] caseProjections;
     private Integer[] movingAvgs;
+    private Integer[] pcrTest;
+    private Integer[] pcrPos;
 
     public ArrayReport() {
 
@@ -75,6 +77,8 @@ public class ArrayReport {
         this.deathDeltas = new Integer[curveDates.length];
         this.caseProjections = new Integer[curveDates.length];
         this.movingAvgs = new Integer[curveDates.length];
+        this.pcrPos = new Integer[curveDates.length];
+        this.pcrTest = new Integer[curveDates.length];
 
         EpicurvePoint currentPoint;
         LocalDate currentDate;
@@ -90,6 +94,8 @@ public class ArrayReport {
                 this.deathDeltas[i] = 0;
                 this.caseProjections[i] = 0;
                 this.movingAvgs[i] = 0;
+                this.pcrPos[i] = 0;
+                this.pcrTest[i] = 0;
             } else {
                 this.cases[i] = currentPoint.getPositiveCount() != null ? currentPoint.getPositiveCount() : 0;
                 this.caseDeltas[i] = currentPoint.getCasesVm()!= null ? currentPoint.getCasesVm() : 0;
@@ -97,6 +103,8 @@ public class ArrayReport {
                 this.deathDeltas[i] = currentPoint.getDeathsVm()!= null ? currentPoint.getDeathsVm() : 0;
                 this.caseProjections[i] = currentPoint.getCasesExtrapolated()!= null ? currentPoint.getCasesExtrapolated() : 0;
                 this.movingAvgs[i] = currentPoint.getMovingAvg()!= null ? currentPoint.getMovingAvg() : 0;
+                this.pcrPos[i] = currentPoint.getPcrPos()!= null ? currentPoint.getPcrPos() : 0;
+                this.pcrTest[i] = currentPoint.getPcrTest()!= null ? currentPoint.getPcrTest() : 0;
             }
         }
 

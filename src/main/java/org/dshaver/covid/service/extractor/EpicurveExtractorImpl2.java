@@ -1,9 +1,11 @@
 package org.dshaver.covid.service.extractor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.dshaver.covid.domain.epicurve.Epicurve;
-import org.dshaver.covid.domain.epicurve.EpicurvePoint;
-import org.dshaver.covid.domain.epicurve.EpicurvePointImpl2;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
+import org.dshaver.covid.dao.TestingStatsRepository;
+import org.dshaver.covid.domain.epicurve.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -12,7 +14,9 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 
 @Component
 public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extractor<EpicurvePointImpl2, Map<String, Epicurve>> {
@@ -21,14 +25,19 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
     public static final List<String> COUNTY_FILTER = Arrays.asList("georgia", "cobb", "chatham", "fulton", "gwinnett", "dekalb", "carroll", "bibb", "unknown", "resident", "non-georgia-resident", "healthcare");
 
+    private final TestingStatsRepository testingStatsRepository;
+
     @Inject
-    protected EpicurveExtractorImpl2(ObjectMapper objectMapper) {
+    protected EpicurveExtractorImpl2(ObjectMapper objectMapper, TestingStatsRepository testingStatsRepository) {
         super(objectMapper);
+        this.testingStatsRepository = testingStatsRepository;
     }
 
     @Override
     public Optional<Map<String, Epicurve>> extract(List<EpicurvePointImpl2> raw, String id) {
         logger.info("Extracting data from " + id);
+        // Add testing stats if available.
+        Optional<Table<String, LocalDate, TestingStatsDto>> maybeTestingStatsMap = getTestingStats(id);
         Optional<Map<String, Epicurve>> epicurve = Optional.empty();
         Map<LocalDate, Integer> caseTotals = new HashMap<>();
         Map<LocalDate, Integer> deathTotals = new HashMap<>();
@@ -50,6 +59,16 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
                         caseTotals.merge(labelDate, current.getPositiveCount(), Integer::sum);
                         deathTotals.merge(labelDate, current.getDeathCount(), Integer::sum);
                     }
+
+                    maybeTestingStatsMap.ifPresent(map -> {
+                        TestingStatsDto dto = map.get(current.getCounty(), current.getLabelDate());
+                        if (dto != null) {
+                            current.setPcrPos(dto.getPcrPos());
+                            current.setPcrTest(dto.getPcrTest());
+                            current.setDay7PerPcrPos(dto.getDay7PerPcrPos());
+                            current.setDay14PerPcrPos(dto.getDay14PerPcrPos());
+                        }
+                    });
                 }
             }
 
@@ -69,6 +88,27 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
         }
 
         return epicurve;
+    }
+
+    private Optional<Table<String, LocalDate, TestingStatsDto>> getTestingStats(String id) {
+        Optional<Table<String, LocalDate, TestingStatsDto>> optionalMap = Optional.empty();
+        Optional<TestingStatsContainer> testingStatsContainer = testingStatsRepository.findById(id);
+
+        if (testingStatsContainer.isPresent()) {
+            Table<String, LocalDate, TestingStatsDto> table = testingStatsContainer.get()
+                    .getPayload()
+                    .stream()
+                    .filter(dto -> anyContains(COUNTY_FILTER, dto.getCounty().toLowerCase()))
+                    .collect(Tables.toTable(TestingStatsDto::getCounty,
+                            TestingStatsDto::getReportDate,
+                            dto -> dto,
+                            (dto1, dto2) -> new TestingStatsDto(),
+                            HashBasedTable::create));
+
+            optionalMap = Optional.of(table);
+        }
+
+        return optionalMap;
     }
 
     /**

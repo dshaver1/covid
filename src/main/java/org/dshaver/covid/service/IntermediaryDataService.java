@@ -1,23 +1,16 @@
 package org.dshaver.covid.service;
 
-import org.dshaver.covid.dao.EpicurveDtoV1Repository;
-import org.dshaver.covid.dao.EpicurveDtoV2Repository;
-import org.dshaver.covid.dao.HealthcareDtoRepository;
-import org.dshaver.covid.dao.ReportOverviewRepositoryV1;
+import org.dshaver.covid.dao.*;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
 import org.dshaver.covid.domain.RawDataV2;
 import org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1;
 import org.dshaver.covid.domain.epicurve.EpicurvePointImpl2Container;
 import org.dshaver.covid.domain.epicurve.HealthcareWorkerEpiPointContainer;
+import org.dshaver.covid.domain.epicurve.TestingStatsContainer;
 import org.dshaver.covid.domain.overview.ReportOverview;
-import org.dshaver.covid.domain.overview.ReportOverviewContainer;
-import org.dshaver.covid.domain.overview.ReportOverviewImpl1;
 import org.dshaver.covid.domain.overview.ReportOverviewImpl2;
-import org.dshaver.covid.service.extractor.EpicurvePointImpl1Extractor;
-import org.dshaver.covid.service.extractor.EpicurvePointImpl2Extractor;
-import org.dshaver.covid.service.extractor.HealthcareWorkerDtoExtractor;
-import org.dshaver.covid.service.extractor.ReportOverviewExtractorDelegator;
+import org.dshaver.covid.service.extractor.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -38,6 +31,8 @@ public class IntermediaryDataService {
     private final HealthcareDtoRepository healthcareDtoRepository;
     private final ReportOverviewExtractorDelegator overviewExtractorDelegator;
     private final ReportOverviewRepositoryV1 reportOverviewRepositoryV1;
+    private final TestingStatsExtractor testingStatsExtractor;
+    private final TestingStatsRepository testingStatsRepository;
 
     @Inject
     public IntermediaryDataService(EpicurvePointImpl1Extractor epicurvePointImpl1Extractor,
@@ -47,7 +42,9 @@ public class IntermediaryDataService {
                                    HealthcareWorkerDtoExtractor healthcareWorkerDtoExtractor,
                                    HealthcareDtoRepository healthcareDtoRepository,
                                    ReportOverviewExtractorDelegator overviewExtractorDelegator,
-                                   ReportOverviewRepositoryV1 reportOverviewRepositoryV1) {
+                                   ReportOverviewRepositoryV1 reportOverviewRepositoryV1,
+                                   TestingStatsExtractor testingStatsExtractor,
+                                   TestingStatsRepository testingStatsRepository) {
         this.epicurvePointImpl1Extractor = epicurvePointImpl1Extractor;
         this.epicurvePointImpl2Extractor = epicurvePointImpl2Extractor;
         this.epicurveDtoV1Repository = epicurveDtoV1Repository;
@@ -56,6 +53,8 @@ public class IntermediaryDataService {
         this.healthcareDtoRepository = healthcareDtoRepository;
         this.overviewExtractorDelegator = overviewExtractorDelegator;
         this.reportOverviewRepositoryV1 = reportOverviewRepositoryV1;
+        this.testingStatsExtractor = testingStatsExtractor;
+        this.testingStatsRepository = testingStatsRepository;
     }
 
     public void saveAll(RawData rawData) {
@@ -96,6 +95,15 @@ public class IntermediaryDataService {
                 reportOverviewRepositoryV1.save((ReportOverviewImpl2)container);
             } catch (IOException e) {
                 logger.error("Error saving intermediary healthcare data with id " + rawData.getId(), e);
+            }
+        });
+
+        Optional<TestingStatsContainer> testingStatsContainer = testingStatsExtractor.extract(rawData.getPayload(), rawData.getId());
+        testingStatsContainer.ifPresent(container -> {
+            try {
+                testingStatsRepository.save(container);
+            } catch (IOException e) {
+                logger.error("Error saving intermediary testing stats data with id " + rawData.getId(), e);
             }
         });
     }

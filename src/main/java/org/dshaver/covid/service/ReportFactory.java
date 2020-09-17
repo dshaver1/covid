@@ -6,10 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.dshaver.covid.dao.EpicurveDtoV2Repository;
 import org.dshaver.covid.dao.HealthcareDtoRepository;
 import org.dshaver.covid.dao.ReportOverviewRepositoryV1;
+import org.dshaver.covid.dao.TestingStatsRepository;
 import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.*;
 import org.dshaver.covid.domain.overview.ReportOverview;
-import org.dshaver.covid.domain.overview.ReportOverviewContainer;
 import org.dshaver.covid.domain.overview.ReportOverviewImpl2;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl1;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
@@ -47,6 +47,7 @@ public class ReportFactory {
     private final ObjectMapper objectMapper;
     private final EpicurveDtoV2Repository epicurveDtoV2Repository;
     private final HealthcareDtoRepository healthcareDtoRepository;
+    private final TestingStatsRepository testingStatsRepository;
     private final Extractor<String, ReportOverview> reportOverviewExtractor;
     private final ReportOverviewRepositoryV1 reportOverviewRepositoryV1;
     private final EpicurveExtractorImpl1 epicurveExtractor1;
@@ -68,6 +69,7 @@ public class ReportFactory {
     public ReportFactory(ObjectMapper objectMapper,
                          EpicurveDtoV2Repository epicurveDtoV2Repository,
                          HealthcareDtoRepository healthcareDtoRepository,
+                         TestingStatsRepository testingStatsRepository,
                          @Qualifier("reportOverviewExtractorDelegator") Extractor<String, ReportOverview> reportOverviewExtractor,
                          ReportOverviewRepositoryV1 reportOverviewRepositoryV1,
                          EpicurveExtractorImpl1 epicurveExtractor1,
@@ -76,6 +78,7 @@ public class ReportFactory {
         this.objectMapper = objectMapper;
         this.epicurveDtoV2Repository = epicurveDtoV2Repository;
         this.healthcareDtoRepository = healthcareDtoRepository;
+        this.testingStatsRepository = testingStatsRepository;
         this.reportOverviewExtractor = reportOverviewExtractor;
         this.reportOverviewRepositoryV1 = reportOverviewRepositoryV1;
         this.epicurveExtractor1 = epicurveExtractor1;
@@ -147,6 +150,7 @@ public class ReportFactory {
     public Report createReport(String id, LocalDate reportDate, Report previousReport) {
         Optional<EpicurvePointImpl2Container> epicurveContainer = epicurveDtoV2Repository.findById(id);
         Optional<HealthcareWorkerEpiPointContainer> healthcareContainer = reportDate.isAfter(HEALTHCARE_BEGIN_DATE) ? healthcareDtoRepository.findById(id) : Optional.empty();
+        Optional<TestingStatsContainer> testingStatsContainer = testingStatsRepository.findById(id);
 
         if (!epicurveContainer.isPresent()) {
             throw new IllegalStateException("Could not find main epicurve within raw data!");

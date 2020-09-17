@@ -59,4 +59,20 @@ public interface EpicurvePoint extends Comparable<EpicurvePoint> {
     Integer getMovingAvg();
 
     void setMovingAvg(Integer movingAvg);
+
+    Integer getPcrTest();
+
+    void setPcrTest(Integer pcrTest);
+
+    Integer getPcrPos();
+
+    void setPcrPos(Integer pcrPos);
+
+    Double getDay7PerPcrPos();
+
+    void setDay7PerPcrPos(Double day7PerPcrPos);
+
+    Double getDay14PerPcrPos();
+
+    void setDay14PerPcrPos(Double day14PerPcrPos);
 }

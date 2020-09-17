@@ -28,6 +28,10 @@ public class EpicurvePointImpl1 implements EpicurvePoint {
     Integer casesExtrapolated;
     Integer medianCaseDelta;
     Integer movingAvg;
+    Integer pcrTest;
+    Integer pcrPos;
+    Double day7PerPcrPos;
+    Double day14PerPcrPos;
 
     @Override
     public int compareTo(EpicurvePoint o) {

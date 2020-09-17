@@ -1,6 +1,7 @@
 package org.dshaver.covid.domain.epicurve;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -27,6 +28,10 @@ public class BaseEpicurvePoint implements EpicurvePoint {
     Integer manualCaseTotal;
     @JsonIgnore
     Integer manualDeathTotal;
+    Integer pcrTest;
+    Integer pcrPos;
+    Double day7PerPcrPos;
+    Double day14PerPcrPos;
 
     @Override
     public int compareTo(EpicurvePoint o) {
