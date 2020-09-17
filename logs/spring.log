@@ -1,38 +1,57 @@
-2020-09-16 22:20:46.403  INFO 22104 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 22104 (started by xpdf64 in H:\dev\covid)
-2020-09-16 22:20:46.404  INFO 22104 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
-2020-09-16 22:20:47.197  INFO 22104 --- [main] org.dshaver.covid.service.FileRegistry   : Found index file H:\dev\workingdir\covid\index.json!
-2020-09-16 22:20:47.209  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV1: H:\dev\workingdir\covid\raw\v1
-2020-09-16 22:20:47.217  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV2: H:\dev\workingdir\covid\raw\v2
-2020-09-16 22:20:47.227  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.ManualRawData: H:\dev\workingdir\covid\raw\manual
-2020-09-16 22:20:47.252  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV0: H:\dev\workingdir\covid\raw\v0
-2020-09-16 22:20:47.261  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurvePointImpl2Container: H:\dev\workingdir\covid\filtered\epicurve\v2
-2020-09-16 22:20:47.267  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.HealthcareWorkerEpiPointContainer: H:\dev\workingdir\covid\filtered\healthcare
-2020-09-16 22:20:47.281  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.overview.ReportOverviewImpl2: H:\dev\workingdir\covid\filtered\overview\v1
-2020-09-16 22:20:47.298  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.Report: H:\dev\workingdir\covid\reports\json
-2020-09-16 22:20:47.309  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1: H:\dev\workingdir\covid\filtered\epicurve\v1
-2020-09-16 22:20:47.318  INFO 22104 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.HistogramReport: H:\dev\workingdir\covid\histogram
-2020-09-16 22:20:47.570  INFO 22104 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
-2020-09-16 22:20:47.682  INFO 22104 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
-2020-09-16 22:20:47.904  INFO 22104 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
-2020-09-16 22:20:47.946  INFO 22104 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 1.832 seconds (JVM running for 2.654)
-2020-09-16 22:20:48.201  INFO 22104 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
-2020-09-16 22:20:48.201  INFO 22104 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
-2020-09-16 22:31:29.097  INFO 9660 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 9660 (started by xpdf64 in H:\dev\covid)
-2020-09-16 22:31:29.099  INFO 9660 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
-2020-09-16 22:31:29.902  INFO 9660 --- [main] org.dshaver.covid.service.FileRegistry   : Found index file H:\dev\workingdir\covid\index.json!
-2020-09-16 22:31:29.916  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV1: H:\dev\workingdir\covid\raw\v1
-2020-09-16 22:31:29.925  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV2: H:\dev\workingdir\covid\raw\v2
-2020-09-16 22:31:29.937  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.ManualRawData: H:\dev\workingdir\covid\raw\manual
-2020-09-16 22:31:29.958  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV0: H:\dev\workingdir\covid\raw\v0
-2020-09-16 22:31:29.969  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurvePointImpl2Container: H:\dev\workingdir\covid\filtered\epicurve\v2
-2020-09-16 22:31:29.974  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.HealthcareWorkerEpiPointContainer: H:\dev\workingdir\covid\filtered\healthcare
-2020-09-16 22:31:29.989  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.overview.ReportOverviewImpl2: H:\dev\workingdir\covid\filtered\overview\v1
-2020-09-16 22:31:30.009  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.Report: H:\dev\workingdir\covid\reports\json
-2020-09-16 22:31:30.022  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1: H:\dev\workingdir\covid\filtered\epicurve\v1
-2020-09-16 22:31:30.032  INFO 9660 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.HistogramReport: H:\dev\workingdir\covid\histogram
-2020-09-16 22:31:30.302  INFO 9660 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
-2020-09-16 22:31:30.429  INFO 9660 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
-2020-09-16 22:31:30.659  INFO 9660 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
-2020-09-16 22:31:30.704  INFO 9660 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 1.908 seconds (JVM running for 2.69)
-2020-09-16 22:31:30.941  INFO 9660 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
-2020-09-16 22:31:30.942  INFO 9660 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-09-17 08:58:39.773  INFO 9876 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 9876 (started by xpdf64 in H:\dev\covid)
+2020-09-17 08:58:39.777  INFO 9876 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
+2020-09-17 08:58:40.629  INFO 9876 --- [main] org.dshaver.covid.service.FileRegistry   : Found index file H:\dev\workingdir\covid\index.json!
+2020-09-17 08:58:40.642  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV1: H:\dev\workingdir\covid\raw\v1
+2020-09-17 08:58:40.653  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV2: H:\dev\workingdir\covid\raw\v2
+2020-09-17 08:58:40.663  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.ManualRawData: H:\dev\workingdir\covid\raw\manual
+2020-09-17 08:58:40.682  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV0: H:\dev\workingdir\covid\raw\v0
+2020-09-17 08:58:40.690  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurvePointImpl2Container: H:\dev\workingdir\covid\filtered\epicurve\v2
+2020-09-17 08:58:40.695  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.HealthcareWorkerEpiPointContainer: H:\dev\workingdir\covid\filtered\healthcare
+2020-09-17 08:58:40.709  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.overview.ReportOverviewImpl2: H:\dev\workingdir\covid\filtered\overview\v1
+2020-09-17 08:58:40.723  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.Report: H:\dev\workingdir\covid\reports\json
+2020-09-17 08:58:40.733  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1: H:\dev\workingdir\covid\filtered\epicurve\v1
+2020-09-17 08:58:40.742  INFO 9876 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.HistogramReport: H:\dev\workingdir\covid\histogram
+2020-09-17 08:58:41.031  INFO 9876 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-09-17 08:58:41.156  INFO 9876 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-09-17 08:58:41.376  INFO 9876 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-09-17 08:58:41.418  INFO 9876 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 1.948 seconds (JVM running for 2.787)
+2020-09-17 08:58:41.700  INFO 9876 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-09-17 08:58:41.701  INFO 9876 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-09-17 09:09:44.988  INFO 16108 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 16108 (started by xpdf64 in H:\dev\covid)
+2020-09-17 09:09:44.989  INFO 16108 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
+2020-09-17 09:09:45.862  INFO 16108 --- [main] org.dshaver.covid.service.FileRegistry   : Found index file H:\dev\workingdir\covid\index.json!
+2020-09-17 09:09:45.877  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV1: H:\dev\workingdir\covid\raw\v1
+2020-09-17 09:09:45.887  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV2: H:\dev\workingdir\covid\raw\v2
+2020-09-17 09:09:45.901  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.ManualRawData: H:\dev\workingdir\covid\raw\manual
+2020-09-17 09:09:45.923  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV0: H:\dev\workingdir\covid\raw\v0
+2020-09-17 09:09:45.932  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurvePointImpl2Container: H:\dev\workingdir\covid\filtered\epicurve\v2
+2020-09-17 09:09:45.937  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.HealthcareWorkerEpiPointContainer: H:\dev\workingdir\covid\filtered\healthcare
+2020-09-17 09:09:45.951  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.overview.ReportOverviewImpl2: H:\dev\workingdir\covid\filtered\overview\v1
+2020-09-17 09:09:45.965  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.Report: H:\dev\workingdir\covid\reports\json
+2020-09-17 09:09:45.978  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1: H:\dev\workingdir\covid\filtered\epicurve\v1
+2020-09-17 09:09:45.987  INFO 16108 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.HistogramReport: H:\dev\workingdir\covid\histogram
+2020-09-17 09:09:46.290  INFO 16108 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-09-17 09:09:46.421  INFO 16108 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-09-17 09:09:46.635  INFO 16108 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-09-17 09:09:46.678  INFO 16108 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 2.005 seconds (JVM running for 2.924)
+2020-09-17 09:09:46.899  INFO 16108 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-09-17 09:09:46.900  INFO 16108 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-09-17 09:18:59.752  INFO 1596 --- [main] org.dshaver.covid.CovidApplicationTest   : Starting CovidApplicationTest on DESKTOP-0KHVPVS with PID 1596 (started by xpdf64 in H:\dev\covid)
+2020-09-17 09:18:59.754  INFO 1596 --- [main] org.dshaver.covid.CovidApplicationTest   : The following profiles are active: local
+2020-09-17 09:19:00.639  INFO 1596 --- [main] org.dshaver.covid.service.FileRegistry   : Found index file H:\dev\workingdir\covid\index.json!
+2020-09-17 09:19:00.653  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV1: H:\dev\workingdir\covid\raw\v1
+2020-09-17 09:19:00.663  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV2: H:\dev\workingdir\covid\raw\v2
+2020-09-17 09:19:00.676  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.ManualRawData: H:\dev\workingdir\covid\raw\manual
+2020-09-17 09:19:00.698  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.RawDataV0: H:\dev\workingdir\covid\raw\v0
+2020-09-17 09:19:00.706  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurvePointImpl2Container: H:\dev\workingdir\covid\filtered\epicurve\v2
+2020-09-17 09:19:00.712  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.HealthcareWorkerEpiPointContainer: H:\dev\workingdir\covid\filtered\healthcare
+2020-09-17 09:19:00.726  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.overview.ReportOverviewImpl2: H:\dev\workingdir\covid\filtered\overview\v1
+2020-09-17 09:19:00.741  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.Report: H:\dev\workingdir\covid\reports\json
+2020-09-17 09:19:00.754  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1: H:\dev\workingdir\covid\filtered\epicurve\v1
+2020-09-17 09:19:00.763  INFO 1596 --- [main] o.dshaver.covid.dao.BaseFileRepository   : Scanning directory for class org.dshaver.covid.domain.HistogramReport: H:\dev\workingdir\covid\histogram
+2020-09-17 09:19:01.065  INFO 1596 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2020-09-17 09:19:01.195  INFO 1596 --- [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2020-09-17 09:19:01.411  INFO 1596 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2020-09-17 09:19:01.453  INFO 1596 --- [main] org.dshaver.covid.CovidApplicationTest   : Started CovidApplicationTest in 2.021 seconds (JVM running for 2.936)
+2020-09-17 09:19:01.685  INFO 1596 --- [SpringContextShutdownHook] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2020-09-17 09:19:01.686  INFO 1596 --- [SpringContextShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'

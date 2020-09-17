@@ -144,9 +144,9 @@
     epicurveAvg = new Epicurve(avgSvg, corrWidth, corrHeight, avgxScale, avgyScale, avgxAxis, avgyAxis, avgyScale2, avgyAxis2);
 
     Promise.all([
-        d3.csv("reports/v2/csv/georgia/summary.csv"),
-        d3.csv("reports/v2/csv/georgia/cases.csv"),
-        d3.csv("reports/v2/csv/georgia/deaths.csv")
+        d3.csv("reports/v2/csv/georgia/summary_georgia.csv"),
+        d3.csv("reports/v2/csv/georgia/cases_georgia.csv"),
+        d3.csv("reports/v2/csv/georgia/deaths_georgia.csv")
     ]).then(function (files) {
         summaryData = files[0];
         caseData = files[1];
