@@ -369,7 +369,7 @@ class Epicurve {
     }
 
     applyDateOffset(date, offset) {
-        let dateObj = new Date(date);
+        let dateObj = this.convertDate(date);
         dateObj.setDate(dateObj.getDate() - offset);
         return this.getFormattedDate(dateObj);
     }
@@ -380,6 +380,16 @@ class Epicurve {
         let day = date.getDate().toString().padStart(2, '0');
 
         return year + '-' + month + '-' + day;
+    }
+
+    /**
+     * Convert a date string in 2020-10-10T101300 format into a Date() object.
+     */
+    convertDate(dateString) {
+        let filteredDateString = dateString.slice(0, 15) + ":" + dateString.slice(15 + Math.abs(0))
+        filteredDateString = filteredDateString.slice(0, 13) + ":" + filteredDateString.slice(13 + Math.abs(0));
+        filteredDateString = filteredDateString.replace("T", " ");
+        return new Date(filteredDateString);
     }
 
     /**
@@ -457,31 +467,31 @@ class Epicurve {
         let tempChartData = [];
 
         let reportedCasesData = []
-        summaryData.forEach(function (d) {
+        let filteredSummaryData = summaryData.filter(d => d.reportDate >= "2020-05-11")
+
+        filteredSummaryData.forEach(function (d) {
             reportedCasesData[d.reportDate] = d.confirmedCasesVm;
         });
 
         let reportedDeathsData = []
-        summaryData.forEach(function (d) {
+        filteredSummaryData.forEach(function (d) {
             reportedDeathsData[d.reportDate] = d.deathsVm;
         });
 
         let dateIndexLookup = {};
         let indexDateLookup = {};
-        let allReportDates = Object.keys(deathData[deathData.length - 1]).filter(d => d !== 'id');
+        let allReportDates = Object.keys(deathData[deathData.length - 1]).filter(d => d !== 'id').filter(d => d >= "2020-05-11");
         for (let i = 0; i < allReportDates.length; i++) {
             let currentDate = allReportDates[i];
             dateIndexLookup[currentDate] = i;
             indexDateLookup[i] = currentDate;
         }
 
-        for (let i = 0; i < summaryData.length; i++) {
-            let currentSummaryData = summaryData[i];
+        for (let i = 0; i < filteredSummaryData.length; i++) {
+            let currentSummaryData = filteredSummaryData[i];
             let currentCaseData = caseData[i];
             let currentDeathData = deathData[i];
-            let currentReportDates = Object.keys(currentCaseData).filter(function (d) {
-                return d !== 'id'
-            });
+            let currentReportDates = Object.keys(currentCaseData).filter(d => d !== 'id').filter(d => d >= "2020-05-11");
             let currentTimeseries = tempChartData[currentSummaryData.id];
             if (!currentTimeseries) {
                 currentTimeseries = [];
