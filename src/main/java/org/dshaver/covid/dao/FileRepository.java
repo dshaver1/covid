@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.dshaver.covid.domain.FileIndex;
 import org.dshaver.covid.domain.Identifiable;
 import org.dshaver.covid.service.FileRegistry;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,8 +53,16 @@ public interface FileRepository<T extends Identifiable> {
 
     FileRegistry getFileRegistry();
 
-    default T readFile(Path path) throws IOException {
-        return getObjectMapper().readValue(path.toFile(), getClazz());
+    Logger getLogger();
+
+    default T readFile(Path path) {
+        try {
+            return getObjectMapper().readValue(path.toFile(), getClazz());
+        } catch (IOException e) {
+            getLogger().error("Error parsing raw data from disk! " + path, e);
+        }
+
+        return null;
     }
 
     default Stream<Path> streamAllPaths() throws IOException {

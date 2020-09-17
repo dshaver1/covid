@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Created by xpdf64 on 2020-04-27.
@@ -23,6 +24,8 @@ public class ReportService {
     private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
     private static final int TARGET_HOUR = 19;
 
+    private final RawDataRepositoryV0 rawDataRepositoryV0;
+    private final RawDataRepositoryV1 rawDataRepositoryV1;
     private final RawDataRepositoryV2 rawDataRepositoryV2;
     private final RawDataFileRepository rawDataFileRepository;
     private final RawDataDownloaderDelegator rawDataDownloader;
@@ -35,7 +38,9 @@ public class ReportService {
     private final FileRegistry fileRegistry;
 
     @Inject
-    public ReportService(RawDataFileRepository rawDataFileRepository,
+    public ReportService(RawDataRepositoryV0 rawDataRepositoryV0,
+                         RawDataRepositoryV1 rawDataRepositoryV1,
+                         RawDataFileRepository rawDataFileRepository,
                          ReportFactory reportFactory,
                          RawDataRepositoryV2 rawDataRepositoryV2,
                          RawDataDownloaderDelegator rawDataDownloader,
@@ -45,6 +50,8 @@ public class ReportService {
                          CsvService csvService,
                          @Value("${covid.dirs.reports.csv}") String reportTgtDir,
                          FileRegistry fileRegistry) {
+        this.rawDataRepositoryV0 = rawDataRepositoryV0;
+        this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.rawDataFileRepository = rawDataFileRepository;
         this.reportFactory = reportFactory;
         this.rawDataRepositoryV2 = rawDataRepositoryV2;
@@ -89,24 +96,17 @@ public class ReportService {
         return response;
     }
 
-    public void processRange(LocalDate startDate, LocalDate endDate, boolean deleteFirst) throws Exception {
+    public void processRange(LocalDate startDate, LocalDate endDate, boolean deleteFirst) {
         if (deleteFirst) {
             csvService.deleteAllCsvs(reportTgtDir);
         }
 
-        rawDataRepositoryV2.streamSelectedPaths()
-                .map(path -> {
-                    try {
-                        return rawDataRepositoryV2.readFile(path);
-                    } catch (IOException e) {
-                        logger.error("Error parsing raw data from disk! " + path, e);
-                    }
-
-                    return null;
-                })
+        Stream.concat(rawDataRepositoryV0.streamSelectedPaths().map(rawDataRepositoryV0::readFile), Stream.concat(
+                rawDataRepositoryV1.streamSelectedPaths().map(rawDataRepositoryV1::readFile),
+                rawDataRepositoryV2.streamSelectedPaths().map(rawDataRepositoryV2::readFile)))
                 .filter(Objects::nonNull)
-                .filter(rawDataV2 -> !rawDataV2.getReportDate().isAfter(endDate))
-                .filter(rawDataV2 -> !rawDataV2.getReportDate().isBefore(startDate))
+                .filter(rawData -> !rawData.getReportDate().isAfter(endDate))
+                .filter(rawData -> !rawData.getReportDate().isBefore(startDate))
                 .forEach(this::process);
     }
 

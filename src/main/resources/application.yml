@@ -14,12 +14,15 @@ covid:
       csv: /mnt/data/reports/v2/csv/
       json: /mnt/data/reports/v2/json/
     raw:
-      v2: /mnt/data/raw/v2
+      v0: /mnt/data/raw/v0
       v1: /mnt/data/raw/v1
+      v2: /mnt/data/raw/v2
       manual: /mnt/data/raw/manual
     filtered:
-      epicurve: /mnt/data/filteredjson/epicurve
+      epicurve.v1: /mnt/data/filteredjson/epicurve/v1
+      epicurve.v2: /mnt/data/filteredjson/epicurve/v2
       healthcare: /mnt/data/filteredjson/healthcare
+      overview.v1: /mnt/data/filteredjson/overview/v1
     histogram: /mnt/data/histogram
 server.port: 8080
 logging.file.path: /mnt/data/covid/logs/
@@ -35,12 +38,15 @@ covid:
       csv: H:\dev\workingdir\covid\reports\csv
       json: H:\dev\workingdir\covid\reports\json
     raw:
-      v2: H:\dev\workingdir\covid\raw\v2
+      v0: H:\dev\workingdir\covid\raw\v0
       v1: H:\dev\workingdir\covid\raw\v1
+      v2: H:\dev\workingdir\covid\raw\v2
       manual: H:\dev\workingdir\covid\raw\manual
     filtered:
-      epicurve: H:\dev\workingdir\covid\filtered\epicurve
+      epicurve.v1: H:\dev\workingdir\covid\filtered\epicurve\v1
+      epicurve.v2: H:\dev\workingdir\covid\filtered\epicurve\v2
       healthcare: H:\dev\workingdir\covid\filtered\healthcare
+      overview.v1: H:\dev\workingdir\covid\filtered\overview\v1
     histogram: H:\dev\workingdir\covid\histogram
 server.port: 8080
 logging.file.path: H:\dev\covid\logs\

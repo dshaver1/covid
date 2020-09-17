@@ -3,11 +3,14 @@ package org.dshaver.covid.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.dshaver.covid.dao.EpicurveDtoRepository;
+import org.dshaver.covid.dao.EpicurveDtoV2Repository;
 import org.dshaver.covid.dao.HealthcareDtoRepository;
+import org.dshaver.covid.dao.ReportOverviewRepositoryV1;
 import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.*;
 import org.dshaver.covid.domain.overview.ReportOverview;
+import org.dshaver.covid.domain.overview.ReportOverviewContainer;
+import org.dshaver.covid.domain.overview.ReportOverviewImpl2;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl1;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.dshaver.covid.service.extractor.Extractor;
@@ -36,13 +39,16 @@ public class ReportFactory {
     private static final Logger logger = LoggerFactory.getLogger(ReportFactory.class);
     private static final DateTimeFormatter SOURCE_LABEL_FORMAT = new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern("dd-MMM-yy").toFormatter();
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
+    private static final LocalDate HEALTHCARE_BEGIN_DATE = LocalDate.of(2020, 6, 1);
+    private static final LocalDate EXTRACTOR_2_BEGIN_DATE = LocalDate.of(2020, 5, 11);
     private final Pattern onlyNumbersPattern = Pattern.compile("(\\d+).*");
     private final List<String> whiteList = new ArrayList<>();
     private final String filter = "\"dataPoints\" : ";
     private final ObjectMapper objectMapper;
-    private final EpicurveDtoRepository epicurveDtoRepository;
+    private final EpicurveDtoV2Repository epicurveDtoV2Repository;
     private final HealthcareDtoRepository healthcareDtoRepository;
     private final Extractor<String, ReportOverview> reportOverviewExtractor;
+    private final ReportOverviewRepositoryV1 reportOverviewRepositoryV1;
     private final EpicurveExtractorImpl1 epicurveExtractor1;
     private final EpicurveExtractorImpl2 epicurveExtractor2;
     private final HealthcareWorkerExtractor healthcareWorkerExtractor;
@@ -60,16 +66,18 @@ public class ReportFactory {
 
     @Inject
     public ReportFactory(ObjectMapper objectMapper,
-                         EpicurveDtoRepository epicurveDtoRepository,
+                         EpicurveDtoV2Repository epicurveDtoV2Repository,
                          HealthcareDtoRepository healthcareDtoRepository,
                          @Qualifier("reportOverviewExtractorDelegator") Extractor<String, ReportOverview> reportOverviewExtractor,
+                         ReportOverviewRepositoryV1 reportOverviewRepositoryV1,
                          EpicurveExtractorImpl1 epicurveExtractor1,
                          EpicurveExtractorImpl2 epicurveExtractor2,
                          HealthcareWorkerExtractor healthcareWorkerExtractor) {
         this.objectMapper = objectMapper;
-        this.epicurveDtoRepository = epicurveDtoRepository;
+        this.epicurveDtoV2Repository = epicurveDtoV2Repository;
         this.healthcareDtoRepository = healthcareDtoRepository;
         this.reportOverviewExtractor = reportOverviewExtractor;
+        this.reportOverviewRepositoryV1 = reportOverviewRepositoryV1;
         this.epicurveExtractor1 = epicurveExtractor1;
         this.epicurveExtractor2 = epicurveExtractor2;
         this.healthcareWorkerExtractor = healthcareWorkerExtractor;
@@ -78,12 +86,17 @@ public class ReportFactory {
     public Report createReport(RawData rawData, Report previousReport) throws Exception {
         if (rawData instanceof RawDataV2) {
             logger.info("About to start creating report from RawDataV2");
-            return createReport((RawDataV2) rawData, previousReport);
+            return createReport(rawData.getId(), rawData.getReportDate(), previousReport);
         }
 
         if (rawData instanceof RawDataV1) {
             logger.info("About to start creating report from RawDataV1");
-            return createReport((RawDataV1) rawData, previousReport);
+            return createReport(rawData.getId(), rawData.getReportDate(), previousReport);
+        }
+
+        if (rawData instanceof RawDataV0) {
+            logger.info("About to start creating report from RawDataV0");
+            return createReport((RawDataV0) rawData, previousReport);
         }
 
         if (rawData instanceof ManualRawData) {
@@ -131,9 +144,9 @@ public class ReportFactory {
         return report;
     }
 
-    public Report createReport(RawDataV2 rawData, Report previousReport) {
-        Optional<EpicurvePointImpl2Container> epicurveContainer = epicurveDtoRepository.findById(rawData.getId());
-        Optional<HealthcareWorkerEpiPointContainer> healthcareContainer = healthcareDtoRepository.findById(rawData.getId());
+    public Report createReport(String id, LocalDate reportDate, Report previousReport) {
+        Optional<EpicurvePointImpl2Container> epicurveContainer = epicurveDtoV2Repository.findById(id);
+        Optional<HealthcareWorkerEpiPointContainer> healthcareContainer = reportDate.isAfter(HEALTHCARE_BEGIN_DATE) ? healthcareDtoRepository.findById(id) : Optional.empty();
 
         if (!epicurveContainer.isPresent()) {
             throw new IllegalStateException("Could not find main epicurve within raw data!");
@@ -143,17 +156,18 @@ public class ReportFactory {
             logger.info("Could not find healthcare epicurve within raw data!");
         }
 
-        Optional<Map<String, Epicurve>> maybeEpicurve = epicurveExtractor2.extract(epicurveContainer.get().getPayload(), rawData.getId());
+        Optional<Map<String, Epicurve>> maybeEpicurve = epicurveExtractor2.extract(epicurveContainer.get().getPayload(), id);
         Optional<Map<String, Epicurve>> maybeHealthcareEpicurve = Optional.empty();
         if (healthcareContainer.isPresent()) {
-            maybeHealthcareEpicurve = healthcareWorkerExtractor.extract(healthcareContainer.get().getPayload(), rawData.getId());
+            maybeHealthcareEpicurve = healthcareWorkerExtractor.extract(healthcareContainer.get().getPayload(), id);
         }
 
         if (!maybeEpicurve.isPresent()) {
             throw new IllegalStateException("Could not extract epicurve from !");
         }
 
-        Optional<ReportOverview> maybeOverview = reportOverviewExtractor.extract(rawData.getPayload(), rawData.getId());
+        Optional<ReportOverviewImpl2> maybeOverview = reportOverviewRepositoryV1.findById(id);
+        //Optional<ReportOverview> maybeOverview = reportOverviewExtractor.extract(rawData.getPayload(), rawData.getId());
 
         if (!maybeOverview.isPresent()) {
             throw new IllegalStateException("Could not find ReportOverview within raw data!");
@@ -168,8 +182,8 @@ public class ReportFactory {
 
         ReportOverview overview = maybeOverview.get();
         Report report = new Report(LocalDateTime.now(),
-                rawData.getId(),
-                rawData.getReportDate(),
+                id,
+                reportDate,
                 epicurves,
                 overview.getTotalTests(),
                 overview.getConfirmedCovid(),
@@ -194,8 +208,8 @@ public class ReportFactory {
         return report;
     }
 
-    public Report createReport(RawDataV1 rawData, Report previousReport) throws Exception {
-        List<String> filteredStrings = rawData.getLines()
+    public Report createReport(RawDataV0 rawData, Report previousReport) throws Exception {
+        List<String> filteredStrings = rawData.getPayload()
                 .stream()
                 .filter(s -> whiteList.stream().anyMatch(white -> s.toUpperCase().contains(white)))
                 .collect(Collectors.toList());
@@ -354,12 +368,12 @@ public class ReportFactory {
     }
 
 
-    private String getVar(String varName, List<String> downloadedStrings) {
-        for (int i = 0; i < downloadedStrings.size(); i++) {
-            String currentString = downloadedStrings.get(i);
+    private String getVar(String varName, List<String> splitStrings) {
+        for (int i = 0; i < splitStrings.size(); i++) {
+            String currentString = splitStrings.get(i);
 
             if (currentString.contains(varName)) {
-                return parseJson(downloadedStrings.get(i + 1).trim());
+                return parseJson(splitStrings.get(i + 1).trim());
             }
         }
 

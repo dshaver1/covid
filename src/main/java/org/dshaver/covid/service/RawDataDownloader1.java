@@ -63,7 +63,7 @@ public class RawDataDownloader1 implements RawDataDownloader<RawDataV1> {
             }
         }
 
-        rawData.setLines(downloadedStrings);
+        rawData.setPayload(downloadedStrings);
         return rawData;
     }
 

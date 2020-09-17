@@ -2,6 +2,7 @@ package org.dshaver.covid.service.extractor;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.dshaver.covid.dao.BaseFileRepository;
 import org.dshaver.covid.domain.overview.ReportOverview;
 import org.dshaver.covid.domain.overview.ReportOverviewImpl2;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -35,7 +37,10 @@ public class ReportOverviewExtractorImpl2 extends AbstractExtractor implements E
             if (overviewString.isPresent()) {
                 reportOverviewContainer = getObjectMapper().readValue(overviewString.get(), new TypeReference<List<ReportOverviewImpl2>>(){});
                 if (reportOverviewContainer != null && !reportOverviewContainer.isEmpty()) {
-                    reportOverview = Optional.ofNullable(reportOverviewContainer.get(0));
+                    ReportOverviewImpl2 overview = reportOverviewContainer.get(0);
+                    overview.setId(id);
+                    overview.setReportDate(LocalDateTime.parse(id, BaseFileRepository.idFormatter).toLocalDate());
+                    reportOverview = Optional.of(overview);
                 }
             }
         } catch (Exception e) {

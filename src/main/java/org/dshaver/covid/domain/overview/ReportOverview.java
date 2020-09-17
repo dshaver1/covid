@@ -1,8 +1,9 @@
 package org.dshaver.covid.domain.overview;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.dshaver.covid.domain.Identifiable;
 
-public interface ReportOverview {
+public interface ReportOverview extends Identifiable {
     Integer getTotalTests();
 
     Integer getConfirmedCovid();

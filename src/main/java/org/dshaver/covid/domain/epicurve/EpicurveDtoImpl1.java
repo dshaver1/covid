@@ -6,12 +6,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
 public class EpicurveDtoImpl1 implements EpicurveDto {
+    private LocalDate reportDate;
+    private String id;
+    private Path filePath;
+
     @JsonProperty("SASJSONExport")
     String exportFormat;
 
@@ -64,5 +70,33 @@ public class EpicurveDtoImpl1 implements EpicurveDto {
     @Override
     public Collection<EpicurvePoint> getStateEpicurve() {
         return getEpicurvePoints();
+    }
+
+    @Override
+    public LocalDate getReportDate() {
+        return reportDate;
+    }
+
+    public void setReportDate(LocalDate reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public Path getFilePath() {
+        return filePath;
+    }
+
+    @Override
+    public void setFilePath(Path filePath) {
+        this.filePath = filePath;
     }
 }

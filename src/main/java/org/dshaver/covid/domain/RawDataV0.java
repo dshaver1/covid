@@ -12,7 +12,7 @@ import java.util.List;
  * report date/time.
  */
 @Data
-public class RawDataV1 implements RawData {
+public class RawDataV0 implements RawData {
     private String id;
 
     private LocalDateTime createTime;

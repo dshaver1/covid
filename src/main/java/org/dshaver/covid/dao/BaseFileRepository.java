@@ -146,11 +146,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
         if (latestId.isPresent()) {
             Optional<Path> regFile = fileRegistry.getPath(getClazz(), latestId.get());
             if (regFile.isPresent()) {
-                try {
-                    latest = Optional.ofNullable(readFile(regFile.get()));
-                } catch (IOException e) {
-                    logger.error("Error reading latest " + getClazz() + " file: " + getPath(), e);
-                }
+                latest = Optional.ofNullable(readFile(regFile.get()));
             }
         }
 
@@ -180,6 +176,11 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
     @Override
     public FileRegistry getFileRegistry() {
         return fileRegistry;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
     }
 
     private Stream<T> streamAll() throws IOException {

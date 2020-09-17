@@ -80,32 +80,25 @@ public class RawDataController {
 
     @PostMapping("/covid/api/transformRaw")
     public void transformRaw() throws Exception {
-        String v1PathString = "H:\\dev\\workingdir\\covid\\raw\\v1";
+        String v1PathString = "H:\\dev\\workingdir\\covid\\raw\\temp";
         String v2PathString = "H:\\dev\\workingdir\\covid\\raw\\v2";
-        Path outputDir = Paths.get("H:\\dev\\workingdir\\covid\\raw\\output");
-        List<Path> paths = Streams.concat(Files.list(Paths.get(v1PathString)), Files.list(Paths.get(v2PathString))).collect(Collectors.toList());
+        Path outputDir = Paths.get("H:\\dev\\workingdir\\covid\\raw\\v0");
+        List<Path> paths = Streams.concat(Files.list(Paths.get(v1PathString)))
+                //, Files.list(Paths.get(v2PathString)))
+                .collect(Collectors.toList());
 
         for (Path path : paths) {
             String originalFilename = path.getFileName().toString();
             String outputFilename = originalFilename.substring(0, originalFilename.indexOf("."));
             Path fullOutputPath = outputDir.resolve(outputFilename + ".json");
-            try (BufferedReader reader = Files.newBufferedReader(path);
-                 BufferedWriter writer = Files.newBufferedWriter(fullOutputPath)) {
-                final int bufferSize = 1024;
-                final char[] buffer = new char[bufferSize];
-                final StringBuilder out = new StringBuilder();
-                int charsRead;
-                while ((charsRead = reader.read(buffer, 0, buffer.length)) > 0) {
-                    out.append(buffer, 0, charsRead);
-                }
+
+            List<String> allLines = Files.readAllLines(path);
+            try (BufferedWriter writer = Files.newBufferedWriter(fullOutputPath)) {
                 String id = outputFilename.substring(outputFilename.indexOf("2"));
 
                 LocalDate reportDate = LocalDateTime.parse(id, idFormatter).toLocalDate();
 
-                List<String> payload = new ArrayList<>();
-                payload.add(StringUtils.deleteWhitespace(out.toString()));
-
-                BasicFile file = new BasicFile(reportDate, id, path, payload);
+                BasicFile file = new BasicFile(reportDate, id, fullOutputPath, allLines);
 
                 objectMapper.writeValue(writer, file);
             }
