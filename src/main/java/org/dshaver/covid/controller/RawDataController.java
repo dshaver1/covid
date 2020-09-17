@@ -2,11 +2,11 @@ package org.dshaver.covid.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Streams;
-import org.apache.commons.lang3.StringUtils;
 import org.dshaver.covid.domain.BasicFile;
 import org.dshaver.covid.domain.DownloadResponse;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
+import org.dshaver.covid.service.FileRegistry;
 import org.dshaver.covid.service.RawDataFileRepository;
 import org.dshaver.covid.service.RawDataWriter;
 import org.dshaver.covid.service.ReportService;
@@ -15,6 +15,7 @@ import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +44,7 @@ public class RawDataController {
     private final EpicurveExtractorImpl2 extractorImpl2;
     private final ObjectMapper objectMapper;
     private final ReportService reportService;
+    private final FileRegistry fileRegistry;
 
     @Inject
     public RawDataController(RawDataWriter rawDataWriter,
@@ -51,13 +52,15 @@ public class RawDataController {
                              EpicurveExtractorImpl1 extractorImpl1,
                              EpicurveExtractorImpl2 extractorImpl2,
                              ObjectMapper objectMapper,
-                             ReportService reportService) {
+                             ReportService reportService,
+                             FileRegistry fileRegistry) {
         this.rawDataWriter = rawDataWriter;
         this.fileRepository = fileRepository;
         this.extractorImpl1 = extractorImpl1;
         this.extractorImpl2 = extractorImpl2;
         this.objectMapper = objectMapper;
         this.reportService = reportService;
+        this.fileRegistry = fileRegistry;
     }
 
     @PostMapping("/covid/api/poll")
@@ -103,6 +106,16 @@ public class RawDataController {
                 objectMapper.writeValue(writer, file);
             }
         }
+    }
+
+    @PostMapping("/covid/api/scanDirectories")
+    public void scan() throws Exception {
+        fileRegistry.checkAndSaveIndex();
+    }
+
+    @GetMapping("health")
+    public String healthCheck() {
+        return "UP";
     }
 
     private String getExtension(RawData data) {

@@ -67,7 +67,12 @@ public class FileRegistry {
      */
     @Scheduled(cron = "0 30 * * * *")
     public void checkAndSaveIndex() {
+        logger.info("Saving index...");
         Optional<MultiFileIndex> diskIndex = readIndex();
+
+        for (Class<? extends Identifiable> clazz : fileIndex.getMultimap().keySet()) {
+            // TODO finish scan util
+        }
 
         if (diskIndex.isPresent()) {
             if (diskIndex.get().getLastUpdated().isBefore(this.fileIndex.getLastUpdated())) {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 /**
  * Created by xpdf64 on 2020-04-27.
@@ -31,7 +32,7 @@ public class ReportOverviewRepositoryV1 extends BaseFileRepository<ReportOvervie
 
     @Override
     public String createFilename(ReportOverviewImpl2 entity) {
-        return String.format("REPORT_OVERVIEW_V1_%s.json", reportDateFormatter.format(entity.getReportDate()));
+        return String.format("REPORT_OVERVIEW_V1_%s.json", idFormatter.format(LocalDateTime.parse(entity.getId().replace(":", ""), idFormatter)));
     }
 
     @Override

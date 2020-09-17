@@ -137,13 +137,13 @@
     epicurve = new Epicurve(dphSvg, width, height, dphxScale, dphyScale, dphxAxis, dphyAxis);
 
     Promise.all([
-        d3.csv("reports/v2/csv/summary.csv"),
-        d3.csv("reports/v2/csv/cases.csv"),
-        d3.csv("reports/v2/csv/deaths.csv"),
-        d3.csv("reports/v2/csv/caseDeltas.csv"),
-        d3.csv("reports/v2/csv/deathDeltas.csv"),
+        d3.csv("reports/v2/csv/georgia/summary.csv"),
+        d3.csv("reports/v2/csv/georgia/cases.csv"),
+        d3.csv("reports/v2/csv/georgia/deaths.csv"),
+        d3.csv("reports/v2/csv/georgia/caseDeltas.csv"),
+        d3.csv("reports/v2/csv/georgia/deathDeltas.csv"),
         //d3.csv("reports/v2/csv/caseProjections.csv"),
-        d3.csv("reports/v2/csv/movingAvgs.csv")
+        d3.csv("reports/v2/csv/georgia/movingAvgs.csv")
     ]).then(function (files) {
         summaryData = files[0];
         chartData = epicurve.parseChartData(summaryData, files[1], files[2], files[3], files[4], null, files[5]);
