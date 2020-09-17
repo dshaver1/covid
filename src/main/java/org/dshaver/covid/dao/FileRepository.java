@@ -3,6 +3,7 @@ package org.dshaver.covid.dao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.dshaver.covid.domain.FileIndex;
 import org.dshaver.covid.domain.Identifiable;
+import org.dshaver.covid.service.FileRegistry;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -49,11 +50,21 @@ public interface FileRepository<T extends Identifiable> {
 
     ObjectMapper getObjectMapper();
 
+    FileRegistry getFileRegistry();
+
     default T readFile(Path path) throws IOException {
         return getObjectMapper().readValue(path.toFile(), getClazz());
     }
 
-    default Stream<Path> streamPaths() throws IOException {
+    default Stream<Path> streamAllPaths() throws IOException {
         return Files.list(getPath());
+    }
+
+    /**
+     * Streams the selected entities for the day. (Some days have more than 1 report... we only care about the first one.)
+     * @return
+     */
+    default Stream<Path> streamSelectedPaths() {
+        return getFileRegistry().getPathsByReportDate(getClazz());
     }
 }

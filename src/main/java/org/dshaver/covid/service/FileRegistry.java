@@ -1,6 +1,7 @@
 package org.dshaver.covid.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.Streams;
 import org.dshaver.covid.domain.FileIndex;
 import org.dshaver.covid.domain.Identifiable;
 import org.dshaver.covid.domain.MultiFileIndex;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Holds indices linking common attributes to their corresponding file paths so I don't have to scan through all files every time.
@@ -92,6 +94,13 @@ public class FileRegistry {
 
     public Optional<String> getLatestId(Class<? extends Identifiable> clazz) {
         return getIndex(clazz).getIdToPath().keySet().stream().max(Comparator.naturalOrder());
+    }
+
+    /**
+     * Get ordered stream of paths by report date. No duplicated report dates.
+     */
+    public Stream<Path> getPathsByReportDate(Class<? extends Identifiable> clazz) {
+        return getIndex(clazz).getReportDateToPath().values().stream().sorted(Comparator.comparing(path -> path.getFileName().toString()));
     }
 
     public void putIndex(Class<? extends Identifiable> clazz, FileIndex fileIndex) {

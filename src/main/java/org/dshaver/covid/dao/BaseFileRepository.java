@@ -70,16 +70,16 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
 
     @Override
     public FileIndex scanDirectory() {
+        logger.info("Scanning directory for {}: {}", this.getClazz(), this.getPath().toString());
+
         FileIndex fileIndex = new FileIndex(LocalDateTime.now(), getClazz());
         try {
             Files.list(getPath()).forEach(path -> {
-                if (!fileRegistry.isKnown(getClazz(), path)) {
-                    String id = getIdFromFilename(path);
-                    LocalDate reportDate = getReportDateFromFilename(path);
+                String id = getIdFromFilename(path);
+                LocalDate reportDate = getReportDateFromFilename(path);
 
-                    fileIndex.getIdToPath().put(id, path);
-                    fileIndex.getReportDateToPath().put(reportDate, path);
-                }
+                fileIndex.getIdToPath().put(id, path);
+                fileIndex.getReportDateToPath().put(reportDate, path);
             });
         } catch (IOException e) {
             logger.error("Could not scan directory!", e);
@@ -177,8 +177,13 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
         return objectMapper;
     }
 
+    @Override
+    public FileRegistry getFileRegistry() {
+        return fileRegistry;
+    }
+
     private Stream<T> streamAll() throws IOException {
-        return streamPaths()
+        return streamAllPaths()
                 .map(path -> {
                     try {
                         T entity = objectMapper.readValue(path.toFile(), getClazz());

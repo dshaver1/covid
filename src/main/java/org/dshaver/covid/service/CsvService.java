@@ -1,7 +1,9 @@
 package org.dshaver.covid.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dshaver.covid.domain.ArrayReport;
 import org.dshaver.covid.domain.Report;
+import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,10 +12,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +24,9 @@ import java.util.stream.Collectors;
 @Service
 public class CsvService {
     private static final Logger logger = LoggerFactory.getLogger(CsvService.class);
+    private static final String[] SUMMARY_HEADER = new String[]{"id", "createTime", "reportDate", "totalTests", "totalTestVm",
+            "totalConfirmedCases", "totalDeaths", "confirmedCasesVm", "hospitalized", "hospitalizedVm", "deathsVm",
+            "icu", "icuVm", "casesVsDeathsCorrelation"};
 
     public String[] createHeader(Collection<ArrayReport> reports) {
         List<String> header = new ArrayList<>();
@@ -116,14 +118,63 @@ public class CsvService {
         return String.join("\n", Files.readAllLines(path));
     }
 
-    public void delete(String dir, String county) {
+    public void deleteAllCsvs(String dir) {
+        logger.info("Cleaning up ALL existing csvs...");
+
+        for (String county : EpicurveExtractorImpl2.COUNTY_FILTER) {
+            logger.info("Cleaning up csvs for {}!", county);
+            try {
+                Files.list(getCountyDirPath(dir, county)).forEach(path -> {
+                    try {
+                        Files.deleteIfExists(path);
+                    } catch (IOException e) {
+                        logger.info("Could not delete {} because it doesn't exist!", path);
+                    }
+                });
+            } catch (NoSuchFileException e) {
+                logger.info("Could not delete files in {} because it doesn't exist!", dir);
+            } catch (IOException e) {
+                logger.error("Error deleting directory contents for " + county, e);
+            }
+        }
+    }
+
+    public Path getCountyDirPath(String baseDir, String county) {
+        return Paths.get(baseDir, county);
+    }
+
+    public Path getCountyFilePath(String dir, String type, String county) {
+        Path path = Paths.get(dir).resolve(String.format("%s.csv", type));
+        if (county != null) {
+            String filteredCounty = county.replace(" ", "-");
+            filteredCounty = filteredCounty.replace("/", "");
+            filteredCounty = filteredCounty.replace("\\", "");
+            filteredCounty = filteredCounty.replace("unknown-state", "");
+            filteredCounty = filteredCounty.replace("non-ga-resident", "non-georgia-resident");
+            filteredCounty = filteredCounty.replace("non-georgiaresident", "non-georgia-resident");
+            filteredCounty = filteredCounty.replace("non-garesidentunknownstate", "non-georgia-resident");
+            filteredCounty = filteredCounty.replace("dekalbg", "dekalb");
+
+
+            path = getCountyDirPath(dir, filteredCounty).resolve(String.format("%s_%s.csv", type, filteredCounty));
+        }
+
         try {
-            Files.deleteIfExists(Paths.get(dir).resolve(String.format("cases_%s.csv", county)));
-            Files.deleteIfExists(Paths.get(dir).resolve(String.format("caseDeltas_%s.csv", county)));
-            //Files.deleteIfExists(Paths.get(dir).resolve(String.format("caseProjections_%s.csv", county)));
-            Files.deleteIfExists(Paths.get(dir).resolve(String.format("movingAvgs_%s.csv", county)));
-            Files.deleteIfExists(Paths.get(dir).resolve(String.format("deaths_%s.csv", county)));
-            Files.deleteIfExists(Paths.get(dir).resolve(String.format("deathDeltas_%s.csv", county)));
+            Files.createDirectories(path.getParent());
+        } catch (IOException e) {
+            logger.error("Error creating county csv path!", e);
+        }
+
+        return path;
+    }
+
+    public void delete(Path path, String county) {
+        try {
+            Files.deleteIfExists(path.resolve(String.format("cases_%s.csv", county)));
+            Files.deleteIfExists(path.resolve(String.format("caseDeltas_%s.csv", county)));
+            Files.deleteIfExists(path.resolve(String.format("movingAvgs_%s.csv", county)));
+            Files.deleteIfExists(path.resolve(String.format("deaths_%s.csv", county)));
+            Files.deleteIfExists(path.resolve(String.format("deathDeltas_%s.csv", county)));
         } catch (IOException e) {
             logger.error("Could not delete files!", e);
         }
@@ -135,6 +186,23 @@ public class CsvService {
         BufferedWriter writer = null;
         if (path.toFile().exists()) {
             writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
+
+            // Check to see if we even need to append anything.
+            try (FileReader fileReader = new FileReader(path.toFile()); BufferedReader br = new BufferedReader(fileReader)) {
+                // Read existing header
+                String existingHeader = br.readLine();
+                if (StringUtils.isNotEmpty(existingHeader)) {
+                    String[] existingHeaderArray = existingHeader.split(",");
+
+                    // Only append if the new header is exactly 1 longer than existing header... otherwise just return without doing anything.
+                    if (header.length - existingHeaderArray.length != 1) {
+                        logger.debug("Thought we needed to append to the csv {}, but actually didn't.", path);
+                        writer.close();
+                        return;
+                    }
+                }
+            }
+
         } else {
             writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
             writer.write(String.join(",", header));
@@ -152,8 +220,58 @@ public class CsvService {
         writer.close();
     }
 
+    public void appendSummary(Path path, String county, Report report) throws Exception {
+        ArrayReport arrayReport = new ArrayReport(report, county);
+
+        BufferedWriter writer = null;
+        if (path.toFile().exists()) {
+            writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
+        } else {
+            writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
+            writer.write(String.join(",", SUMMARY_HEADER));
+        }
+
+        try {
+            List<String> row = new ArrayList<>();
+            writer.write("\n");
+
+            row.add(arrayReport.getId());
+            row.add(arrayReport.getCreateTime().toString());
+            row.add(arrayReport.getReportDate().toString());
+            row.add("" + arrayReport.getTotalTests());
+            row.add("" + arrayReport.getTotalTestsVm());
+            row.add("" + arrayReport.getTotalConfirmedCases());
+            row.add("" + arrayReport.getTotalDeaths());
+            row.add("" + arrayReport.getConfirmedCasesVm());
+            row.add("" + arrayReport.getHospitalized());
+            row.add("" + arrayReport.getHospitalizedVm());
+            row.add("" + arrayReport.getDeathsVm());
+            row.add("" + arrayReport.getIcu());
+            row.add("" + arrayReport.getIcuVm());
+
+            writer.write(String.join(",", row));
+
+            writer.flush();
+
+            row.clear();
+
+        } catch (IOException e) {
+            logger.error("Error writing summary csv: " + path, e);
+        } finally {
+            writer.close();
+        }
+
+        try {
+            Files.readAllLines(path);
+        } catch (IOException e) {
+            logger.error("Error reading back summary file: " + path, e);
+        }
+    }
+
     public void updateHeader(Path path, String[] header) throws Exception {
         List<String> existingRows = new ArrayList<>();
+
+        Files.createDirectories(path.getParent());
 
         try (FileReader fileReader = new FileReader(path.toFile()); BufferedReader br = new BufferedReader(fileReader)) {
             // Skip existing header

@@ -19,7 +19,7 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
     private static final Logger logger = LoggerFactory.getLogger(EpicurveExtractorImpl2.class);
     private static final Pattern epicurvePattern = Pattern.compile("(\\[\\{\"measure\".+?}])");
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
-    public static final List<String> COUNTY_FILTER = Arrays.asList("georgia", "cobb", "fulton", "gwinnett", "dekalb", "carroll", "bibb", "unknown", "resident", "non-georgia-resident");
+    public static final List<String> COUNTY_FILTER = Arrays.asList("georgia", "cobb", "chatham", "fulton", "gwinnett", "dekalb", "carroll", "bibb", "unknown", "resident", "non-georgia-resident", "healthcare");
 
     @Inject
     protected EpicurveExtractorImpl2(ObjectMapper objectMapper) {

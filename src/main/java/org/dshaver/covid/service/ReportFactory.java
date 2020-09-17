@@ -131,7 +131,7 @@ public class ReportFactory {
         return report;
     }
 
-    public Report createReport(RawDataV2 rawData, Report previousReport) throws Exception {
+    public Report createReport(RawDataV2 rawData, Report previousReport) {
         Optional<EpicurvePointImpl2Container> epicurveContainer = epicurveDtoRepository.findById(rawData.getId());
         Optional<HealthcareWorkerEpiPointContainer> healthcareContainer = healthcareDtoRepository.findById(rawData.getId());
 
@@ -140,11 +140,14 @@ public class ReportFactory {
         }
 
         if (!healthcareContainer.isPresent()) {
-            throw new IllegalStateException("Could not find healthcare epicurve within raw data!");
+            logger.info("Could not find healthcare epicurve within raw data!");
         }
 
         Optional<Map<String, Epicurve>> maybeEpicurve = epicurveExtractor2.extract(epicurveContainer.get().getPayload(), rawData.getId());
-        Optional<Map<String, Epicurve>> maybeHealthcareEpicurve = healthcareWorkerExtractor.extract(healthcareContainer.get().getPayload(), rawData.getId());
+        Optional<Map<String, Epicurve>> maybeHealthcareEpicurve = Optional.empty();
+        if (healthcareContainer.isPresent()) {
+            maybeHealthcareEpicurve = healthcareWorkerExtractor.extract(healthcareContainer.get().getPayload(), rawData.getId());
+        }
 
         if (!maybeEpicurve.isPresent()) {
             throw new IllegalStateException("Could not extract epicurve from !");

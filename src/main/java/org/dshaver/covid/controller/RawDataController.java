@@ -69,11 +69,13 @@ public class RawDataController {
     public void reprocess(@RequestParam(name = "startDate", required = false)
                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                           @RequestParam(name = "endDate", required = false)
-                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
+                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                          @RequestParam(name = "clean", required = false) Boolean clean) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
+        boolean defaultedClean = clean == null ? true : clean;
 
-        reportService.processRange(defaultedStartDate, defaultedEndDate);
+        reportService.processRange(defaultedStartDate, defaultedEndDate, defaultedClean);
     }
 
     @PostMapping("/covid/api/transformRaw")

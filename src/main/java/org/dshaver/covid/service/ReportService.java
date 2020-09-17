@@ -11,12 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -69,6 +64,8 @@ public class ReportService {
     public DownloadResponse checkForData() throws Exception {
         DownloadResponse response = new DownloadResponse();
 
+        fileRegistry.putIndex(RawDataV2.class, rawDataRepositoryV2.scanDirectory());
+
         // Check disk
         Optional<String> diskLatestId = fileRegistry.getLatestId(RawDataV2.class);
 
@@ -92,8 +89,12 @@ public class ReportService {
         return response;
     }
 
-    public void processRange(LocalDate startDate, LocalDate endDate) throws Exception {
-        rawDataRepositoryV2.streamPaths()
+    public void processRange(LocalDate startDate, LocalDate endDate, boolean deleteFirst) throws Exception {
+        if (deleteFirst) {
+            csvService.deleteAllCsvs(reportTgtDir);
+        }
+
+        rawDataRepositoryV2.streamSelectedPaths()
                 .map(path -> {
                     try {
                         return rawDataRepositoryV2.readFile(path);
@@ -117,55 +118,34 @@ public class ReportService {
             logger.info("Writing csvs for {} on {}.", county, report.getReportDate());
 
             try {
-                csvService.appendFile(getCountyPath(reportTgtDir, "cases", county), county, header, report, ArrayReport::getCases);
-                csvService.appendFile(getCountyPath(reportTgtDir, "caseDeltas", county), county, header, report, ArrayReport::getCaseDeltas);
-                csvService.appendFile(getCountyPath(reportTgtDir, "movingAvgs", county), county, header, report, ArrayReport::getMovingAvgs);
-                csvService.appendFile(getCountyPath(reportTgtDir, "deaths", county), county, header, report, ArrayReport::getDeaths);
-                csvService.appendFile(getCountyPath(reportTgtDir, "deathDeltas", county), county, header, report, ArrayReport::getDeathDeltas);
+                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "cases", county), county, header, report, ArrayReport::getCases);
+                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "caseDeltas", county), county, header, report, ArrayReport::getCaseDeltas);
+                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "movingAvgs", county), county, header, report, ArrayReport::getMovingAvgs);
+                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "deaths", county), county, header, report, ArrayReport::getDeaths);
+                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "deathDeltas", county), county, header, report, ArrayReport::getDeathDeltas);
+                csvService.appendSummary(csvService.getCountyFilePath(reportTgtDir, "summary", county), county, report);
+
             } catch (Exception e) {
                 logger.error("Could not write csvs for county " + county);
             }
         }
+
+        updateAllHeaders(report, header);
     }
 
-    public void updateAllHeaders(String dir, Report report, String[] header) {
+    public void updateAllHeaders(Report report, String[] header) {
         try {
             for (Epicurve epicurve : report.getEpicurves().values()) {
                 String county = epicurve.getCounty().toLowerCase();
-                csvService.updateHeader(getCountyPath(dir, "cases", county), header);
-                csvService.updateHeader(getCountyPath(dir, "caseDeltas", county), header);
-                csvService.updateHeader(getCountyPath(dir, "movingAvgs", county), header);
-                csvService.updateHeader(getCountyPath(dir, "deaths", county), header);
-                csvService.updateHeader(getCountyPath(dir, "deathDeltas", county), header);
+                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "cases", county), header);
+                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "caseDeltas", county), header);
+                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "movingAvgs", county), header);
+                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "deaths", county), header);
+                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "deathDeltas", county), header);
             }
         } catch (Exception e) {
             logger.error("Could not update headers in target csvs coming from report file", e);
         }
-    }
-
-    public void rewriteCsvs() {
-
-    }
-
-    private Path getCountyPath(String dir, String type, String county) {
-        Path path = Paths.get(dir).resolve(String.format("%s.csv", type));
-        if (county != null) {
-            String filteredCounty = county.replace(" ", "-");
-            filteredCounty = filteredCounty.replace("/", "");
-            filteredCounty = filteredCounty.replace("\\", "");
-            filteredCounty = filteredCounty.replace("unknown-state", "");
-            filteredCounty = filteredCounty.replace("non-ga-resident", "non-georgia-resident");
-
-            path = Paths.get(dir, county).resolve(String.format("%s_%s.csv", type, filteredCounty));
-        }
-
-        try {
-            Files.createDirectories(path.getParent());
-        } catch (IOException e) {
-            logger.error("Error creating county csv path!", e);
-        }
-
-        return path;
     }
 
     private void process(RawData data) {
