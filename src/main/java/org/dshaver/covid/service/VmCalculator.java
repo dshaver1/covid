@@ -5,6 +5,9 @@ import com.google.common.collect.TreeBasedTable;
 import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
+import org.dshaver.covid.service.extractor.ReportOverviewExtractorImpl2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -12,9 +15,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class VmCalculator {
+    private static final Logger logger = LoggerFactory.getLogger(ReportOverviewExtractorImpl2.class);
     public static final LocalDate CUTOFF_DATE = LocalDate.of(2020, 4,15);
 
     public static Report populateVm(Report report, Report previousReport) {
+        logger.info("Populating VM data for report with id {}", report.getId());
         if (previousReport == null) {
             report.getGeorgiaEpicurve().getData().forEach(point -> {
                 point.setCasesVm(0);

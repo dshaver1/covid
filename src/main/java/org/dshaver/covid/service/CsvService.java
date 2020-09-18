@@ -8,10 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.inject.Inject;
+import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,6 +25,13 @@ public class CsvService {
     private static final String[] SUMMARY_HEADER = new String[]{"id", "createTime", "reportDate", "totalTests", "totalTestVm",
             "totalConfirmedCases", "totalDeaths", "confirmedCasesVm", "hospitalized", "hospitalizedVm", "deathsVm",
             "icu", "icuVm", "casesVsDeathsCorrelation"};
+
+    private final CountyService countyService;
+
+    @Inject
+    public CsvService(CountyService countyService) {
+        this.countyService = countyService;
+    }
 
     public String[] createHeader(Collection<ArrayReport> reports) {
         List<String> header = new ArrayList<>();
@@ -121,7 +126,7 @@ public class CsvService {
     public void deleteAllCsvs(String dir) {
         logger.info("Cleaning up ALL existing csvs...");
 
-        for (String county : EpicurveExtractorImpl2.COUNTY_FILTER) {
+        for (String county : countyService.getAllEnabledCounties()) {
             logger.info("Cleaning up csvs for {}!", county);
             try {
                 Files.list(getCountyDirPath(dir, county)).forEach(path -> {
@@ -182,11 +187,10 @@ public class CsvService {
 
     public void appendFile(Path path, String county, String[] header, Report report, Function<ArrayReport, Integer[]> intFunction) throws Exception {
         ArrayReport arrayReport = new ArrayReport(report, county);
+        List<String> existingRows = new ArrayList<>();
 
         BufferedWriter writer = null;
         if (path.toFile().exists()) {
-            writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
-
             // Check to see if we even need to append anything.
             try (FileReader fileReader = new FileReader(path.toFile()); BufferedReader br = new BufferedReader(fileReader)) {
                 // Read existing header
@@ -197,8 +201,23 @@ public class CsvService {
                     // Only append if the new header is exactly 1 longer than existing header... otherwise just return without doing anything.
                     if (header.length - existingHeaderArray.length != 1) {
                         logger.debug("Thought we needed to append to the csv {}, but actually didn't.", path);
-                        writer.close();
                         return;
+                    }
+
+                    String currentString;
+                    // Save the rest of the file to memory so we can prepend the new header.
+                    while ((currentString = br.readLine()) != null) {
+                        existingRows.add(currentString);
+                    }
+
+                    writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
+                    // Rewrite header
+                    writer.write(String.join(",", header));
+
+                    // Add back the rest of the existing file
+                    for (String currentRow : existingRows) {
+                        writer.write("\n");
+                        writer.write(currentRow);
                     }
                 }
             }
@@ -208,6 +227,7 @@ public class CsvService {
             writer.write(String.join(",", header));
         }
 
+        // Now write the new line
         writer.write("\n");
 
         List<String> row = new ArrayList<>();

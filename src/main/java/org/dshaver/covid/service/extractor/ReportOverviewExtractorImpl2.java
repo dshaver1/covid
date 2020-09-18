@@ -29,6 +29,7 @@ public class ReportOverviewExtractorImpl2 extends AbstractExtractor implements E
 
     @Override
     public Optional<ReportOverview> extract(List<String> raw, String id) {
+        logger.info("Extracting ReportOverview for id {}", id);
         Optional<ReportOverview> reportOverview = Optional.empty();
         Optional<String> overviewString = find(raw, getPattern());
         List<ReportOverviewImpl2> reportOverviewContainer = null;

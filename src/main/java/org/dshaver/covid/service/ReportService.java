@@ -5,7 +5,9 @@ import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,7 @@ public class ReportService {
     private final CsvService csvService;
     private final String reportTgtDir;
     private final FileRegistry fileRegistry;
+    private final TaskExecutor taskExecutor;
 
     @Inject
     public ReportService(RawDataRepositoryV0 rawDataRepositoryV0,
@@ -49,7 +52,8 @@ public class ReportService {
                          HistogramReportRepository histogramReportDao,
                          CsvService csvService,
                          @Value("${covid.dirs.reports.csv}") String reportTgtDir,
-                         FileRegistry fileRegistry) {
+                         FileRegistry fileRegistry,
+                         @Qualifier("singleTaskExecutor") TaskExecutor taskExecutor) {
         this.rawDataRepositoryV0 = rawDataRepositoryV0;
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.rawDataFileRepository = rawDataFileRepository;
@@ -62,13 +66,19 @@ public class ReportService {
         this.csvService = csvService;
         this.reportTgtDir = reportTgtDir;
         this.fileRegistry = fileRegistry;
+        this.taskExecutor = taskExecutor;
     }
 
     /**
      * Main entrypoint to check for new reports.
      */
-    @Scheduled(cron = "0 15 * * * *")
-    public DownloadResponse checkForData() throws Exception {
+    @Scheduled(cron = "0 55 * * * *")
+    public void checkForData() {
+        checkForData(false);
+    }
+
+
+    public DownloadResponse checkForData(boolean force) {
         DownloadResponse response = new DownloadResponse();
 
         fileRegistry.putIndex(RawDataV2.class, rawDataRepositoryV2.scanDirectory());
@@ -85,10 +95,10 @@ public class ReportService {
 
         diskLatestId.ifPresent(response::setPreviousLatestId);
 
-        if (diskLatestId.isPresent() && downloadLatestId != null && !diskLatestId.get().equals(downloadLatestId)) {
+        if (force || (diskLatestId.isPresent() && downloadLatestId != null && !diskLatestId.get().equals(downloadLatestId))) {
             response.setNewLatestId(data.getId());
             response.setFoundNew(true);
-            process(data);
+            process(data, true);
         } else {
             logger.info("No new data found! Latest id: {}", diskLatestId.get());
         }
@@ -96,7 +106,7 @@ public class ReportService {
         return response;
     }
 
-    public void processRange(LocalDate startDate, LocalDate endDate, boolean deleteFirst) {
+    public void processRange(LocalDate startDate, LocalDate endDate, boolean deleteFirst, boolean saveIntermediate) {
         if (deleteFirst) {
             csvService.deleteAllCsvs(reportTgtDir);
         }
@@ -107,15 +117,16 @@ public class ReportService {
                 .filter(Objects::nonNull)
                 .filter(rawData -> !rawData.getReportDate().isAfter(endDate))
                 .filter(rawData -> !rawData.getReportDate().isBefore(startDate))
-                .forEach(this::process);
+                .forEach(data -> process(data, saveIntermediate));
     }
 
     public void appendCsvs(Report report) {
         String[] header = csvService.createHeader(report);
 
+        logger.info("Writing csvs for all counties on {}.", report.getReportDate());
+
         for (Epicurve epicurve : report.getEpicurves().values()) {
             String county = epicurve.getCounty().toLowerCase();
-            logger.info("Writing csvs for {} on {}.", county, report.getReportDate());
 
             try {
                 csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "cases", county), county, header, report, ArrayReport::getCases);
@@ -132,10 +143,11 @@ public class ReportService {
             }
         }
 
-        updateAllHeaders(report, header);
+        //logger.info("Updating all csv headers for report date {}.", report.getReportDate());
+        //updateAllHeaders(report, header);
     }
 
-    public void updateAllHeaders(Report report, String[] header) {
+/*    public void updateAllHeaders(Report report, String[] header) {
         try {
             for (Epicurve epicurve : report.getEpicurves().values()) {
                 String county = epicurve.getCounty().toLowerCase();
@@ -150,11 +162,17 @@ public class ReportService {
         } catch (Exception e) {
             logger.error("Could not update headers in target csvs coming from report file", e);
         }
+    }*/
+    private void process(RawData data) {
+        process(data, true);
     }
 
-    private void process(RawData data) {
-        // Save intermediate filtered json
-        intermediaryDataService.saveAll(data);
+    private void process(RawData data, boolean saveIntermediate) {
+        logger.info("Entering process({},{})", data.getId(), saveIntermediate);
+        if (saveIntermediate) {
+            // Save intermediate filtered json if requested
+            intermediaryDataService.saveAll(data);
+        }
 
         // Find previous report. It's fine if it doesn't exist.
         Report prevReport = reportRepository.findByReportDate(data.getReportDate().minusDays(1)).orElse(null);
@@ -178,6 +196,6 @@ public class ReportService {
         // Ensure index is up to date
         fileRegistry.checkAndSaveIndex();
 
-        optionalReport.ifPresent(this::appendCsvs);
+        optionalReport.ifPresent($ -> taskExecutor.execute(() -> appendCsvs($)));
     }
 }

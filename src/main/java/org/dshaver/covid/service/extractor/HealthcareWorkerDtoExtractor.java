@@ -31,6 +31,7 @@ public class HealthcareWorkerDtoExtractor extends AbstractExtractor implements E
 
     @Override
     public Optional<HealthcareWorkerEpiPointContainer> extract(List<String> raw, String id) {
+        logger.info("Extracting HealthcareWorkerEpiPointContainer for id {}", id);
         Optional<String> epicurveString = find(raw, getPattern());
         List<HealthcareWorkerEpiPoint> epicurvePoints = null;
         Optional<HealthcareWorkerEpiPointContainer> optionalContainer = Optional.empty();

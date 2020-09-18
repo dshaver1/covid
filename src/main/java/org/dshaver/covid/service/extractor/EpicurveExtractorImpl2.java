@@ -6,6 +6,8 @@ import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import org.dshaver.covid.dao.TestingStatsRepository;
 import org.dshaver.covid.domain.epicurve.*;
+import org.dshaver.covid.service.CountyService;
+import org.dshaver.covid.service.CsvService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,23 +16,25 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Component
 public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extractor<EpicurvePointImpl2, Map<String, Epicurve>> {
     private static final Logger logger = LoggerFactory.getLogger(EpicurveExtractorImpl2.class);
     private static final Pattern epicurvePattern = Pattern.compile("(\\[\\{\"measure\".+?}])");
     private static final LocalDate EARLIEST_DATE = LocalDate.of(2020, 2, 16);
-    public static final List<String> COUNTY_FILTER = Arrays.asList("georgia", "cobb", "chatham", "fulton", "gwinnett", "dekalb", "carroll", "bibb", "unknown", "resident", "non-georgia-resident", "healthcare");
 
     private final TestingStatsRepository testingStatsRepository;
+    private final CountyService countyService;
 
     @Inject
-    protected EpicurveExtractorImpl2(ObjectMapper objectMapper, TestingStatsRepository testingStatsRepository) {
+    protected EpicurveExtractorImpl2(ObjectMapper objectMapper,
+                                     TestingStatsRepository testingStatsRepository,
+                                     CountyService countyService) {
         super(objectMapper);
         this.testingStatsRepository = testingStatsRepository;
+        this.countyService = countyService;
     }
 
     @Override
@@ -44,10 +48,11 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
 
         try {
             Map<String, Collection<EpicurvePoint>> filteredDataPoints = new HashMap<>();
+
             for (EpicurvePointImpl2 current : raw) {
                 LocalDate labelDate = LocalDate.parse(current.getTestDate(), DateTimeFormatter.ISO_DATE);
                 // Next iterate over the points and filter/decorate as needed.
-                if (labelDate.isAfter(EARLIEST_DATE) && anyContains(COUNTY_FILTER, current.getCounty().toLowerCase())) {
+                if (labelDate.isAfter(EARLIEST_DATE) && countyService.isCountyEnabled(current.getCounty())) {
                     current.setSource(id);
                     current.setLabel(labelDate.format(DateTimeFormatter.ISO_DATE).toUpperCase());
                     current.setLabelDate(labelDate);
@@ -98,7 +103,7 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
             Table<String, LocalDate, TestingStatsDto> table = testingStatsContainer.get()
                     .getPayload()
                     .stream()
-                    .filter(dto -> anyContains(COUNTY_FILTER, dto.getCounty().toLowerCase()))
+                    .filter(dto -> countyService.isCountyEnabled(dto.getCounty().toLowerCase()))
                     .collect(Tables.toTable(TestingStatsDto::getCounty,
                             TestingStatsDto::getReportDate,
                             dto -> dto,
@@ -109,23 +114,6 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
         }
 
         return optionalMap;
-    }
-
-    /**
-     * Returns true if the query string matches any part of the supplied list, OR if any of the supplied list match part of the query string.
-     */
-    public boolean anyContains(List<String> listToSearch, String query) {
-        for (String current : listToSearch) {
-            if (current.contains(query)) {
-                return true;
-            }
-
-            if (query.contains(current)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override

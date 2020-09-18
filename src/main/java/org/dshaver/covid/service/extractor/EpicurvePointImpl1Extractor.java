@@ -32,6 +32,7 @@ public class EpicurvePointImpl1Extractor extends AbstractExtractor implements Ex
 
     @Override
     public Optional<EpicurveDtoImpl1> extract(List<String> raw, String id) {
+        logger.info("Extracting EpicurveDtoImpl1 for id {}", id);
         Optional<String> epicurveString = find(raw, getPattern());
         EpicurveDtoImpl1 container;
         Optional<EpicurveDtoImpl1> optionalContainer = Optional.empty();

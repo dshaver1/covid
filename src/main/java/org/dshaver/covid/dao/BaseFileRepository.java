@@ -54,6 +54,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
 
     @Override
     public T save(T entity) throws IOException {
+        logger.info("Saving all {} entity with id {}...", getClazz(), entity.getId());
         Path path = Paths.get(getPath().toString(), createFilename(entity));
 
         try {
@@ -101,6 +102,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
 
     @Override
     public Optional<T> findById(String id) {
+        logger.info("Retrieving {} entity with id {}...", getClazz(), id);
         Optional<Path> regFile = fileRegistry.getPath(getClazz(), id);
         Optional<T> entity = Optional.empty();
 
@@ -110,17 +112,23 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
                 entity = Optional.ofNullable(objectMapper.readValue(regFile.get().toFile(), getClazz()));
             } else {
                 // Cache miss. Look on disk.
-                return streamAll().filter(o -> o.getId().equals(id)).findFirst();
+                return streamAllPaths()
+                        .filter(path -> Objects.equals(getIdFromFilename(path), id))
+                        .map(this::readFile)
+                        .findFirst();
             }
         } catch (IOException e) {
             logger.error("Error listing " + getClazz() + " files in " + getPath(), e);
         }
+
+        entity.ifPresent($ -> logger.info("Found {} entity with id {}...", getClazz(), $.getId()));
 
         return entity;
     }
 
     @Override
     public Optional<T> findByReportDate(LocalDate reportDate) {
+        logger.info("Retrieving the {} entity for report date {}...", getClazz(), reportDate);
         Optional<Path> regFile = fileRegistry.getPath(getClazz(), reportDate);
         Optional<T> entity = Optional.empty();
 
@@ -130,7 +138,10 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
                 entity = Optional.ofNullable(readFile(regFile.get()));
             } else {
                 // Cache miss. Look on disk.
-                return streamAll().filter(o -> o.getReportDate().equals(reportDate)).findFirst();
+                return streamAllPaths()
+                        .filter(path -> Objects.equals(getReportDateFromFilename(path), reportDate))
+                        .map(this::readFile)
+                        .findFirst();
             }
         } catch (IOException e) {
             logger.error("Error listing " + getClazz() + " files in " + getPath(), e);
@@ -140,6 +151,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
     }
 
     public Optional<T> getLatest() {
+        logger.info("Retrieving latest {} entity...", getClazz());
         Optional<T> latest = Optional.empty();
         Optional<String> latestId = fileRegistry.getLatestId(getClazz());
 
@@ -184,6 +196,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
     }
 
     private Stream<T> streamAll() throws IOException {
+        logger.info("Retrieving all {} entities...", getClazz());
         return streamAllPaths()
                 .map(path -> {
                     try {
@@ -201,6 +214,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
 
     @Override
     public void delete(T entity) {
+        logger.info("Deleting {} entity with id {}", getClazz(), entity.getId());
         try {
             Path path = Paths.get(getPath().toString(), createFilename(entity));
             if (path.toFile().exists()) {
@@ -216,6 +230,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
 
     @Override
     public void deleteAll() {
+        logger.info("Deleting all {} entities...", getClazz());
         try {
             FileUtils.cleanDirectory(getPath().toFile());
             fileRegistry.removeAll(getClazz());

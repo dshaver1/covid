@@ -64,8 +64,9 @@ public class RawDataController {
     }
 
     @PostMapping("/covid/api/poll")
-    public DownloadResponse checkForData() throws Exception {
-        return reportService.checkForData();
+    public DownloadResponse checkForData(@RequestParam(name = "force", required = false) Boolean force) throws Exception {
+        boolean defaultedForce = force == null ? false : force;
+        return reportService.checkForData(defaultedForce);
     }
 
     @PostMapping("/covid/api/reprocess")
@@ -73,12 +74,14 @@ public class RawDataController {
                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                           @RequestParam(name = "endDate", required = false)
                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                          @RequestParam(name = "clean", required = false) Boolean clean) throws Exception {
+                          @RequestParam(name = "clean", required = false) Boolean clean,
+                          @RequestParam(name = "saveIntermediate", required = false) Boolean saveIntermediate) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
         boolean defaultedClean = clean == null ? true : clean;
+        boolean defaultedSaveIntermediate = saveIntermediate == null ? true : saveIntermediate;
 
-        reportService.processRange(defaultedStartDate, defaultedEndDate, defaultedClean);
+        reportService.processRange(defaultedStartDate, defaultedEndDate, defaultedClean, defaultedSaveIntermediate);
     }
 
     @PostMapping("/covid/api/transformRaw")
