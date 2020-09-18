@@ -1,6 +1,7 @@
 package org.dshaver.covid.service;
 
 import org.dshaver.covid.dao.*;
+import org.dshaver.covid.domain.CountyOverviewContainer;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
 import org.dshaver.covid.domain.RawDataV2;
@@ -33,6 +34,8 @@ public class IntermediaryDataService {
     private final ReportOverviewRepositoryV1 reportOverviewRepositoryV1;
     private final TestingStatsExtractor testingStatsExtractor;
     private final TestingStatsRepository testingStatsRepository;
+    private final CountyOverviewExtractorImpl countyOverviewExtractor;
+    private final CountyOverviewRepository countyOverviewRepository;
 
     @Inject
     public IntermediaryDataService(EpicurvePointImpl1Extractor epicurvePointImpl1Extractor,
@@ -44,7 +47,9 @@ public class IntermediaryDataService {
                                    ReportOverviewExtractorDelegator overviewExtractorDelegator,
                                    ReportOverviewRepositoryV1 reportOverviewRepositoryV1,
                                    TestingStatsExtractor testingStatsExtractor,
-                                   TestingStatsRepository testingStatsRepository) {
+                                   TestingStatsRepository testingStatsRepository,
+                                   CountyOverviewExtractorImpl countyOverviewExtractor,
+                                   CountyOverviewRepository countyOverviewRepository) {
         this.epicurvePointImpl1Extractor = epicurvePointImpl1Extractor;
         this.epicurvePointImpl2Extractor = epicurvePointImpl2Extractor;
         this.epicurveDtoV1Repository = epicurveDtoV1Repository;
@@ -55,6 +60,8 @@ public class IntermediaryDataService {
         this.reportOverviewRepositoryV1 = reportOverviewRepositoryV1;
         this.testingStatsExtractor = testingStatsExtractor;
         this.testingStatsRepository = testingStatsRepository;
+        this.countyOverviewExtractor = countyOverviewExtractor;
+        this.countyOverviewRepository = countyOverviewRepository;
     }
 
     public void saveAll(RawData rawData) {
@@ -104,6 +111,15 @@ public class IntermediaryDataService {
                 testingStatsRepository.save(container);
             } catch (IOException e) {
                 logger.error("Error saving intermediary testing stats data with id " + rawData.getId(), e);
+            }
+        });
+
+        Optional<CountyOverviewContainer> countyOverviewContainer = countyOverviewExtractor.extract(rawData.getPayload(), rawData.getId());
+        countyOverviewContainer.ifPresent(container -> {
+            try {
+                countyOverviewRepository.save(container);
+            } catch (IOException e) {
+                logger.error("Error saving intermediary county overview data with id " + rawData.getId(), e);
             }
         });
     }

@@ -189,6 +189,7 @@ covid:
       healthcare: /mnt/data/filteredjson/healthcare
       overview.v1: /mnt/data/filteredjson/overview/v1
       testingstats.v1: /mnt/data/filteredjson/testingstats/v1
+      countyOverview.v1: /mnt/data/filteredjson/countyoverview/v1
     histogram: /mnt/data/histogram
 server.port: 8080
 logging.file.path: /mnt/data/covid/logs/
@@ -214,6 +215,7 @@ covid:
       healthcare: H:\dev\workingdir\covid\filtered\healthcare
       overview.v1: H:\dev\workingdir\covid\filtered\overview\v1
       testingstats.v1: H:\dev\workingdir\covid\filtered\testingstats\v1
+      countyOverview.v1: H:\dev\workingdir\covid\filtered\countyoverview\v1
     histogram: H:\dev\workingdir\covid\histogram
 server.port: 8080
 logging.file.path: H:\dev\covid\logs\

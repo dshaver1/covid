@@ -3,10 +3,7 @@ package org.dshaver.covid.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.dshaver.covid.dao.EpicurveDtoV2Repository;
-import org.dshaver.covid.dao.HealthcareDtoRepository;
-import org.dshaver.covid.dao.ReportOverviewRepositoryV1;
-import org.dshaver.covid.dao.TestingStatsRepository;
+import org.dshaver.covid.dao.*;
 import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.*;
 import org.dshaver.covid.domain.overview.ReportOverview;
@@ -53,6 +50,7 @@ public class ReportFactory {
     private final EpicurveExtractorImpl1 epicurveExtractor1;
     private final EpicurveExtractorImpl2 epicurveExtractor2;
     private final HealthcareWorkerExtractor healthcareWorkerExtractor;
+    private final CountyOverviewRepository countyOverviewRepository;
 
     {
         whiteList.add("VAR ");
@@ -74,7 +72,8 @@ public class ReportFactory {
                          ReportOverviewRepositoryV1 reportOverviewRepositoryV1,
                          EpicurveExtractorImpl1 epicurveExtractor1,
                          EpicurveExtractorImpl2 epicurveExtractor2,
-                         HealthcareWorkerExtractor healthcareWorkerExtractor) {
+                         HealthcareWorkerExtractor healthcareWorkerExtractor,
+                         CountyOverviewRepository countyOverviewRepository) {
         this.objectMapper = objectMapper;
         this.epicurveDtoV2Repository = epicurveDtoV2Repository;
         this.healthcareDtoRepository = healthcareDtoRepository;
@@ -84,6 +83,7 @@ public class ReportFactory {
         this.epicurveExtractor1 = epicurveExtractor1;
         this.epicurveExtractor2 = epicurveExtractor2;
         this.healthcareWorkerExtractor = healthcareWorkerExtractor;
+        this.countyOverviewRepository = countyOverviewRepository;
     }
 
     public Report createReport(RawData rawData, Report previousReport) throws Exception {
@@ -124,6 +124,7 @@ public class ReportFactory {
                 rawData.getId(),
                 rawData.getReportDate(),
                 epicurves,
+                new HashMap<>(),
                 rawData.getTotalTests(),
                 rawData.getConfirmedCases(),
                 rawData.getHospitalizations(),
@@ -150,7 +151,7 @@ public class ReportFactory {
     public Report createReport(String id, LocalDate reportDate, Report previousReport) {
         Optional<EpicurvePointImpl2Container> epicurveContainer = epicurveDtoV2Repository.findById(id);
         Optional<HealthcareWorkerEpiPointContainer> healthcareContainer = reportDate.isAfter(HEALTHCARE_BEGIN_DATE) ? healthcareDtoRepository.findById(id) : Optional.empty();
-        Optional<TestingStatsContainer> testingStatsContainer = testingStatsRepository.findById(id);
+        Optional<CountyOverviewContainer> countyOverviewContainer = countyOverviewRepository.findById(id);
 
         if (!epicurveContainer.isPresent()) {
             throw new IllegalStateException("Could not find main epicurve within raw data!");
@@ -184,11 +185,15 @@ public class ReportFactory {
             epicurves.put("healthcare", maybeHealthcareEpicurve.get().get("healthcare"));
         }
 
+        Map<String, CountyOverview> countyOverviews = new HashMap<>();
+        countyOverviewContainer.ifPresent(overviewContainer -> overviewContainer.getPayload().forEach(o -> countyOverviews.put(o.getCountyName().toLowerCase(), o)));
+
         ReportOverview overview = maybeOverview.get();
         Report report = new Report(LocalDateTime.now(),
                 id,
                 reportDate,
                 epicurves,
+                countyOverviews,
                 overview.getTotalTests(),
                 overview.getConfirmedCovid(),
                 overview.getHospitalization(),

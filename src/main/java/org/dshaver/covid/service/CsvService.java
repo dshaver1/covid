@@ -59,7 +59,7 @@ public class CsvService {
             header = headerList.toArray(new String[]{});
 
         } catch (Exception e) {
-            logger.error("Could not extract header from report with id {}!", report.getId());
+            logger.error("Could not extract header from report with id " + report.getId(), e);
         }
 
         return header;
@@ -151,15 +151,7 @@ public class CsvService {
     public Path getCountyFilePath(String dir, String type, String county) {
         Path path = Paths.get(dir).resolve(String.format("%s.csv", type));
         if (county != null) {
-            String filteredCounty = county.replace(" ", "-");
-            filteredCounty = filteredCounty.replace("/", "");
-            filteredCounty = filteredCounty.replace("\\", "");
-            filteredCounty = filteredCounty.replace("unknown-state", "");
-            filteredCounty = filteredCounty.replace("non-ga-resident", "non-georgia-resident");
-            filteredCounty = filteredCounty.replace("non-georgiaresident", "non-georgia-resident");
-            filteredCounty = filteredCounty.replace("non-garesidentunknownstate", "non-georgia-resident");
-            filteredCounty = filteredCounty.replace("dekalbg", "dekalb");
-
+            String filteredCounty = cleanCounty(county);
 
             path = getCountyDirPath(dir, filteredCounty).resolve(String.format("%s_%s.csv", type, filteredCounty));
         }
@@ -340,5 +332,18 @@ public class CsvService {
 
             row = new ArrayList<>();
         }
+    }
+
+    public static String cleanCounty(String originalCounty) {
+        String filteredCounty = originalCounty.toLowerCase().replace(" ", "-");
+        filteredCounty = filteredCounty.replace("/", "");
+        filteredCounty = filteredCounty.replace("\\", "");
+        filteredCounty = filteredCounty.replace("unknown-state", "");
+        filteredCounty = filteredCounty.replace("non-ga-resident", "non-georgia-resident");
+        filteredCounty = filteredCounty.replace("non-georgiaresident", "non-georgia-resident");
+        filteredCounty = filteredCounty.replace("non-garesidentunknownstate", "non-georgia-resident");
+        filteredCounty = filteredCounty.replace("dekalbg", "dekalb");
+
+        return filteredCounty;
     }
 }

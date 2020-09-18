@@ -34,6 +34,7 @@ public class Report implements Identifiable {
     private LocalDateTime createTime;
     private LocalDate reportDate;
     private Path filePath;
+    private Map<String, CountyOverview> countyOverviewMap;
     private Map<String, Epicurve> epicurves;
 
     @JsonDeserialize(contentAs = EpicurvePointImpl2.class)
@@ -71,8 +72,9 @@ public class Report implements Identifiable {
         this.deathsVm = deathsVm;
     }
 
-    public Report(LocalDateTime createTime, String id, LocalDate reportDate, Map<String, Epicurve> epicurves, int totalTests, int confirmedCases, int hospitalized,
-                  int deaths, int icu, int totalTestsVm, int confirmedCasesVm, int hospitalizedVm, int deathsVm, int icuVm) {
+    public Report(LocalDateTime createTime, String id, LocalDate reportDate, Map<String, Epicurve> epicurves, Map<String, CountyOverview> countyOverviewMap,
+                  int totalTests, int confirmedCases, int hospitalized,int deaths, int icu, int totalTestsVm, int confirmedCasesVm, int hospitalizedVm,
+                  int deathsVm, int icuVm) {
         this.createTime = createTime;
         this.id = id;
         this.reportDate = reportDate;
@@ -81,6 +83,7 @@ public class Report implements Identifiable {
         this.hospitalized = hospitalized;
         this.deaths = deaths;
         this.epicurves = epicurves;
+        this.countyOverviewMap = countyOverviewMap;
         this.icu = icu;
         this.totalTestsVm = totalTestsVm;
         this.confirmedCasesVm = confirmedCasesVm;

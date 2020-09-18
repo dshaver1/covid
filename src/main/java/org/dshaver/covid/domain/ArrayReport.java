@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.dshaver.covid.service.CsvService.cleanCounty;
+
 @Data
 @ToString(exclude = {"curveDates", "caseDeltas", "deathDeltas", "cases", "deaths", "caseProjections", "movingAvgs", "pcrTest", "pcrPos"})
 public class ArrayReport {
@@ -56,8 +58,8 @@ public class ArrayReport {
         this.reportDate = report.getReportDate();
         this.totalTests = report.getTotalTests();
         this.totalTestsVm = report.getTotalTestsVm();
-        this.totalConfirmedCases = report.getConfirmedCases();
-        this.totalDeaths = report.getDeaths();
+        this.totalConfirmedCases = getCountyPositive(report, county);
+        this.totalDeaths = getCountyDeath(report, county);
         this.confirmedCasesVm = report.getConfirmedCasesVm();
         this.hospitalized = report.getHospitalized();
         this.hospitalizedVm = report.getHospitalizedVm();
@@ -109,6 +111,32 @@ public class ArrayReport {
         }
 
         assertReport();
+    }
+
+    private Integer getCountyPositive(Report report, String county) {
+        String cleanCounty = cleanCounty(county);
+        CountyOverview countyOverview = report.getCountyOverviewMap().get(cleanCounty);
+
+        if (countyOverview == null && cleanCounty.equals("georgia")) {
+            return report.getConfirmedCases();
+        } else if (countyOverview != null) {
+            return countyOverview.getPositive();
+        } else {
+            return 0;
+        }
+    }
+
+    private Integer getCountyDeath(Report report, String county) {
+        String cleanCounty = cleanCounty(county);
+        CountyOverview countyOverview = report.getCountyOverviewMap().get(cleanCounty);
+
+        if (countyOverview == null && cleanCounty.equals("georgia")) {
+            return report.getDeaths();
+        } else if (countyOverview != null) {
+            return countyOverview.getDeaths();
+        } else {
+            return 0;
+        }
     }
 
     private LocalDate[] extractContiguousDates(Collection<EpicurvePoint> dataPoints, LocalDate reportDate) {

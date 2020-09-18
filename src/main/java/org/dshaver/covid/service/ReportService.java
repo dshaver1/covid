@@ -139,7 +139,7 @@ public class ReportService {
                 csvService.appendSummary(csvService.getCountyFilePath(reportTgtDir, "summary", county), county, report);
 
             } catch (Exception e) {
-                logger.error("Could not write csvs for county " + county);
+                logger.error("Could not write csvs for county " + county, e);
             }
         }
 
