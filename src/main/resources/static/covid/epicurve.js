@@ -962,6 +962,16 @@ function sumTimeSeries(data) {
     return Object.values(data).map(d => +d).filter(d => !isNaN(d)).reduce((d1,d2) => d1+d2)
 }
 
+function getCountyFromUrl(url) {
+    let selectedCounty = new URLSearchParams(url).get("county");
+
+    if (!selectedCounty) {
+        selectedCounty = "georgia";
+    }
+
+    return selectedCounty;
+}
+
 d3.selection.prototype.moveToFront = function () {
     return this.each(function () {
         this.parentNode.appendChild(this);
