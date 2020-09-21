@@ -158,7 +158,7 @@
         dphxScale.domain(getLastElement(chartData).map(function (d) {
             return d.label;
         }));
-        dphyScale.domain([-20, epicurve.getYScale(getLastElement(chartData))]);
+        dphyScale.domain([-20, epicurve.getYScaleMax(getLastElement(chartData))]);
         //drawAxisLines();
 
         // add DPH axis

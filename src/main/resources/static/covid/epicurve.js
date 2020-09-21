@@ -596,12 +596,27 @@ class Epicurve {
         }
     }
 
-    getYScale(data) {
+    getYScaleMax(data) {
         if (deltaEnabled) {
             return 300;
         }
 
         return 50 + d3.max(data, d => d.cases)
+    }
+
+    getYScaleMin(data) {
+        let minDelta = d3.min(data, d => d.casesDelta);
+        let maxDelta = d3.max(data, d => d.casesDelta);
+
+        if (minDelta > -10 && maxDelta < 100) {
+            return -10;
+        }
+
+        if (minDelta <= -10 || maxDelta >= 100) {
+            return -100
+        }
+
+        return -100;
     }
 
     createTooltips() {
