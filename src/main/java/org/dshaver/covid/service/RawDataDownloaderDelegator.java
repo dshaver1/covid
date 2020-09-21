@@ -34,7 +34,7 @@ public class RawDataDownloaderDelegator {
     }
 
     public RawData transform(File file) throws Exception {
-            return downloaderV2.transform(new FileInputStream(file), false);
+        return downloaderV2.transform(new FileInputStream(file), false);
     }
 
     public RawData download(Class<? extends RawData> rawDataClass) {
@@ -43,6 +43,10 @@ public class RawDataDownloaderDelegator {
         }
 
         return downloaderV1.download(downloadUrl1);
+    }
+
+    public RawData download(String url) {
+        return downloaderV2.download(url);
     }
 
     /**

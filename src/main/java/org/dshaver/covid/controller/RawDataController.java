@@ -6,10 +6,7 @@ import org.dshaver.covid.domain.BasicFile;
 import org.dshaver.covid.domain.DownloadResponse;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
-import org.dshaver.covid.service.FileRegistry;
-import org.dshaver.covid.service.RawDataFileRepository;
-import org.dshaver.covid.service.RawDataWriter;
-import org.dshaver.covid.service.ReportService;
+import org.dshaver.covid.service.*;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl1;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.slf4j.Logger;
@@ -45,6 +42,7 @@ public class RawDataController {
     private final ObjectMapper objectMapper;
     private final ReportService reportService;
     private final FileRegistry fileRegistry;
+    private final RawDataDownloaderDelegator rawDataDownloader;
 
     @Inject
     public RawDataController(RawDataWriter rawDataWriter,
@@ -53,7 +51,8 @@ public class RawDataController {
                              EpicurveExtractorImpl2 extractorImpl2,
                              ObjectMapper objectMapper,
                              ReportService reportService,
-                             FileRegistry fileRegistry) {
+                             FileRegistry fileRegistry,
+                             RawDataDownloaderDelegator rawDataDownloader) {
         this.rawDataWriter = rawDataWriter;
         this.fileRepository = fileRepository;
         this.extractorImpl1 = extractorImpl1;
@@ -61,12 +60,18 @@ public class RawDataController {
         this.objectMapper = objectMapper;
         this.reportService = reportService;
         this.fileRegistry = fileRegistry;
+        this.rawDataDownloader = rawDataDownloader;
     }
 
     @PostMapping("/covid/api/poll")
     public DownloadResponse checkForData(@RequestParam(name = "force", required = false) Boolean force) throws Exception {
         boolean defaultedForce = force == null ? false : force;
         return reportService.checkForData(defaultedForce);
+    }
+
+    @PostMapping("/covid/api/download")
+    public void downloadFromUrl(@RequestParam(name = "url", required = false) String url) throws Exception {
+        rawDataDownloader.download(url);
     }
 
     @PostMapping("/covid/api/reprocess")

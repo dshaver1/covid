@@ -60,10 +60,10 @@ public class ArrayReport {
         this.totalTestsVm = report.getTotalTestsVm();
         this.totalConfirmedCases = getCountyPositive(report, county);
         this.totalDeaths = getCountyDeath(report, county);
-        this.confirmedCasesVm = report.getConfirmedCasesVm();
+        this.confirmedCasesVm = getCountyCasesVm(report, county);
         this.hospitalized = report.getHospitalized();
         this.hospitalizedVm = report.getHospitalizedVm();
-        this.deathsVm = report.getDeathsVm();
+        this.deathsVm = getCountyDeathsVm(report, county);
         this.icu = report.getIcu();
         this.icuVm = report.getIcuVm();
 
@@ -126,6 +126,19 @@ public class ArrayReport {
         }
     }
 
+    private Integer getCountyCasesVm(Report report, String county) {
+        String cleanCounty = cleanCounty(county);
+        CountyOverview countyOverview = report.getCountyOverviewMap().get(cleanCounty);
+
+        if (countyOverview == null && cleanCounty.equals("georgia")) {
+            return report.getConfirmedCasesVm();
+        } else if (countyOverview != null) {
+            return countyOverview.getPositiveVm();
+        } else {
+            return 0;
+        }
+    }
+
     private Integer getCountyDeath(Report report, String county) {
         String cleanCounty = cleanCounty(county);
         CountyOverview countyOverview = report.getCountyOverviewMap().get(cleanCounty);
@@ -134,6 +147,19 @@ public class ArrayReport {
             return report.getDeaths();
         } else if (countyOverview != null) {
             return countyOverview.getDeaths();
+        } else {
+            return 0;
+        }
+    }
+
+    private Integer getCountyDeathsVm(Report report, String county) {
+        String cleanCounty = cleanCounty(county);
+        CountyOverview countyOverview = report.getCountyOverviewMap().get(cleanCounty);
+
+        if (countyOverview == null && cleanCounty.equals("georgia")) {
+            return report.getDeathsVm();
+        } else if (countyOverview != null) {
+            return countyOverview.getDeathsVm();
         } else {
             return 0;
         }

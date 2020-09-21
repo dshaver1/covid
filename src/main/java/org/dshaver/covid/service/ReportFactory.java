@@ -28,6 +28,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.dshaver.covid.service.CsvService.cleanCounty;
+
 /**
  * Created by xpdf64 on 2020-04-27.
  */
@@ -186,7 +188,20 @@ public class ReportFactory {
         }
 
         Map<String, CountyOverview> countyOverviews = new HashMap<>();
-        countyOverviewContainer.ifPresent(overviewContainer -> overviewContainer.getPayload().forEach(o -> countyOverviews.put(o.getCountyName().toLowerCase(), o)));
+        countyOverviewContainer.ifPresent(overviewContainer -> overviewContainer.getPayload().forEach(o -> {
+            String cleanCounty = cleanCounty(o.getCountyName());
+            CountyOverview previousCountyOverview = previousReport.getCountyOverviewMap().get(cleanCounty);
+            int positiveVm = 0;
+            int deathsVm = 0;
+            if (previousCountyOverview != null) {
+                positiveVm = o.getPositive() - (previousReport.getCountyOverviewMap().get(cleanCounty).getPositive());
+                deathsVm = o.getDeaths() - (previousReport.getCountyOverviewMap().get(cleanCounty).getDeaths());
+            }
+            o.setPositiveVm(positiveVm);
+            o.setDeathsVm(deathsVm);
+
+            countyOverviews.put(o.getCountyName().toLowerCase(), o);
+        }));
 
         ReportOverview overview = maybeOverview.get();
         Report report = new Report(LocalDateTime.now(),

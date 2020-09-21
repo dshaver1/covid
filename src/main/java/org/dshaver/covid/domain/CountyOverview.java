@@ -8,9 +8,11 @@ public class CountyOverview {
     @JsonProperty("county_name")
     private String countyName;
     private Integer positive;
+    private Integer positiveVm;
     private Integer population;
     private Integer hospitalization;
     private Integer deaths;
+    private Integer deathsVm;
     private Double rate;
     @JsonProperty("death_rate")
     private Double deathRate;
