@@ -987,6 +987,10 @@ function getCountyFromUrl(url) {
     return selectedCounty;
 }
 
+function constructCountyUrl(type, county) {
+    return "reports/v2/csv/" + county + "/" + type + "_" + county + ".csv"
+}
+
 d3.selection.prototype.moveToFront = function () {
     return this.each(function () {
         this.parentNode.appendChild(this);

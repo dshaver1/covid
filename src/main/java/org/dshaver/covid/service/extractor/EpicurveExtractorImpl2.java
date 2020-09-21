@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.dshaver.covid.service.CsvService.cleanCounty;
+
 @Component
 public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extractor<EpicurvePointImpl2, Map<String, Epicurve>> {
     private static final Logger logger = LoggerFactory.getLogger(EpicurveExtractorImpl2.class);
@@ -53,6 +55,7 @@ public class EpicurveExtractorImpl2 extends AbstractExtractor implements Extract
                 LocalDate labelDate = LocalDate.parse(current.getTestDate(), DateTimeFormatter.ISO_DATE);
                 // Next iterate over the points and filter/decorate as needed.
                 if (labelDate.isAfter(EARLIEST_DATE) && countyService.isCountyEnabled(current.getCounty())) {
+                    current.setCounty(cleanCounty(current.getCounty()));
                     current.setSource(id);
                     current.setLabel(labelDate.format(DateTimeFormatter.ISO_DATE).toUpperCase());
                     current.setLabelDate(labelDate);

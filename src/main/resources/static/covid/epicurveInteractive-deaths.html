@@ -65,6 +65,29 @@
     <div id="graphContent"></div>
     
     <footer id="footer-wrap">
+        <div class="row">
+            <div class="col-sm-5"></div>
+            <div class="col-sm-3" style="text-align: left">
+                <ul>
+                    <li>
+                        <a id="deathsDownloadLink" href="#">Deaths Per Day</a>
+                    </li>
+                    <li>
+                        <a id="casesDownloadLink" href="#">Cases Per Day</a>
+                    </li>
+                    <li>
+                        <a id="caseDeltasDownloadLink" href="#">Case Deltas Per Day</a>
+                    </li>
+                    <li>
+                        <a id="movingAvgDownloadLink" href="#">Case Moving Averages</a>
+                    </li>
+                    <li>
+                        <a id="summaryDownloadLink" href="#">Summary Data</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-5"></div>
+        </div>
         <div class="inner" style="text-align: center">
             <p>All COVID-19 data sourced from
                 <a href="https://ga-covid19.ondemand.sas.com/">https://ga-covid19.ondemand.sas.com/</a>
@@ -89,6 +112,12 @@
 <script>
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
+        let selectedCounty = getCountyFromUrl(window.location.search);
+        document.getElementById("deathsDownloadLink").href = constructCountyUrl("deaths", selectedCounty);
+        document.getElementById("casesDownloadLink").href = constructCountyUrl("cases", selectedCounty);
+        document.getElementById("caseDeltasDownloadLink").href = constructCountyUrl("caseDeltas", selectedCounty);
+        document.getElementById("movingAvgDownloadLink").href = constructCountyUrl("movingAvgs", selectedCounty);
+        document.getElementById("summaryDownloadLink").href = constructCountyUrl("summary", selectedCounty);
     });
 </script>
 <script>
