@@ -57,7 +57,10 @@ public interface FileRepository<T extends Identifiable> {
 
     default T readFile(Path path) {
         try {
-            return getObjectMapper().readValue(path.toFile(), getClazz());
+            T entity = getObjectMapper().readValue(path.toFile(), getClazz());
+            entity.setFilePath(path);
+
+            return entity;
         } catch (IOException e) {
             getLogger().error("Error parsing raw data from disk! " + path, e);
         }
@@ -65,8 +68,14 @@ public interface FileRepository<T extends Identifiable> {
         return null;
     }
 
-    default Stream<Path> streamAllPaths() throws IOException {
-        return Files.list(getPath());
+    default Stream<Path> streamAllPaths() {
+        try {
+            return Files.list(getPath());
+        } catch (IOException e) {
+            getLogger().error("Error getting path stream for " + getClazz(), e);
+        }
+
+        return Stream.empty();
     }
 
     /**

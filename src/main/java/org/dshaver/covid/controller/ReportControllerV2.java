@@ -1,14 +1,11 @@
 package org.dshaver.covid.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.dshaver.covid.dao.HistogramReportRepository;
-import org.dshaver.covid.dao.ManualRawDataRepository;
-import org.dshaver.covid.dao.RawDataRepositoryV2;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.ArrayReport;
+import org.dshaver.covid.domain.HistogramReport;
 import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.service.CsvService;
-import org.dshaver.covid.service.ReportService;
+import org.dshaver.covid.service.HistogramReportFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,31 +28,19 @@ public class ReportControllerV2 {
     private static final Logger logger = LoggerFactory.getLogger(ReportControllerV2.class);
     private static final int DEFAULT_TARGET_HOUR = 18;
     private final ReportRepository reportRepository;
-    private final RawDataRepositoryV2 rawDataRepository;
-    private final ManualRawDataRepository manualRawDataRepository;
-    private final HistogramReportRepository histogramReportDao;
-    private final ReportService reportService;
-    private final ObjectMapper objectMapper;
     private final String reportTgtDir;
     private final CsvService csvService;
+    private final HistogramReportFactory histogramReportFactory;
 
     @Inject
     public ReportControllerV2(ReportRepository reportRepository,
-                              RawDataRepositoryV2 rawDataRepository,
-                              ManualRawDataRepository manualRawDataRepository,
-                              HistogramReportRepository histogramReportDao,
-                              ReportService reportService,
-                              ObjectMapper objectMapper,
                               @Value("${covid.dirs.reports.csv}") String reportTgtDir,
-                              CsvService csvService) {
+                              CsvService csvService,
+                              HistogramReportFactory histogramReportFactory) {
         this.reportRepository = reportRepository;
-        this.rawDataRepository = rawDataRepository;
-        this.manualRawDataRepository = manualRawDataRepository;
-        this.histogramReportDao = histogramReportDao;
-        this.reportService = reportService;
-        this.objectMapper = objectMapper;
         this.reportTgtDir = reportTgtDir;
         this.csvService = csvService;
+        this.histogramReportFactory = histogramReportFactory;
     }
 
     @GetMapping(value = "/covid/api/reports/v2/{file}.csv", produces = "text/csv")
@@ -133,5 +118,18 @@ public class ReportControllerV2 {
         reports.addAll(reportRepository.findAll().collect(Collectors.toList()));
 
         return new ArrayReport(reports.last());
+    }
+
+    @PostMapping("/covid/api/reports/histogram/calculate")
+    public void downloadFromUrl(@RequestParam(name = "startDate", required = false)
+                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                                 @RequestParam(name = "endDate", required = false)
+                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                                 @RequestParam(name = "windowSize", required = false) Integer windowSize) throws Exception {
+        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate;
+        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate;
+        Integer defaultedWindowSize = windowSize == null ? 7 : windowSize;
+
+        histogramReportFactory.createAllHistogramReports(defaultedStartDate, defaultedEndDate, defaultedWindowSize);
     }
 }

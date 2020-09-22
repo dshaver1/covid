@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.dshaver.covid.domain.epicurve.EpicurvePointImpl2;
@@ -25,7 +28,7 @@ import java.util.Map;
 @JsonPropertyOrder(value = {"id", "createTime", "reportDate", "totalTests", "totalTestsVm", "confirmedCases",
         "confirmedCasesVm", "deaths", "deathsVm", "hospitalized", "hospitalizedVm", "icu", "icuVm",
         "top5CaseDeltas", "top5DeathDeltas", "georgiaEpicurve"})
-public class Report implements Identifiable {
+public class Report implements Identifiable, Comparable<Report> {
     public static final String GEORGIA = "georgia";
     private static final Logger logger = LoggerFactory.getLogger(Report.class);
     private static final String dataFolder = "H:\\dev\\covid\\data\\";
@@ -109,5 +112,32 @@ public class Report implements Identifiable {
 
     public void setEpicurves(Map<String, Epicurve> epicurves) {
         this.epicurves = epicurves;
+    }
+
+    @Override
+    public int compareTo(Report o) {
+        return this.getId().compareTo(o.getId());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Report report = (Report) o;
+
+        return new EqualsBuilder()
+                .append(id, report.id)
+                .append(reportDate, report.reportDate)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(reportDate)
+                .toHashCode();
     }
 }

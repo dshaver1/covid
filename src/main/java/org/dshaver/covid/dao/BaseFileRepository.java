@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -132,19 +133,15 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
         Optional<Path> regFile = fileRegistry.getPath(getClazz(), reportDate);
         Optional<T> entity = Optional.empty();
 
-        try {
-            if (regFile.isPresent()) {
-                // Cache hit! Read file directly without searching.
-                entity = Optional.ofNullable(readFile(regFile.get()));
-            } else {
-                // Cache miss. Look on disk.
-                return streamAllPaths()
-                        .filter(path -> Objects.equals(getReportDateFromFilename(path), reportDate))
-                        .map(this::readFile)
-                        .findFirst();
-            }
-        } catch (IOException e) {
-            logger.error("Error listing " + getClazz() + " files in " + getPath(), e);
+        if (regFile.isPresent()) {
+            // Cache hit! Read file directly without searching.
+            entity = Optional.ofNullable(readFile(regFile.get()));
+        } else {
+            // Cache miss. Look on disk.
+            return streamAllPaths()
+                    .filter(path -> Objects.equals(getReportDateFromFilename(path), reportDate))
+                    .map(this::readFile)
+                    .findFirst();
         }
 
         return entity;
@@ -167,7 +164,13 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
 
     @Override
     public Stream<T> findByReportDateBetweenOrderByIdAsc(LocalDate startDate, LocalDate endDate) {
-        return Stream.empty();
+        return streamAllPaths()
+                .filter(path -> {
+                    LocalDate reportDate = getReportDateFromFilename(path.getFileName());
+                    return !(reportDate.isBefore(startDate) || reportDate.isAfter(endDate));
+                })
+                .map(this::readFile)
+                .sorted(Comparator.comparing(Identifiable::getId));
     }
 
     @Override
@@ -198,17 +201,7 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
     private Stream<T> streamAll() throws IOException {
         logger.info("Retrieving all {} entities...", getClazz());
         return streamAllPaths()
-                .map(path -> {
-                    try {
-                        T entity = objectMapper.readValue(path.toFile(), getClazz());
-                        entity.setFilePath(path);
-
-                        return objectMapper.readValue(path.toFile(), getClazz());
-                    } catch (Exception e) {
-                        logger.error("Error reading " + getClazz() + " files in " + getPath(), e);
-                    }
-                    return null;
-                })
+                .map(this::readFile)
                 .filter(Objects::nonNull);
     }
 
