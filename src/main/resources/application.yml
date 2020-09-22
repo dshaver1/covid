@@ -178,6 +178,7 @@ covid:
       root: /mnt/data/reports/
       csv: /mnt/data/reports/v2/csv/
       json: /mnt/data/reports/v2/json/
+      histogram: /mnt/data/reports/v2/histogram
     raw:
       v0: /mnt/data/raw/v0
       v1: /mnt/data/raw/v1
@@ -190,7 +191,6 @@ covid:
       overview.v1: /mnt/data/filteredjson/overview/v1
       testingstats.v1: /mnt/data/filteredjson/testingstats/v1
       countyOverview.v1: /mnt/data/filteredjson/countyoverview/v1
-    histogram: /mnt/data/histogram
 server.port: 8080
 logging.file.path: /mnt/data/covid/logs/
 
@@ -204,6 +204,7 @@ covid:
       root: H:\dev\workingdir\covid\reports
       csv: H:\dev\workingdir\covid\reports\csv
       json: H:\dev\workingdir\covid\reports\json
+      histogram: H:\dev\workingdir\covid\reports\histogram
     raw:
       v0: H:\dev\workingdir\covid\raw\v0
       v1: H:\dev\workingdir\covid\raw\v1
@@ -216,6 +217,5 @@ covid:
       overview.v1: H:\dev\workingdir\covid\filtered\overview\v1
       testingstats.v1: H:\dev\workingdir\covid\filtered\testingstats\v1
       countyOverview.v1: H:\dev\workingdir\covid\filtered\countyoverview\v1
-    histogram: H:\dev\workingdir\covid\histogram
 server.port: 8080
 logging.file.path: H:\dev\covid\logs\

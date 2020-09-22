@@ -19,7 +19,7 @@ public class HistogramReportRepository extends BaseFileRepository<HistogramRepor
     public final FileRegistry fileRegistry;
 
     @Inject
-    public HistogramReportRepository(@Value("${covid.dirs.histogram}") String histogramPath,
+    public HistogramReportRepository(@Value("${covid.dirs.reports.histogram}") String histogramPath,
                                      FileRegistry fileRegistry,
                                      ObjectMapper objectMapper) {
         super(objectMapper, fileRegistry, Paths.get(histogramPath));
