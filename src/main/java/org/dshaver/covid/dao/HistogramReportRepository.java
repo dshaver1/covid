@@ -1,7 +1,7 @@
 package org.dshaver.covid.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.dshaver.covid.domain.HistogramReport;
+import org.dshaver.covid.domain.HistogramReportContainer;
 import org.dshaver.covid.service.FileRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class HistogramReportRepository extends BaseFileRepository<HistogramReport> {
-    private static final Logger logger = LoggerFactory.getLogger(HistogramReport.class);
+public class HistogramReportRepository extends BaseFileRepository<HistogramReportContainer> {
+    private static final Logger logger = LoggerFactory.getLogger(HistogramReportRepository.class);
     public final FileRegistry fileRegistry;
 
     @Inject
@@ -26,17 +26,17 @@ public class HistogramReportRepository extends BaseFileRepository<HistogramRepor
         this.fileRegistry = fileRegistry;
     }
 
-    public List<HistogramReport> findAllByOrderByIdDesc() {
+    public List<HistogramReportContainer> findAllByOrderByIdDesc() {
         return new ArrayList<>();
     }
 
     @Override
-    public String createFilename(HistogramReport report) {
-        return String.format("histogram_%s.json", reportDateFormatter.format(report.getReportDate()));
+    public String createFilename(HistogramReportContainer report) {
+        return String.format("HISTOGRAM_%s.json", reportDateFormatter.format(report.getReportDate()));
     }
 
     @Override
-    public Class<HistogramReport> getClazz() {
-        return HistogramReport.class;
+    public Class<HistogramReportContainer> getClazz() {
+        return HistogramReportContainer.class;
     }
 }

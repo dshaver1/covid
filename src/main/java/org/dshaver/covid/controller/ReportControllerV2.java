@@ -2,7 +2,6 @@ package org.dshaver.covid.controller;
 
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.ArrayReport;
-import org.dshaver.covid.domain.HistogramReport;
 import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.service.CsvService;
 import org.dshaver.covid.service.HistogramReportFactory;

@@ -1,6 +1,6 @@
 package org.dshaver.covid.service;
 
-import org.dshaver.covid.domain.HistogramReport;
+import org.dshaver.covid.domain.HistogramReportV2;
 import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 
@@ -14,12 +14,12 @@ import java.util.Map;
 public class EpicurveExtrapolator {
     private static final BigDecimal HUNDREDTH = BigDecimal.valueOf(0.01D);
 
-    public static Report extrapolateCases(Report report, HistogramReport histogramReport) {
+    public static Report extrapolateCases(Report report, HistogramReportV2 histogramReport) {
         if (histogramReport == null) {
             return report;
         }
 
-        EpicurvePoint[] epicurveArray = report.getGeorgiaEpicurve().getData().toArray(new EpicurvePoint[0]);
+/*        EpicurvePoint[] epicurveArray = report.getGeorgiaEpicurve().getData().toArray(new EpicurvePoint[0]);
         Map<Integer, BigDecimal> casesPercentageCumulative = histogramReport.getCasesPercentageCumulative();
         for (int idx = 0; idx < epicurveArray.length; idx++) {
             // What is the percentage of adds that occur on the given date?
@@ -31,7 +31,7 @@ public class EpicurveExtrapolator {
             BigDecimal divided = currentHist.compareTo(BigDecimal.ZERO) == 0 || currentPointPositiveCount.compareTo(BigDecimal.ZERO) == 0 ? currentPointPositiveCount : currentPointPositiveCount.divide(currentHist, RoundingMode.HALF_DOWN);
             currentPoint.setCasesExtrapolated(divided.intValue());
             currentPoint.setMedianCaseDelta(histogramReport.getCasesMedianHist().get(reverseIdx));
-        }
+        }*/
 
         return report;
     }

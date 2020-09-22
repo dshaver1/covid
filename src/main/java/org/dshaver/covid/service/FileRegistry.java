@@ -65,7 +65,7 @@ public class FileRegistry {
     /**
      * Save new index to disk if the index in memory has been updated more recently than the one on disk.
      */
-    @Scheduled(cron = "0 30 * * * *")
+    //@Scheduled(cron = "0 30 * * * *")
     public void checkAndSaveIndex() {
         logger.info("Saving index...");
         Optional<MultiFileIndex> diskIndex = readIndex();
