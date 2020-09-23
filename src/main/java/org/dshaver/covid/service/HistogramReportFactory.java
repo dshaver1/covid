@@ -11,6 +11,7 @@ import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -29,16 +30,24 @@ import static org.dshaver.covid.domain.HistogramReportV2.HIST_SIZE;
 
 @Service
 public class HistogramReportFactory {
+    public static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
     public static final MathContext DECIMALS_2 = new MathContext(2);
     private static final Logger logger = LoggerFactory.getLogger(HistogramReportFactory.class);
     public final HistogramReportRepository histogramReportRepository;
     public final ReportRepository reportRepository;
+    private final int defaultWindowLength;
 
     @Inject
     public HistogramReportFactory(HistogramReportRepository histogramReportRepository,
-                                  ReportRepository reportRepository) {
+                                  ReportRepository reportRepository,
+                                  @Value("${covid.histogram.window.size}") int defaultWindowLength) {
         this.histogramReportRepository = histogramReportRepository;
         this.reportRepository = reportRepository;
+        this.defaultWindowLength = defaultWindowLength;
+    }
+
+    public void createAllHistogramReports(LocalDate startDate, LocalDate endDate) {
+        createAllHistogramReports(startDate, endDate, defaultWindowLength);
     }
 
     public void createAllHistogramReports(LocalDate startDate, LocalDate endDate, Integer windowLength) {
@@ -46,19 +55,27 @@ public class HistogramReportFactory {
 
         // Initial report set
         List<Report> reports = reportRepository.findByReportDateBetweenOrderByIdAsc(startDate, currentDate).collect(Collectors.toList());
-
         do {
-            logger.info("Calculating histogram report for end date {} with window size {}", currentDate, windowLength);
+            if (!reports.isEmpty() && reports.size() == windowLength) {
+                logger.info("Calculating histogram report for end date {} with window size {}", currentDate, windowLength);
 
-            createHistogramReport(reports, currentDate);
+                createHistogramReport(reports, currentDate);
+            } else {
+                logger.info("Was going to calculate histogram for {} but didn't find enough reports! Expected {} but only found {}", currentDate, windowLength, reports.size());
+            }
 
             // Reset for next window
             currentDate = currentDate.plusDays(1);
             if (currentDate.isAfter(endDate)) {
                 break;
             }
-            reports.remove(0);
-            reports.add(reportRepository.findByReportDate(currentDate).get());
+
+            Optional<Report> nextReport = reportRepository.findByReportDate(currentDate);
+            nextReport.ifPresent(reports::add);
+
+            if (reports.size() > windowLength) {
+                reports.remove(0);
+            }
         } while (!currentDate.equals(endDate));
     }
 
@@ -104,7 +121,7 @@ public class HistogramReportFactory {
         Multimap<Integer, Integer> deathDeltaMultimap = ArrayListMultimap.create();
 
         // Calculate basic case and death histogram.
-        reports.stream().map(Report::getEpicurves).map(map -> map.get(county)).forEach(epicurve -> {
+        reports.stream().map(Report::getEpicurves).map(map -> map.get(county)).filter(Objects::nonNull).forEach(epicurve -> {
             Integer[] reversedCaseDeltas = getReversedValues(epicurve, EpicurvePoint::getCasesVm);
             Integer[] reversedDeathDeltas = getReversedValues(epicurve, EpicurvePoint::getDeathsVm);
             for (int i = 0; i < HIST_SIZE; i++) {
@@ -134,19 +151,28 @@ public class HistogramReportFactory {
             reportV2.getDeathsPercentageHist()[i] = Double.isNaN(deathPercent) || Double.isInfinite(deathPercent) ? BigDecimal.ZERO : BigDecimal.valueOf(deathPercent).round(DECIMALS_2);
 
             // Calculate cumulative percentage histograms
-            reportV2.getCasesPercentageCumulative()[i] = Arrays.stream(reportV2.getCasesPercentageHist()).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
-            reportV2.getDeathsPercentageCumulative()[i] = Arrays.stream(reportV2.getDeathsPercentageHist()).reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
+            reportV2.getCasesPercentageCumulative()[i] = Arrays.stream(reportV2.getCasesPercentageHist()).reduce(BigDecimal::add).orElse(BigDecimal.ZERO).min(ONE_HUNDRED);
+            reportV2.getDeathsPercentageCumulative()[i] = Arrays.stream(reportV2.getDeathsPercentageHist()).reduce(BigDecimal::add).orElse(BigDecimal.ZERO).min(ONE_HUNDRED);
         }
 
         return reportV2;
     }
 
     private Integer[] getReversedValues(Epicurve epicurve, Function<EpicurvePoint, Integer> valueFunction) {
-        return epicurve.getData().stream()
+        Integer[] values = epicurve.getData().stream()
                 .sorted(Comparator.comparing(EpicurvePoint::getLabelDate).reversed())
-                .map(valueFunction::apply)
+                .map(o -> {
+                    Integer raw = valueFunction.apply(o);
+                    return raw == null ? 0 : raw;
+                })
                 .map(Math::abs)
                 .limit(HIST_SIZE)
                 .collect(Collectors.toList()).toArray(new Integer[HIST_SIZE]);
+
+        for (int i = 0; i < HIST_SIZE; i++) {
+            values[i] = values[i] == null ? 0 : values[i];
+        }
+
+        return values;
     }
 }

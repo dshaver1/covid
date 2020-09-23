@@ -3,16 +3,12 @@ package org.dshaver.covid.domain;
 import com.google.common.base.Preconditions;
 import lombok.Data;
 import lombok.ToString;
-import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.dshaver.covid.service.CsvService.cleanCounty;

@@ -36,6 +36,8 @@
                             <a class="nav-link" href="epicurveInteractive-correlation.html" data-toggle="tooltip" data-placement="bottom"
                                title="Visualize the correlation between cases and deaths">Case/Death Correlation
                             </a>
+                            <a class="nav-link" href="epicurveInteractive-reportingLag.html" data-toggle="tooltip" data-placement="bottom"
+                               title="Visualize how reporting lag has shifted over time">Reporting Lag</a>
                         </div>
                     </div>
                 </nav>
@@ -283,7 +285,7 @@
     }
 
     function updateAllGraphs(dateString) {
-        let offsetDate = epicurve.applyDateOffset(dateString, 13);
+        let offsetDate = applyDateOffset(dateString, 13);
 
         epicurve.updateFloatingPoints(chartData[dateString], getLabel, getReportedCases, "reportedcasesbar", "#2b5280");
         epicurve.updateBarChart(chartData[dateString], getLabel, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");

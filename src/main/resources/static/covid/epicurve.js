@@ -44,6 +44,7 @@ class Epicurve {
     }
 
     updateBarChart(data, xCallback, yCallback, clazz, color, highlightColor) {
+        //var selectedData = this.svg.selectAll("." + clazz).data([data], d => xCallback(d));
         let selectedData = this.svg.selectAll("." + clazz).data(data);
         let enterData = selectedData.enter();
 
@@ -56,7 +57,8 @@ class Epicurve {
             .attr("width", this.xScale.bandwidth())
             .style("fill", d => yCallback(d) > 0 ? color : highlightColor);
 
-        selectedData.transition().duration(100)
+        selectedData.merge(selectedData).transition().duration(100)
+            .attr("x", d => this.xScale(xCallback(d)))
             .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
             .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)))
             .style("fill", d => yCallback(d) > 0 ? color : highlightColor);
@@ -138,6 +140,55 @@ class Epicurve {
         this.svg.selectAll("line").moveToFront();
         this.svg.selectAll('.' + circleClass).moveToFront();
         this.svg.selectAll('.mouseoverclazz').moveToFront();
+    }
+
+    updateCurvedLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, yScale) {
+        let dYScale = yScale ? yScale : this.yScale;
+
+        var selectedData = this.svg.selectAll("." + clazz).data([data], d => xCallback(d));
+
+        // Draw initial line
+        selectedData.enter()
+            .append("path")
+            .attr("class", clazz)
+            .attr("d", d3.line()
+                .curve(d3.curveCardinal)
+                .x(d => this.getLineX(xCallback(d), isBanded))
+                .y(d => this.getLineY(yCallback(d), dYScale)))
+                // Don't draw the line if it's in the preliminary region.
+                //.defined(d => this.isPointDefined(yCallback, d, prelimRegionStart)))
+            .attr("fill", "none")
+            .attr("stroke", color)
+            .attr("stroke-width", 2);
+
+        // Update line
+        selectedData
+            .merge(selectedData)
+            .transition()
+            .duration(100)
+            .attr("d", d3.line()
+                .curve(d3.curveCardinal)
+                .x(d => this.getLineX(xCallback(d), isBanded))
+                .y(d => this.getLineY(yCallback(d), dYScale)));
+
+        this.svg.selectAll("." + clazz).moveToFront();
+        this.svg.selectAll("line").moveToFront();
+        this.svg.selectAll('.mouseoverclazz').moveToFront();
+    }
+
+    updateXAxis(data) {
+        this.xScale.domain(data.map(function (d) {
+            return d.label;
+        }));
+        let selectedAxis = this.svg.select(".x.axis");
+
+        selectedAxis.transition().duration(100).call(this.xAxis);
+        selectedAxis.exit().transition().duration(100).style("opacity", 0).remove();
+    }
+
+    updateYAxis(data) {
+        this.yScale.domain([this.getYScaleMin(data), this.getYScaleMax(data)]);
+        this.svg.select(".y.axis").transition().duration(100).call(this.yAxis);
     }
 
     updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
@@ -368,30 +419,6 @@ class Epicurve {
             .attr("y", d => this.xScale(d.date) + this.xScale.bandwidth());
     }
 
-    applyDateOffset(date, offset) {
-        let dateObj = this.convertDate(date);
-        dateObj.setDate(dateObj.getDate() - offset);
-        return this.getFormattedDate(dateObj);
-    }
-
-    getFormattedDate(date) {
-        let year = date.getFullYear();
-        let month = (1 + date.getMonth()).toString().padStart(2, '0');
-        let day = date.getDate().toString().padStart(2, '0');
-
-        return year + '-' + month + '-' + day;
-    }
-
-    /**
-     * Convert a date string in 2020-10-10T101300 format into a Date() object.
-     */
-    convertDate(dateString) {
-        let filteredDateString = dateString.slice(0, 15) + ":" + dateString.slice(15 + Math.abs(0))
-        filteredDateString = filteredDateString.slice(0, 13) + ":" + filteredDateString.slice(13 + Math.abs(0));
-        filteredDateString = filteredDateString.replace("T", " ");
-        return new Date(filteredDateString);
-    }
-
     /**
      * Parses the provided incoming csv files into a more useable JSON document, indexed by report ID (ex: 2020-05-27T09:00:03)
      *
@@ -602,6 +629,10 @@ class Epicurve {
         }
 
         return 50 + d3.max(data, d => d.cases)
+    }
+
+    getYScaleMaxLag(data) {
+        return d3.sum(data, d => d.casesDelta)
     }
 
     getYScaleMin(data) {
@@ -921,8 +952,12 @@ function createSlider(data) {
 }
 
 function getLastElement(data) {
+    return getOffsetElement(data, 1)
+}
+
+function getOffsetElement(data, offset) {
     let keySet = Object.keys(data);
-    return data[keySet[keySet.length - 1]];
+    return data[keySet[keySet.length - offset]];
 }
 
 /**
@@ -989,6 +1024,30 @@ function getCountyFromUrl(url) {
 
 function constructCountyUrl(type, county) {
     return "reports/v2/csv/" + county + "/" + type + "_" + county + ".csv"
+}
+
+/**
+ * Convert a date string in 2020-10-10T101300 format into a Date() object.
+ */
+function convertDate(dateString) {
+    let filteredDateString = dateString.slice(0, 15) + ":" + dateString.slice(15 + Math.abs(0))
+    filteredDateString = filteredDateString.slice(0, 13) + ":" + filteredDateString.slice(13 + Math.abs(0));
+    filteredDateString = filteredDateString.replace("T", " ");
+    return new Date(filteredDateString);
+}
+
+function applyDateOffset(date, offset) {
+    let dateObj = convertDate(date);
+    dateObj.setDate(dateObj.getDate() - offset);
+    return getFormattedDate(dateObj);
+}
+
+function getFormattedDate(date) {
+    let year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+
+    return year + '-' + month + '-' + day;
 }
 
 d3.selection.prototype.moveToFront = function () {

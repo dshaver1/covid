@@ -5,6 +5,7 @@ import org.dshaver.covid.domain.ArrayReport;
 import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.service.CsvService;
 import org.dshaver.covid.service.HistogramReportFactory;
+import org.dshaver.covid.service.ReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,16 +31,19 @@ public class ReportControllerV2 {
     private final String reportTgtDir;
     private final CsvService csvService;
     private final HistogramReportFactory histogramReportFactory;
+    private final ReportService reportService;
 
     @Inject
     public ReportControllerV2(ReportRepository reportRepository,
                               @Value("${covid.dirs.reports.csv}") String reportTgtDir,
                               CsvService csvService,
-                              HistogramReportFactory histogramReportFactory) {
+                              HistogramReportFactory histogramReportFactory,
+                              ReportService reportService) {
         this.reportRepository = reportRepository;
         this.reportTgtDir = reportTgtDir;
         this.csvService = csvService;
         this.histogramReportFactory = histogramReportFactory;
+        this.reportService = reportService;
     }
 
     @GetMapping(value = "/covid/api/reports/v2/{file}.csv", produces = "text/csv")
@@ -120,15 +124,25 @@ public class ReportControllerV2 {
     }
 
     @PostMapping("/covid/api/reports/histogram/calculate")
-    public void downloadFromUrl(@RequestParam(name = "startDate", required = false)
-                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-                                                 @RequestParam(name = "endDate", required = false)
-                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                                                 @RequestParam(name = "windowSize", required = false) Integer windowSize) throws Exception {
+    public void calculateHistogram(@RequestParam(name = "startDate", required = false)
+                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                   @RequestParam(name = "endDate", required = false)
+                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                   @RequestParam(name = "windowSize", required = false) Integer windowSize) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate;
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate;
         Integer defaultedWindowSize = windowSize == null ? 7 : windowSize;
 
-        histogramReportFactory.createAllHistogramReports(defaultedStartDate, defaultedEndDate, defaultedWindowSize);
+        reportService.processHistogramRange(defaultedStartDate, defaultedEndDate, defaultedWindowSize);
+    }
+
+    @PostMapping("/covid/api/reports/histogram/csvs")
+    public void generateHistogramCsvs(@RequestParam(name = "startDate", required = false)
+                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                      @RequestParam(name = "endDate", required = false)
+                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
+        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate;
+        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate;
+        reportService.createHistogramCsvs(defaultedStartDate, defaultedEndDate);
     }
 }

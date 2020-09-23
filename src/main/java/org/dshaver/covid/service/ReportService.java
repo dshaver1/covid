@@ -14,8 +14,9 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -29,12 +30,12 @@ public class ReportService {
     private final RawDataRepositoryV0 rawDataRepositoryV0;
     private final RawDataRepositoryV1 rawDataRepositoryV1;
     private final RawDataRepositoryV2 rawDataRepositoryV2;
-    private final RawDataFileRepository rawDataFileRepository;
     private final RawDataDownloaderDelegator rawDataDownloader;
     private final ReportFactory reportFactory;
     private final ReportRepository reportRepository;
     private final IntermediaryDataService intermediaryDataService;
     private final HistogramReportRepository histogramReportDao;
+    private final HistogramReportFactory histogramReportFactory;
     private final CsvService csvService;
     private final String reportTgtDir;
     private final FileRegistry fileRegistry;
@@ -43,26 +44,26 @@ public class ReportService {
     @Inject
     public ReportService(RawDataRepositoryV0 rawDataRepositoryV0,
                          RawDataRepositoryV1 rawDataRepositoryV1,
-                         RawDataFileRepository rawDataFileRepository,
                          ReportFactory reportFactory,
                          RawDataRepositoryV2 rawDataRepositoryV2,
                          RawDataDownloaderDelegator rawDataDownloader,
                          ReportRepository reportRepository,
                          IntermediaryDataService intermediaryDataService,
                          HistogramReportRepository histogramReportDao,
+                         HistogramReportFactory histogramReportFactory,
                          CsvService csvService,
                          @Value("${covid.dirs.reports.csv}") String reportTgtDir,
                          FileRegistry fileRegistry,
                          @Qualifier("singleTaskExecutor") TaskExecutor taskExecutor) {
         this.rawDataRepositoryV0 = rawDataRepositoryV0;
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
-        this.rawDataFileRepository = rawDataFileRepository;
         this.reportFactory = reportFactory;
         this.rawDataRepositoryV2 = rawDataRepositoryV2;
         this.rawDataDownloader = rawDataDownloader;
         this.reportRepository = reportRepository;
         this.intermediaryDataService = intermediaryDataService;
         this.histogramReportDao = histogramReportDao;
+        this.histogramReportFactory = histogramReportFactory;
         this.csvService = csvService;
         this.reportTgtDir = reportTgtDir;
         this.fileRegistry = fileRegistry;
@@ -99,6 +100,9 @@ public class ReportService {
             response.setNewLatestId(data.getId());
             response.setFoundNew(true);
             process(data, true);
+
+            // Ensure index is up to date
+            fileRegistry.checkAndSaveIndex();
         } else {
             logger.info("No new data found! Latest id: {}", diskLatestId.get());
         }
@@ -118,6 +122,27 @@ public class ReportService {
                 .filter(rawData -> !rawData.getReportDate().isAfter(endDate))
                 .filter(rawData -> !rawData.getReportDate().isBefore(startDate))
                 .forEach(data -> process(data, saveIntermediate));
+
+        // Ensure index is up to date
+        fileRegistry.checkAndSaveIndex();
+
+        processHistogramRange(startDate, endDate);
+    }
+
+    public void processHistogramRange(LocalDate startDate, LocalDate endDate) {
+        histogramReportFactory.createAllHistogramReports(startDate, endDate);
+        createHistogramCsvs(startDate, endDate);
+    }
+
+    public void processHistogramRange(LocalDate startDate, LocalDate endDate, Integer windowSize) {
+        histogramReportFactory.createAllHistogramReports(startDate, endDate, windowSize);
+        createHistogramCsvs(startDate, endDate);
+    }
+
+    public void createHistogramCsvs(LocalDate startDate, LocalDate endDate) {
+        histogramReportDao.findByReportDateBetweenOrderByIdAsc(startDate, endDate)
+                .sorted(Comparator.comparing(HistogramReportContainer::getReportDate))
+                .forEachOrdered(this::appendHistogramCsvs);
     }
 
     public void appendCsvs(Report report) {
@@ -142,27 +167,22 @@ public class ReportService {
                 logger.error("Could not write csvs for county " + county, e);
             }
         }
-
-        //logger.info("Updating all csv headers for report date {}.", report.getReportDate());
-        //updateAllHeaders(report, header);
     }
 
-/*    public void updateAllHeaders(Report report, String[] header) {
-        try {
-            for (Epicurve epicurve : report.getEpicurves().values()) {
-                String county = epicurve.getCounty().toLowerCase();
-                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "cases", county), header);
-                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "caseDeltas", county), header);
-                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "movingAvgs", county), header);
-                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "deaths", county), header);
-                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "deathDeltas", county), header);
-                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "pcrTests", county), header);
-                csvService.updateHeader(csvService.getCountyFilePath(reportTgtDir, "pcrPositives", county), header);
-            }
-        } catch (Exception e) {
-            logger.error("Could not update headers in target csvs coming from report file", e);
+    public void appendHistogramCsvs(HistogramReportContainer histogramReport) {
+        List<String> histogramHeaderList = new ArrayList<>();
+        histogramHeaderList.add("reportDate");
+        histogramHeaderList.addAll(IntStream.range(0, 100).mapToObj(Integer::toString).collect(Collectors.toList()));
+        String[] histogramHeader = histogramHeaderList.toArray(new String[]{});
+
+        for (HistogramReportV2 currentReport : histogramReport.getCountyHistogramMap().values()) {
+            String county = currentReport.getCounty().toLowerCase();
+
+            csvService.appendHistogramFile(csvService.getCountyFilePath(reportTgtDir, "histogramCases", county), county, histogramHeader, histogramReport, HistogramReportV2::getCasesPercentageHist);
+            csvService.appendHistogramFile(csvService.getCountyFilePath(reportTgtDir, "histogramCasesCum", county), county, histogramHeader, histogramReport, HistogramReportV2::getCasesPercentageCumulative);
         }
-    }*/
+    }
+
     private void process(RawData data) {
         process(data, true);
     }
@@ -192,9 +212,6 @@ public class ReportService {
         } catch (Exception e) {
             logger.error("Error creating report " + data.getId(), e);
         }
-
-        // Ensure index is up to date
-        fileRegistry.checkAndSaveIndex();
 
         optionalReport.ifPresent($ -> taskExecutor.execute(() -> appendCsvs($)));
     }
