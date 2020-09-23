@@ -2,6 +2,8 @@ package org.dshaver.covid.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dshaver.covid.domain.ArrayReport;
+import org.dshaver.covid.domain.HistogramReportContainer;
+import org.dshaver.covid.domain.HistogramReportV2;
 import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.slf4j.Logger;
@@ -10,12 +12,10 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.*;
+import java.math.BigDecimal;
 import java.nio.file.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -176,11 +176,52 @@ public class CsvService {
             logger.error("Could not delete files!", e);
         }
     }
+    public void appendHistogramFile(Path path, String county, String[] header, HistogramReportContainer report, Function<HistogramReportV2, BigDecimal[]> bdFunction) {
+        HistogramReportV2 countyReport = report.getCountyHistogramMap().get(county);
+
+        try {
+            BufferedWriter writer = null;
+            if (path.toFile().exists()) {
+                writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
+            } else {
+                writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
+                writer.write(String.join(",", header));
+                writer.write("\n");
+            }
+
+            List<String> row = new ArrayList<>();
+
+            row.add(report.getReportDate().toString());
+            row.addAll(Arrays.stream(bdFunction.apply(countyReport)).map(Object::toString).collect(Collectors.toList()));
+
+            writer.write(String.join(",", row));
+
+            writer.write("\n");
+
+            writer.close();
+        } catch (IOException e) {
+            logger.error("Error writing histogram report! Report date: " + report.getReportDate(), e);
+        }
+    }
 
     public void appendFile(Path path, String county, String[] header, Report report, Function<ArrayReport, Integer[]> intFunction) throws Exception {
         ArrayReport arrayReport = new ArrayReport(report, county);
         List<String> existingRows = new ArrayList<>();
 
+        BufferedWriter writer = getBufferedWriter(path, header, existingRows);
+        if (writer == null) return;
+
+        List<String> row = new ArrayList<>();
+
+        row.add(report.getId());
+        row.addAll(Arrays.stream(intFunction.apply(arrayReport)).map(Object::toString).collect(Collectors.toList()));
+
+        writer.write(String.join(",", row));
+
+        writer.close();
+    }
+
+    private BufferedWriter getBufferedWriter(Path path, String[] header, List<String> existingRows) throws IOException {
         BufferedWriter writer = null;
         if (path.toFile().exists()) {
             // Check to see if we even need to append anything.
@@ -193,7 +234,7 @@ public class CsvService {
                     // Only append if the new header is exactly 1 longer than existing header... otherwise just return without doing anything.
                     if (header.length - existingHeaderArray.length != 1) {
                         logger.debug("Thought we needed to append to the csv {}, but actually didn't.", path);
-                        return;
+                        return null;
                     }
 
                     String currentString;
@@ -221,15 +262,7 @@ public class CsvService {
 
         // Now write the new line
         writer.write("\n");
-
-        List<String> row = new ArrayList<>();
-
-        row.add(report.getId());
-        row.addAll(Arrays.stream(intFunction.apply(arrayReport)).map(Object::toString).collect(Collectors.toList()));
-
-        writer.write(String.join(",", row));
-
-        writer.close();
+        return writer;
     }
 
     public void appendSummary(Path path, String county, Report report) throws Exception {

@@ -3,16 +3,18 @@ package org.dshaver.covid.domain;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Arrays;
 
 @Data
 public class HistogramReportV2 {
     public static final int HIST_SIZE = 100;
 
-    private final String county;
+    private String county;
     private final int[] casesHist = new int[HIST_SIZE], deathsHist = new int[HIST_SIZE], casesMedianHist = new int[HIST_SIZE], deathsMedianHist = new int[HIST_SIZE];
     private final BigDecimal[] casesPercentageHist = new BigDecimal[HIST_SIZE], deathsPercentageHist = new BigDecimal[HIST_SIZE], casesPercentageCumulative = new BigDecimal[HIST_SIZE], deathsPercentageCumulative = new BigDecimal[HIST_SIZE];
+
+    public HistogramReportV2() {
+    }
 
     public HistogramReportV2(String county) {
         this.county = county;
