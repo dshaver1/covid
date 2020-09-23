@@ -46,6 +46,10 @@ public class HistogramReportFactory {
         this.defaultWindowLength = defaultWindowLength;
     }
 
+    public HistogramReportContainer createHistogramReport(LocalDate endDate) {
+        return createHistogramReport(endDate.minusDays(defaultWindowLength), endDate);
+    }
+
     public void createAllHistogramReports(LocalDate startDate, LocalDate endDate) {
         createAllHistogramReports(startDate, endDate, defaultWindowLength);
     }

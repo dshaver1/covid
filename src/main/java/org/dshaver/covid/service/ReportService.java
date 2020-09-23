@@ -100,6 +100,7 @@ public class ReportService {
             response.setNewLatestId(data.getId());
             response.setFoundNew(true);
             process(data, true);
+            processHistogram(data.getReportDate());
 
             // Ensure index is up to date
             fileRegistry.checkAndSaveIndex();
@@ -127,6 +128,11 @@ public class ReportService {
         fileRegistry.checkAndSaveIndex();
 
         processHistogramRange(startDate, endDate);
+    }
+
+    public void processHistogram(LocalDate endDate) {
+        HistogramReportContainer histogramReportContainer = histogramReportFactory.createHistogramReport(endDate);
+        appendHistogramCsvs(histogramReportContainer);
     }
 
     public void processHistogramRange(LocalDate startDate, LocalDate endDate) {
