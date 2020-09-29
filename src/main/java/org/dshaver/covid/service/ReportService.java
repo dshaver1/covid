@@ -40,6 +40,7 @@ public class ReportService {
     private final String reportTgtDir;
     private final FileRegistry fileRegistry;
     private final TaskExecutor taskExecutor;
+    private final AggregateReportFactory aggregateReportFactory;
 
     @Inject
     public ReportService(RawDataRepositoryV0 rawDataRepositoryV0,
@@ -54,7 +55,8 @@ public class ReportService {
                          CsvService csvService,
                          @Value("${covid.dirs.reports.csv}") String reportTgtDir,
                          FileRegistry fileRegistry,
-                         @Qualifier("singleTaskExecutor") TaskExecutor taskExecutor) {
+                         @Qualifier("singleTaskExecutor") TaskExecutor taskExecutor,
+                         AggregateReportFactory aggregateReportFactory) {
         this.rawDataRepositoryV0 = rawDataRepositoryV0;
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.reportFactory = reportFactory;
@@ -68,6 +70,7 @@ public class ReportService {
         this.reportTgtDir = reportTgtDir;
         this.fileRegistry = fileRegistry;
         this.taskExecutor = taskExecutor;
+        this.aggregateReportFactory = aggregateReportFactory;
     }
 
     /**
@@ -101,6 +104,7 @@ public class ReportService {
             response.setFoundNew(true);
             process(data, true);
             processHistogram(data.getReportDate());
+            aggregateReportFactory.createAggregateReport(data.getReportDate());
 
             // Ensure index is up to date
             fileRegistry.checkAndSaveIndex();

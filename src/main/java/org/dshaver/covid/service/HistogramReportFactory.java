@@ -132,6 +132,8 @@ public class HistogramReportFactory {
                 // Sum up 0-baselined case and death deltas
                 reportV2.getCasesHist()[i] = reversedCaseDeltas[i] + reportV2.getCasesHist()[i];
                 reportV2.getDeathsHist()[i] = reversedDeathDeltas[i] + reportV2.getDeathsHist()[i];
+                reportV2.getCasesMin()[i] = reversedCaseDeltas[i] < reportV2.getCasesMin()[i] ? reversedCaseDeltas[i] : reportV2.getCasesMin()[i];
+                reportV2.getCasesMax()[i] = reversedCaseDeltas[i] > reportV2.getCasesMax()[i] ? reversedCaseDeltas[i] : reportV2.getCasesMax()[i];
 
                 // Save off the 0-baselined values for later
                 caseDeltaMultimap.put(i, reversedCaseDeltas[i]);
@@ -140,8 +142,8 @@ public class HistogramReportFactory {
         });
 
         // Prepare for calculating percentage histograms
-        int casesSum = IntStream.of(reportV2.getCasesHist()).sum();
-        int deathsSum = IntStream.of(reportV2.getDeathsHist()).sum();
+        IntSummaryStatistics casesSummary = IntStream.of(reportV2.getCasesHist()).summaryStatistics();
+        IntSummaryStatistics deathsSummary = IntStream.of(reportV2.getDeathsHist()).summaryStatistics();
 
         for (int i = 0; i < HIST_SIZE; i++) {
             // Calculate median histograms
@@ -149,8 +151,8 @@ public class HistogramReportFactory {
             reportV2.getDeathsMedianHist()[i] = deathDeltaMultimap.get(i).stream().sorted().skip(reports.size()/2).findFirst().orElse(0);
 
             // Calculate percentage histograms
-            double casePercent = ((0D + reportV2.getCasesHist()[i]) / casesSum) * 100;
-            double deathPercent = ((0D + reportV2.getDeathsHist()[i]) / deathsSum) * 100;
+            double casePercent = ((0D + reportV2.getCasesHist()[i]) / casesSummary.getSum()) * 100;
+            double deathPercent = ((0D + reportV2.getDeathsHist()[i]) / deathsSummary.getSum()) * 100;
             reportV2.getCasesPercentageHist()[i] = Double.isNaN(casePercent) || Double.isInfinite(casePercent) ? BigDecimal.ZERO : BigDecimal.valueOf(casePercent).round(DECIMALS_2);
             reportV2.getDeathsPercentageHist()[i] = Double.isNaN(deathPercent) || Double.isInfinite(deathPercent) ? BigDecimal.ZERO : BigDecimal.valueOf(deathPercent).round(DECIMALS_2);
 
