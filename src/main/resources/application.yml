@@ -1,6 +1,7 @@
 spring.data.mongodb.database: covid
 covid.download.url: https://d20s4vd27d0hk0.cloudfront.net/
 covid.download.url2: https://ga-covid19.ondemand.sas.com/static/js/main.js
+covid.download.url3: https://ga-covid19.ondemand.sas.com/
 
 covid.histogram.window.size: 28
 
@@ -185,6 +186,9 @@ covid:
       v0: /mnt/data/raw/v0
       v1: /mnt/data/raw/v1
       v2: /mnt/data/raw/v2
+      v3: /mnt/data/raw/v3
+      v3Main: /mnt/data/raw/v3/main
+      v3FourthChunk: /mnt/data/raw/v3/chunk4
       manual: /mnt/data/raw/manual
     filtered:
       epicurve.v1: /mnt/data/filteredjson/epicurve/v1
@@ -212,6 +216,9 @@ covid:
       v0: H:\dev\workingdir\covid\raw\v0
       v1: H:\dev\workingdir\covid\raw\v1
       v2: H:\dev\workingdir\covid\raw\v2
+      v3: H:\dev\workingdir\covid\raw\v3
+      v3Main: H:\dev\workingdir\covid\raw\v3\main
+      v3FourthChunk: H:\dev\workingdir\covid\raw\v3\chunk4
       manual: H:\dev\workingdir\covid\raw\manual
     filtered:
       epicurve.v1: H:\dev\workingdir\covid\filtered\epicurve\v1

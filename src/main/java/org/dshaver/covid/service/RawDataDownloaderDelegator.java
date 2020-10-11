@@ -3,15 +3,13 @@ package org.dshaver.covid.service;
 import org.dshaver.covid.domain.RawData;
 import org.dshaver.covid.domain.RawDataV1;
 import org.dshaver.covid.domain.RawDataV2;
+import org.dshaver.covid.domain.RawDataV3;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,18 +17,24 @@ import java.util.List;
 public class RawDataDownloaderDelegator {
     private final RawDataDownloader<RawDataV1> downloaderV1;
     private final RawDataDownloader<RawDataV2> downloaderV2;
+    private final RawDataDownloader<RawDataV3> downloaderV3;
     private final String downloadUrl1;
     private final String downloadUrl2;
+    private final String downloadUrl3;
 
     @Inject
     public RawDataDownloaderDelegator(RawDataDownloader<RawDataV1> downloaderV1,
                                       RawDataDownloader<RawDataV2> downloaderV2,
+                                      RawDataDownloader<RawDataV3> downloaderV3,
                                       @Value("${covid.download.url}") String downloadUrl1,
-                                      @Value("${covid.download.url2}") String downloadUrl2) {
+                                      @Value("${covid.download.url2}") String downloadUrl2,
+                                      @Value("${covid.download.url3}") String downloadUrl3) {
         this.downloaderV1 = downloaderV1;
         this.downloaderV2 = downloaderV2;
+        this.downloaderV3 = downloaderV3;
         this.downloadUrl1 = downloadUrl1;
         this.downloadUrl2 = downloadUrl2;
+        this.downloadUrl3 = downloadUrl3;
     }
 
     public RawData transform(File file) throws Exception {
@@ -38,6 +42,10 @@ public class RawDataDownloaderDelegator {
     }
 
     public RawData download(Class<? extends RawData> rawDataClass) {
+        if (rawDataClass.equals(RawDataV3.class)) {
+            return downloaderV3.download(downloadUrl3);
+        }
+
         if (rawDataClass.equals(RawDataV2.class)) {
             return downloaderV2.download(downloadUrl2);
         }

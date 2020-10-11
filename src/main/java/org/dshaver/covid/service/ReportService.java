@@ -30,6 +30,7 @@ public class ReportService {
     private final RawDataRepositoryV0 rawDataRepositoryV0;
     private final RawDataRepositoryV1 rawDataRepositoryV1;
     private final RawDataRepositoryV2 rawDataRepositoryV2;
+    private final RawDataRepositoryV3 rawDataRepositoryV3;
     private final RawDataDownloaderDelegator rawDataDownloader;
     private final ReportFactory reportFactory;
     private final ReportRepository reportRepository;
@@ -47,6 +48,7 @@ public class ReportService {
                          RawDataRepositoryV1 rawDataRepositoryV1,
                          ReportFactory reportFactory,
                          RawDataRepositoryV2 rawDataRepositoryV2,
+                         RawDataRepositoryV3 rawDataRepositoryV3,
                          RawDataDownloaderDelegator rawDataDownloader,
                          ReportRepository reportRepository,
                          IntermediaryDataService intermediaryDataService,
@@ -61,6 +63,7 @@ public class ReportService {
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.reportFactory = reportFactory;
         this.rawDataRepositoryV2 = rawDataRepositoryV2;
+        this.rawDataRepositoryV3 = rawDataRepositoryV3;
         this.rawDataDownloader = rawDataDownloader;
         this.reportRepository = reportRepository;
         this.intermediaryDataService = intermediaryDataService;
@@ -93,7 +96,7 @@ public class ReportService {
         diskLatestId.ifPresent(response::setPreviousLatestId);
 
         // Download
-        RawData data = rawDataDownloader.download(RawDataV2.class);
+        RawData data = rawDataDownloader.download(RawDataV3.class);
 
         String downloadLatestId = data.getId();
 
@@ -122,7 +125,8 @@ public class ReportService {
 
         Stream.concat(rawDataRepositoryV0.streamSelectedPaths().map(rawDataRepositoryV0::readFile), Stream.concat(
                 rawDataRepositoryV1.streamSelectedPaths().map(rawDataRepositoryV1::readFile),
-                rawDataRepositoryV2.streamSelectedPaths().map(rawDataRepositoryV2::readFile)))
+                Stream.concat(rawDataRepositoryV2.streamSelectedPaths().map(rawDataRepositoryV2::readFile),
+                        rawDataRepositoryV3.streamSelectedPaths().map(rawDataRepositoryV3::readFile))))
                 .filter(Objects::nonNull)
                 .filter(rawData -> !rawData.getReportDate().isAfter(endDate))
                 .filter(rawData -> !rawData.getReportDate().isBefore(startDate))
