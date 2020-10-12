@@ -79,7 +79,7 @@ public class ReportService {
     /**
      * Main entrypoint to check for new reports.
      */
-    @Scheduled(cron = "0 55 * * * *")
+    @Scheduled(cron = "15,21,3,9 55 * * * *")
     public void checkForData() {
         checkForData(false);
     }
