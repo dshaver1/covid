@@ -51,7 +51,9 @@ public class HistogramReportFactory {
     }
 
     public void createAllHistogramReports(LocalDate startDate, LocalDate endDate) {
+        logger.info("Begin creating histograms from {} to {}!", startDate, endDate);
         createAllHistogramReports(startDate, endDate, defaultWindowLength);
+        logger.info("Done creating histograms from {} to {}!", startDate, endDate);
     }
 
     public void createAllHistogramReports(LocalDate startDate, LocalDate endDate, Integer windowLength) {

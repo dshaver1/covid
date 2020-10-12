@@ -139,21 +139,25 @@ public class ReportService {
     }
 
     public void processHistogram(LocalDate endDate) {
+        logger.info("Creating all histogram report for {}...", endDate);
         HistogramReportContainer histogramReportContainer = histogramReportFactory.createHistogramReport(endDate);
         appendHistogramCsvs(histogramReportContainer);
     }
 
     public void processHistogramRange(LocalDate startDate, LocalDate endDate) {
+        logger.info("Creating all histogram reports between {} and {}...", startDate, endDate);
         histogramReportFactory.createAllHistogramReports(startDate, endDate);
         createHistogramCsvs(startDate, endDate);
     }
 
     public void processHistogramRange(LocalDate startDate, LocalDate endDate, Integer windowSize) {
+        logger.info("Creating all histogram reports between {} and {} with {} window size...", startDate, endDate, windowSize);
         histogramReportFactory.createAllHistogramReports(startDate, endDate, windowSize);
         createHistogramCsvs(startDate, endDate);
     }
 
     public void createHistogramCsvs(LocalDate startDate, LocalDate endDate) {
+        logger.info("Creating all histogram csvs between {} and {}...", startDate, endDate);
         histogramReportDao.findByReportDateBetweenOrderByIdAsc(startDate, endDate)
                 .sorted(Comparator.comparing(HistogramReportContainer::getReportDate))
                 .forEachOrdered(this::appendHistogramCsvs);
@@ -189,6 +193,7 @@ public class ReportService {
         histogramHeaderList.addAll(IntStream.range(0, 100).mapToObj(Integer::toString).collect(Collectors.toList()));
         String[] histogramHeader = histogramHeaderList.toArray(new String[]{});
 
+        logger.info("Appending histogram csvs for {}", histogramReport.getReportDate());
         for (HistogramReportV2 currentReport : histogramReport.getCountyHistogramMap().values()) {
             String county = currentReport.getCounty().toLowerCase();
 

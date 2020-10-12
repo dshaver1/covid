@@ -82,11 +82,25 @@ public class RawDataController {
                           @RequestParam(name = "clean", required = false) Boolean clean,
                           @RequestParam(name = "saveIntermediate", required = false) Boolean saveIntermediate) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
-        LocalDate defaultedEndDate = endDate == null ? LocalDate.now() : endDate.plusDays(1);
+        LocalDate defaultedEndDate = endDate == null ? getDefaultEndDate() : endDate.plusDays(1);
         boolean defaultedClean = clean == null ? true : clean;
         boolean defaultedSaveIntermediate = saveIntermediate == null ? true : saveIntermediate;
 
         reportService.processRange(defaultedStartDate, defaultedEndDate, defaultedClean, defaultedSaveIntermediate);
+
+        logger.info("Done reprocessing {} to {}!", defaultedStartDate, defaultedEndDate);
+    }
+
+    /**
+     * Use today if it's after 3pm, but use yesterday if it's before 3pm.
+     */
+    private LocalDate getDefaultEndDate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.getHour() >= 15) {
+            return now.toLocalDate();
+        }
+
+        return now.toLocalDate().minusDays(1);
     }
 
     @PostMapping("/covid/api/transformRaw")

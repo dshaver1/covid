@@ -289,8 +289,8 @@ public class CsvService {
             String currentLine = "";
             try (FileReader fileReader = new FileReader(path.toFile()); BufferedReader br = new BufferedReader(fileReader)) {
                 while ((currentLine = br.readLine()) != null) {
-                    if (currentLine.contains(report.getId())); {
-                        logger.debug("Thought we needed to append to the csv {}, but actually didn't.", path);
+                    if (currentLine.contains(report.getId())) {
+                        logger.info("Thought we needed to append to the csv {}, but actually didn't. {} contains {}.", path, currentLine, report.getId());
                         return;
                     }
                 }

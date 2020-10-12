@@ -80,6 +80,7 @@ covid.enabledCounties:
   haralson: true
   harris: true
   hart: true
+  healthcare: true
   heard: true
   henry: true
   houston: true
@@ -115,6 +116,7 @@ covid.enabledCounties:
   muscogee: true
   newton: true
   non-ga: true
+  non-georgia-resident: true
   oconee: true
   oglethorpe: true
   paulding: true
