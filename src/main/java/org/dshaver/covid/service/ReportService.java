@@ -79,7 +79,7 @@ public class ReportService {
     /**
      * Main entrypoint to check for new reports.
      */
-    @Scheduled(cron = "15,21,3,9 55 * * * *")
+    @Scheduled(cron = "${covid.cron.polling}")
     public void checkForData() {
         checkForData(false);
     }
