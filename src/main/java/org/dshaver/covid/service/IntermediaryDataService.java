@@ -1,10 +1,7 @@
 package org.dshaver.covid.service;
 
 import org.dshaver.covid.dao.*;
-import org.dshaver.covid.domain.CountyOverviewContainer;
-import org.dshaver.covid.domain.RawData;
-import org.dshaver.covid.domain.RawDataV1;
-import org.dshaver.covid.domain.RawDataV2;
+import org.dshaver.covid.domain.*;
 import org.dshaver.covid.domain.epicurve.EpicurveDtoImpl1;
 import org.dshaver.covid.domain.epicurve.EpicurvePointImpl2Container;
 import org.dshaver.covid.domain.epicurve.HealthcareWorkerEpiPointContainer;
@@ -76,7 +73,7 @@ public class IntermediaryDataService {
             });
         }
 
-        if (rawData instanceof RawDataV2) {
+        if (rawData instanceof RawDataV2 || rawData instanceof RawDataV3) {
             Optional<EpicurvePointImpl2Container> epicurveContainer = epicurvePointImpl2Extractor.extract(rawData.getPayload(), rawData.getId());
             epicurveContainer.ifPresent(container -> {
                 try {

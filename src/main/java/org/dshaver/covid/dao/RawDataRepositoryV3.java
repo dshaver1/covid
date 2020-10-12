@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 /**
  * Created by xpdf64 on 2020-04-27.
@@ -29,7 +30,7 @@ public class RawDataRepositoryV3 extends BaseFileRepository<RawDataV3> {
 
     @Override
     public String createFilename(RawDataV3 entity) {
-        return String.format("DPH_RAW_V3_%s.json", reportDateFormatter.format(entity.getReportDate()));
+        return String.format("DPH_RAW_V3_%s.json", idFormatter.format(LocalDateTime.parse(entity.getId().replace(":", ""), idFormatter)));
     }
 
     @Override

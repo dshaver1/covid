@@ -8,12 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -85,7 +84,7 @@ public class RawDataDownloader3 implements RawDataDownloader<RawDataV3> {
                 logger.error("Error opening stream!");
             }
 
-            logger.info("Downloading from {}...", mainUrl);
+            logger.info("Downloading from {}...", fourthChunkUrl);
             RawDataV3 rawDataFourth = new RawDataV3();
             try (InputStream inputStream = mainUrl.openStream()) {
                 rawDataFourth = transform(inputStream, true);
@@ -151,7 +150,7 @@ public class RawDataDownloader3 implements RawDataDownloader<RawDataV3> {
         }
 
         if (dateObj == null) {
-            throw new IllegalStateException("Could not find date in raw DPH data!");
+            logger.error("Could not find date in raw DPH data!");
         }
 
         List<String> payload = new ArrayList<>();

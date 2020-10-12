@@ -82,7 +82,7 @@ public class RawDataController {
                           @RequestParam(name = "clean", required = false) Boolean clean,
                           @RequestParam(name = "saveIntermediate", required = false) Boolean saveIntermediate) throws Exception {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate.minusDays(1);
-        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate.plusDays(1);
+        LocalDate defaultedEndDate = endDate == null ? LocalDate.now() : endDate.plusDays(1);
         boolean defaultedClean = clean == null ? true : clean;
         boolean defaultedSaveIntermediate = saveIntermediate == null ? true : saveIntermediate;
 
