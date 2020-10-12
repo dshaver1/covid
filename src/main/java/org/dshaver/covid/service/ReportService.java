@@ -88,10 +88,10 @@ public class ReportService {
     public DownloadResponse checkForData(boolean force) {
         DownloadResponse response = new DownloadResponse();
 
-        fileRegistry.putIndex(RawDataV2.class, rawDataRepositoryV2.scanDirectory());
+        fileRegistry.putIndex(RawDataV3.class, rawDataRepositoryV3.scanDirectory());
 
         // Check disk
-        Optional<String> diskLatestId = fileRegistry.getLatestId(RawDataV2.class);
+        Optional<String> diskLatestId = fileRegistry.getLatestId(RawDataV3.class);
 
         diskLatestId.ifPresent(response::setPreviousLatestId);
 
