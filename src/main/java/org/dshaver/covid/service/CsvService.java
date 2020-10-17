@@ -183,6 +183,19 @@ public class CsvService {
             BufferedWriter writer = null;
             if (path.toFile().exists()) {
                 writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
+                // Check if we need to do anything...
+                try (FileReader fileReader = new FileReader(path.toFile()); BufferedReader br = new BufferedReader(fileReader)) {
+                    String currentString;
+                    String lastDateString = "";
+                    while ((currentString = br.readLine()) != null) {
+                        lastDateString = currentString.split(",")[0];
+                    }
+
+                    if (report.getReportDate().toString().equals(lastDateString)) {
+                        logger.debug("Thought we needed to append to the csv {}, but actually didn't.", path);
+                        return;
+                    }
+                }
             } else {
                 writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
                 writer.write(String.join(",", header));
@@ -271,6 +284,18 @@ public class CsvService {
         BufferedWriter writer = null;
         if (path.toFile().exists()) {
             writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
+
+            // Check to see if we even need to append anything
+            String currentLine = "";
+            try (FileReader fileReader = new FileReader(path.toFile()); BufferedReader br = new BufferedReader(fileReader)) {
+                while ((currentLine = br.readLine()) != null) {
+                    if (currentLine.contains(report.getId())) {
+                        logger.info("Thought we needed to append to the csv {}, but actually didn't. {} contains {}.", path, currentLine, report.getId());
+                        return;
+                    }
+                }
+            }
+
         } else {
             writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
             writer.write(String.join(",", SUMMARY_HEADER));

@@ -87,3 +87,73 @@ function parseLagData(summaryData, caseDeltaData, caseHistData, caseHistCumData)
 
     return tempChartData;
 }
+
+function applyDateOffset(date, offset) {
+    let dateObj = convertDate(date);
+    dateObj.setDate(dateObj.getDate() - offset);
+    return getFormattedDate(dateObj);
+}
+
+function getFormattedDate(date) {
+    let year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+
+    return year + '-' + month + '-' + day;
+}
+
+/**
+ * Convert a date string in 2020-10-10T101300 format into a Date() object.
+ */
+function convertDate(dateString) {
+    let filteredDateString = dateString.slice(0, 15) + ":" + dateString.slice(15 + Math.abs(0))
+    filteredDateString = filteredDateString.slice(0, 13) + ":" + filteredDateString.slice(13 + Math.abs(0));
+    filteredDateString = filteredDateString.replace("T", " ");
+    return new Date(filteredDateString);
+}
+
+function createSlider(data) {
+    let count = 0;
+
+    for (let value of Object.values(data)) {
+        if (value.length > 0) {
+            count++
+        }
+    }
+
+    count = (count - 1) * -1;
+
+    let tickValueArray = [];
+
+    for (let current = 0; current > count; current = current - 7) {
+        tickValueArray.push(current);
+    }
+
+    let sliderTime = d3
+        .sliderBottom()
+        //.min(-1 * (timeData.length - 1))
+        //.max(0)
+        .domain([count, 0])
+        .marks([count, 0])
+        .step(1)
+        //.ticks(5)
+        .width(350)
+        .tickValues(tickValueArray);
+
+    var gTime = d3
+        .select('div#slider-time')
+        .append('svg')
+        .attr('width', 400)
+        .attr('height', 100)
+        .append('g')
+        .attr('transform', 'translate(30,30)');
+
+    gTime.call(sliderTime);
+
+    return sliderTime;
+}
+
+function getLastElement(data) {
+    let keySet = Object.keys(data);
+    return data[keySet[keySet.length - 1]];
+}

@@ -3,6 +3,7 @@ package org.dshaver.covid.controller;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.ArrayReport;
 import org.dshaver.covid.domain.Report;
+import org.dshaver.covid.service.AggregateReportFactory;
 import org.dshaver.covid.service.CsvService;
 import org.dshaver.covid.service.HistogramReportFactory;
 import org.dshaver.covid.service.ReportService;
@@ -32,18 +33,21 @@ public class ReportControllerV2 {
     private final CsvService csvService;
     private final HistogramReportFactory histogramReportFactory;
     private final ReportService reportService;
+    private final AggregateReportFactory aggregateReportFactory;
 
     @Inject
     public ReportControllerV2(ReportRepository reportRepository,
                               @Value("${covid.dirs.reports.csv}") String reportTgtDir,
                               CsvService csvService,
                               HistogramReportFactory histogramReportFactory,
-                              ReportService reportService) {
+                              ReportService reportService,
+                              AggregateReportFactory aggregateReportFactory) {
         this.reportRepository = reportRepository;
         this.reportTgtDir = reportTgtDir;
         this.csvService = csvService;
         this.histogramReportFactory = histogramReportFactory;
         this.reportService = reportService;
+        this.aggregateReportFactory = aggregateReportFactory;
     }
 
     @GetMapping(value = "/covid/api/reports/v2/{file}.csv", produces = "text/csv")
@@ -144,5 +148,16 @@ public class ReportControllerV2 {
         LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate;
         LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate;
         reportService.createHistogramCsvs(defaultedStartDate, defaultedEndDate);
+    }
+
+    @PostMapping("/covid/api/reports/aggregate/calculate")
+    public void calculateAggregate(@RequestParam(name = "startDate", required = false)
+                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                   @RequestParam(name = "endDate", required = false)
+                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws Exception {
+        LocalDate defaultedStartDate = startDate == null ? LocalDate.of(2020, 1, 1) : startDate;
+        LocalDate defaultedEndDate = endDate == null ? LocalDate.of(2030, 1, 1) : endDate;
+
+        aggregateReportFactory.createAllAggregateReports(defaultedStartDate, defaultedEndDate);
     }
 }

@@ -30,6 +30,7 @@ public class ReportService {
     private final RawDataRepositoryV0 rawDataRepositoryV0;
     private final RawDataRepositoryV1 rawDataRepositoryV1;
     private final RawDataRepositoryV2 rawDataRepositoryV2;
+    private final RawDataRepositoryV3 rawDataRepositoryV3;
     private final RawDataDownloaderDelegator rawDataDownloader;
     private final ReportFactory reportFactory;
     private final ReportRepository reportRepository;
@@ -40,12 +41,14 @@ public class ReportService {
     private final String reportTgtDir;
     private final FileRegistry fileRegistry;
     private final TaskExecutor taskExecutor;
+    private final AggregateReportFactory aggregateReportFactory;
 
     @Inject
     public ReportService(RawDataRepositoryV0 rawDataRepositoryV0,
                          RawDataRepositoryV1 rawDataRepositoryV1,
                          ReportFactory reportFactory,
                          RawDataRepositoryV2 rawDataRepositoryV2,
+                         RawDataRepositoryV3 rawDataRepositoryV3,
                          RawDataDownloaderDelegator rawDataDownloader,
                          ReportRepository reportRepository,
                          IntermediaryDataService intermediaryDataService,
@@ -54,11 +57,13 @@ public class ReportService {
                          CsvService csvService,
                          @Value("${covid.dirs.reports.csv}") String reportTgtDir,
                          FileRegistry fileRegistry,
-                         @Qualifier("singleTaskExecutor") TaskExecutor taskExecutor) {
+                         @Qualifier("singleTaskExecutor") TaskExecutor taskExecutor,
+                         AggregateReportFactory aggregateReportFactory) {
         this.rawDataRepositoryV0 = rawDataRepositoryV0;
         this.rawDataRepositoryV1 = rawDataRepositoryV1;
         this.reportFactory = reportFactory;
         this.rawDataRepositoryV2 = rawDataRepositoryV2;
+        this.rawDataRepositoryV3 = rawDataRepositoryV3;
         this.rawDataDownloader = rawDataDownloader;
         this.reportRepository = reportRepository;
         this.intermediaryDataService = intermediaryDataService;
@@ -68,12 +73,13 @@ public class ReportService {
         this.reportTgtDir = reportTgtDir;
         this.fileRegistry = fileRegistry;
         this.taskExecutor = taskExecutor;
+        this.aggregateReportFactory = aggregateReportFactory;
     }
 
     /**
      * Main entrypoint to check for new reports.
      */
-    @Scheduled(cron = "0 55 * * * *")
+    @Scheduled(cron = "${covid.cron.polling}")
     public void checkForData() {
         checkForData(false);
     }
@@ -82,15 +88,15 @@ public class ReportService {
     public DownloadResponse checkForData(boolean force) {
         DownloadResponse response = new DownloadResponse();
 
-        fileRegistry.putIndex(RawDataV2.class, rawDataRepositoryV2.scanDirectory());
+        fileRegistry.putIndex(RawDataV3.class, rawDataRepositoryV3.scanDirectory());
 
         // Check disk
-        Optional<String> diskLatestId = fileRegistry.getLatestId(RawDataV2.class);
+        Optional<String> diskLatestId = fileRegistry.getLatestId(RawDataV3.class);
 
         diskLatestId.ifPresent(response::setPreviousLatestId);
 
         // Download
-        RawData data = rawDataDownloader.download(RawDataV2.class);
+        RawData data = rawDataDownloader.download(RawDataV3.class);
 
         String downloadLatestId = data.getId();
 
@@ -100,6 +106,8 @@ public class ReportService {
             response.setNewLatestId(data.getId());
             response.setFoundNew(true);
             process(data, true);
+            processHistogram(data.getReportDate());
+            aggregateReportFactory.createAggregateReport(data.getReportDate());
 
             // Ensure index is up to date
             fileRegistry.checkAndSaveIndex();
@@ -117,7 +125,8 @@ public class ReportService {
 
         Stream.concat(rawDataRepositoryV0.streamSelectedPaths().map(rawDataRepositoryV0::readFile), Stream.concat(
                 rawDataRepositoryV1.streamSelectedPaths().map(rawDataRepositoryV1::readFile),
-                rawDataRepositoryV2.streamSelectedPaths().map(rawDataRepositoryV2::readFile)))
+                Stream.concat(rawDataRepositoryV2.streamSelectedPaths().map(rawDataRepositoryV2::readFile),
+                        rawDataRepositoryV3.streamSelectedPaths().map(rawDataRepositoryV3::readFile))))
                 .filter(Objects::nonNull)
                 .filter(rawData -> !rawData.getReportDate().isAfter(endDate))
                 .filter(rawData -> !rawData.getReportDate().isBefore(startDate))
@@ -129,17 +138,26 @@ public class ReportService {
         processHistogramRange(startDate, endDate);
     }
 
+    public void processHistogram(LocalDate endDate) {
+        logger.info("Creating all histogram report for {}...", endDate);
+        HistogramReportContainer histogramReportContainer = histogramReportFactory.createHistogramReport(endDate);
+        appendHistogramCsvs(histogramReportContainer);
+    }
+
     public void processHistogramRange(LocalDate startDate, LocalDate endDate) {
+        logger.info("Creating all histogram reports between {} and {}...", startDate, endDate);
         histogramReportFactory.createAllHistogramReports(startDate, endDate);
         createHistogramCsvs(startDate, endDate);
     }
 
     public void processHistogramRange(LocalDate startDate, LocalDate endDate, Integer windowSize) {
+        logger.info("Creating all histogram reports between {} and {} with {} window size...", startDate, endDate, windowSize);
         histogramReportFactory.createAllHistogramReports(startDate, endDate, windowSize);
         createHistogramCsvs(startDate, endDate);
     }
 
     public void createHistogramCsvs(LocalDate startDate, LocalDate endDate) {
+        logger.info("Creating all histogram csvs between {} and {}...", startDate, endDate);
         histogramReportDao.findByReportDateBetweenOrderByIdAsc(startDate, endDate)
                 .sorted(Comparator.comparing(HistogramReportContainer::getReportDate))
                 .forEachOrdered(this::appendHistogramCsvs);
@@ -175,6 +193,7 @@ public class ReportService {
         histogramHeaderList.addAll(IntStream.range(0, 100).mapToObj(Integer::toString).collect(Collectors.toList()));
         String[] histogramHeader = histogramHeaderList.toArray(new String[]{});
 
+        logger.info("Appending histogram csvs for {}", histogramReport.getReportDate());
         for (HistogramReportV2 currentReport : histogramReport.getCountyHistogramMap().values()) {
             String county = currentReport.getCounty().toLowerCase();
 

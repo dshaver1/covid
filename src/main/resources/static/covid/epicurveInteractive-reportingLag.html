@@ -117,6 +117,7 @@
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script src="../assets/dist/js/d3kit.min.js"></script>
+<script src="epicurve2.js"></script>
 <script>
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
@@ -191,7 +192,7 @@
         caseDeltaData = files[1];
         caseHistData = files[2];
         caseHistCumData = files[3];
-        chartData = epicurve.parseLagData(summaryData, caseDeltaData, caseHistData, caseHistCumData);
+        chartData = parseLagData(summaryData, caseDeltaData, caseHistData, caseHistCumData);
         let latestSummary = summaryData[summaryData.length - 1];
         let latestDate = latestSummary.reportDate;
 

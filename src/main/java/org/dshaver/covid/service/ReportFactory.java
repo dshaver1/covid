@@ -89,6 +89,11 @@ public class ReportFactory {
     }
 
     public Report createReport(RawData rawData, Report previousReport) throws Exception {
+        if (rawData instanceof RawDataV3) {
+            logger.info("About to start creating report from RawDataV3");
+            return createReport(rawData.getId(), rawData.getReportDate(), previousReport);
+        }
+
         if (rawData instanceof RawDataV2) {
             logger.info("About to start creating report from RawDataV2");
             return createReport(rawData.getId(), rawData.getReportDate(), previousReport);

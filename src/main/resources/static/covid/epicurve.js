@@ -439,7 +439,7 @@ class Epicurve {
      *     label: "2020-05-27"
      * }]
      */
-    parseChartData(summaryData, caseData, deathData, caseDeltaData, deathDeltaData, caseProjectionData, movingAvgData) {
+    parseChartData(summaryData, caseData, deathData, caseDeltaData, deathDeltaData, caseProjectionData, movingAvgData, histogramData) {
         let tempChartData = [];
 
         let reportedCasesData = []

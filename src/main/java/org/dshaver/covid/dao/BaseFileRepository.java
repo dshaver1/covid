@@ -243,7 +243,12 @@ public abstract class BaseFileRepository<T extends Identifiable> implements File
         if (matcher.find()) {
             return matcher.group(1);
         } else {
-            return null;
+            Matcher reportDateMatcher = reportDateFilenamePattern.matcher(path.getFileName().toString());
+            if (reportDateMatcher.find()) {
+                return reportDateMatcher.group(1);
+            } else {
+                return null;
+            }
         }
     }
 
