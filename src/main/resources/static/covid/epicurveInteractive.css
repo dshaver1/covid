@@ -71,7 +71,7 @@ div {
     opacity: 0.5 !important;
 }
 
-.prelim-text {
+.prelim-text, .reportedCasesHoverText {
     fill: #7ba4c9;
     font: 10px sans-serif;
 }

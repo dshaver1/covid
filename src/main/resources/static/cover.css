@@ -206,6 +206,11 @@ main {
   font: 10px sans-serif;
 }
 
+.reportedCasesHoverText {
+  fill: #4573a8;
+  font: 10px sans-serif;
+}
+
 /*
  * Selected slider color
  */
@@ -219,6 +224,10 @@ main {
 .tick text, g text {
   shape-rendering: crispEdges;
   fill: #859cb1;
+}
+
+.clicked-mouse-date {
+  fill: #fff;
 }
 
 .tick line, .axis path, .domain {
