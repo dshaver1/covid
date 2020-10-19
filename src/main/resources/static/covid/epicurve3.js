@@ -95,6 +95,7 @@ class Epicurve {
             .attr('height', height)
             .attr('fill', 'none')
             .attr('pointer-events', 'all')
+            .style("cursor", "ew-resize")
             .on('mouseout', function () { // on mouse out hide line, circles and text
                 d3.select(".mouse-line")
                     .style("opacity", "0");
@@ -104,6 +105,7 @@ class Epicurve {
                     .style("opacity", "0");
                 d3.selectAll(".mouse-date")
                     .style("opacity", "0");
+
             })
             .on('mouseover', function () { // on mouse in show line, circles and text
                 d3.select(".mouse-line")
