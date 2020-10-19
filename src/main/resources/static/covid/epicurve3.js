@@ -372,7 +372,7 @@ class Epicurve {
             .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
             .attr('r', 2)
             .style("visibility", d => isVisible ? "visible" : "hidden")
-            .on('mouseover', function (d, i) {
+            .on('click', function (d, i) {
                 updateMouseOverLine(d, this, clazz + "-hover", color, xCallback, yCallback, thisXScale, dYScale);
 
                 d3.select(this).attr("r", 5);
@@ -419,15 +419,21 @@ class Epicurve {
 
         selectedData.exit().transition().duration(100).style("opacity", 0).remove();
 
+        let isVisible = true;
+
+        if (this.svg.selectAll('.' + clazz).data().length > 0) {
+            isVisible = "visible" === this.svg.selectAll('.' + clazz).style("visibility");
+        }
+
         selectedData.enter().append("path")
             .attr("class", clazz)
+            .style("visibility", isVisible ? "visible" : "hidden")
             .attr("d", triangle)
             .attr("stroke", color)
             .attr("fill", color)
             .attr("opacity", "0.5")
             .attr("transform", d => "translate(" + d.scaledX + "," + d.scaledY + ")")
-            //.style("visibility", d => isVisible ? "visible" : "hidden")
-            .on('mouseover', function (d) {
+            .on('click', function (d) {
                 d3.select(this)
                     .attr("opacity", "1")
                     .attr("d", d3.symbol().size(100).type(d3.symbolDiamond));
@@ -1299,7 +1305,7 @@ function dispatchMouseEvents(clazz, scaledX, prevNode, currentNode) {
     if (!prevNode[clazz] && currentNode[clazz]) {
         //console.log("First time? scaledX: " + scaledX);
         prevNode[clazz] = currentNode[clazz];
-        currentNode[clazz].dispatch("mouseover");
+        currentNode[clazz].dispatch("click");
     }
 
     // Exited past the range of available data
@@ -1312,7 +1318,7 @@ function dispatchMouseEvents(clazz, scaledX, prevNode, currentNode) {
     if ((prevNode[clazz].data().length > 0 && currentNode[clazz].data().length) && (prevNode[clazz].data()[0].label !== currentNode[clazz].data()[0].label)) {
         //console.log("Good transition? prevLabel: " + prevNode[clazz].data()[0].label + " currLabel: " + currentNode[clazz].data()[0].label + " scaledX: " + scaledX);
         prevNode[clazz].dispatch("mouseout");
-        currentNode[clazz].dispatch("mouseover");
+        currentNode[clazz].dispatch("click");
         prevNode[clazz] = currentNode[clazz];
     } else {
         //console.log("Doing nothing! prevLabel: " + prevNode[clazz].data()[0].label + " scaledX: " + scaledX);
