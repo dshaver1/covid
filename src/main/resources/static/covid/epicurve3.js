@@ -12,6 +12,9 @@ class Epicurve {
         this.yAxis2 = yAxis2;
         this.prevNode = {};
         this.currentNode = {};
+        this.monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
 
         let selectedData = this.svg.selectAll(".prelim-region").data(["2020-08-08"]);
         let enterData = selectedData.enter();
@@ -38,12 +41,13 @@ class Epicurve {
         let selectedMouseDate = this.svg.selectAll(".mouse-date").data([lastAvailableDate]);
         selectedMouseDate.enter().append("text")
             .attr("x", -this.height - 50)// Note that x and y are flipped because we are rotating the text.
-            .attr("transform", "translate(9,4)rotate(-90)")
-            .attr("alignment-baseline", "middle")
             .attr("y", 96)
+            .attr("transform", "translate(9,1)rotate(-90)")
+            .attr("text-anchor", "start")
             .attr("dx", "-.8em")
             .attr("dy", "-.55em")
             .attr("class", "mouse-date")
+            .style("letter-spacing", "0px")
             .style("color", "white")
             .style("font", "10px sans-serif")
             .attr("opacity", "0")
@@ -52,12 +56,13 @@ class Epicurve {
         let clickedMouseDate = this.svg.selectAll(".clicked-mouse-date").data([lastAvailableDate]);
         clickedMouseDate.enter().append("text")
             .attr("x", -this.height - 50)// Note that x and y are flipped because we are rotating the text.
-            .attr("transform", "translate(9,4)rotate(-90)")
-            .attr("alignment-baseline", "middle")
             .attr("y", 96)
+            .attr("transform", "translate(9,1)rotate(-90)")
+            .attr("text-anchor", "start")
             .attr("dx", "-.8em")
             .attr("dy", "-.55em")
             .attr("class", "clicked-mouse-date")
+            .style("letter-spacing", "0px")
             .style("color", "white")
             .style("font", "10px sans-serif")
             .attr("opacity", "0")
@@ -68,11 +73,12 @@ class Epicurve {
             .attr("class", "clicked-mouse-date-line")
             .style("stroke", "white")
             .style("stroke-width", 1)
+            .style("shape-rendering", "crispEdges")
             .attr("opacity", "0")
             .attr("x1", d => xScale(0))
             .attr("x2", d => xScale(0))
-            .attr("y1", d => this.yScale(0) + 1)
-            .attr("y2", d => this.yScale(0) + 6);
+            .attr("y1", d => this.yScale(0) + 9)
+            .attr("y2", d => this.yScale(0) + 14);
 
         let mouseG = this.svg.append("g")
             .attr("class", "mouse-over-effects");
@@ -111,8 +117,12 @@ class Epicurve {
             })
             .on('mousemove', function () { // mouse moving over canvas
                 let mouse = d3.mouse(this);
-                let index = Math.floor(((mouse[0] - (xScale.step() / 2)) / xScale.step()));
+                //console.log("mouse: " + mouse);
+                //console.log("xScale.step(): " + xScale.step());
+                let index = Math.floor(((mouse[0] - xScale("2020-02-17")) / xScale.step()));
+                //console.log("index: " + index);
                 let scaledX = xScale.domain()[index];
+                //console.log("scaledX: " + scaledX);
                 let opacity = "1";
                 if (!scaledX) {
                     scaledX = xScale.domain()[xScale.domain().length - 1];
@@ -142,7 +152,7 @@ class Epicurve {
             })
             .on('click', function () {
                 let mouse = d3.mouse(this);
-                let index = Math.floor(((mouse[0] - (xScale.step() / 2)) / xScale.step()));
+                let index = Math.floor(((mouse[0] - xScale("2020-02-17")) / xScale.step()));
                 let scaledX = xScale.domain()[index];
                 if (!scaledX) {
                     scaledX = xScale.domain()[xScale.domain().length - 1];
@@ -169,6 +179,8 @@ class Epicurve {
                     .attr("opacity", "1")
                     .attr("x1", xScale(scaledX) + (xScale.step() / 2))
                     .attr("x2", xScale(scaledX) + (xScale.step() / 2));
+
+                d3.selectAll(".hover-effects").style("opacity", "0");
             });
     }
 
@@ -176,9 +188,35 @@ class Epicurve {
         let filteredDates = this.xScale.domain()
             .map(d => d+"T00:00:00")
             .filter(d => new Date(d).getDate().toString().padStart(2, '0') === '01')
-            .map(d => d.substring(0,10))
+            .map(d => d.substring(0,10));
 
         console.log("filteredDates: " + filteredDates);
+
+        let enterDates = this.svg.selectAll(".month-lines").data(filteredDates).enter();
+
+        enterDates
+            .append("line")
+            .attr("class", "month-lines")
+            .style("stroke", "white")
+            .style("shape-rendering", "crispEdges")
+            .style("stroke-width", 1)
+            .style("stroke-dasharray", ("3, 3"))
+            .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth()/2))
+            .attr("y1", 0)
+            .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth()/2))
+            .attr("y2", this.height)
+            .attr("opacity", "0.2");
+
+        enterDates
+            .append("text")
+            .attr("class", "month-text")
+            .attr("x", d => -1)
+            .attr("y", d => this.xScale(d) + this.xScale.bandwidth() + 7)
+            .text(d => this.monthNames[new Date(d).getMonth()+1])
+            .attr("text-anchor", "end")
+            .style("font", "10px sans-serif")
+            .style("alignment-baseline", "top")
+            .attr("transform", "rotate(-90)");
     }
 
     initMouseOverLine(d3This, clazz, color, xScale, yScale) {
@@ -1229,7 +1267,7 @@ function updateMouseOverLine(d, d3This, clazz, color, xCallback, yCallback, xSca
     let lineSelect = d3.selectAll(".hover-effects line." + clazz);
 
     lineSelect
-        .attr("x1", xScale(xCallback(d)) + 9)
+        .attr("x1", xScale(xCallback(d)) + 8)
         .attr("y1", yScale(yCallback(d)))
         .attr("x2", d3.select(d3This.parentNode.parentNode).attr("width") - 83)
         .attr("y2", yScale(yCallback(d)));
