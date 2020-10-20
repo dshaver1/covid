@@ -35,6 +35,9 @@ class Epicurve {
     initDateSelect(xScale) {
         let constructorPrevNode = this.prevNode;
         let constructorCurrNode = this.currentNode;
+        let constructorXScale = this.xScale;
+        let constructorYScale = this.yScale;
+        let constructorThis = this;
         let earliestDate = new Date("2020-05-14");
         let lastAvailableDate = xScale.domain()[xScale.domain().length - 1]
 
@@ -135,9 +138,9 @@ class Epicurve {
                 }
 
                 d3.selectAll(".hover-effects").style("opacity", opacity);
-                dispatchMouseEvents("reportedcasesbar", scaledX, constructorPrevNode, constructorCurrNode);
-                dispatchMouseEvents("caseline-circle", scaledX, constructorPrevNode, constructorCurrNode);
-                dispatchMouseEvents("avgline-circle", scaledX, constructorPrevNode, constructorCurrNode);
+
+                let d = d3.selectAll(".caseline").filter(d => d.label === scaledX).data()[0];
+                constructorThis.updateMouseOverLine(d)
 
                 d3.select(".mouse-line")
                     .attr("d", function () {
@@ -188,9 +191,9 @@ class Epicurve {
 
     initDateLines() {
         let filteredDates = this.xScale.domain()
-            .map(d => d+"T00:00:00")
+            .map(d => d + "T00:00:00")
             .filter(d => new Date(d).getDate().toString().padStart(2, '0') === '01')
-            .map(d => d.substring(0,10));
+            .map(d => d.substring(0, 10));
 
         console.log("filteredDates: " + filteredDates);
 
@@ -203,9 +206,9 @@ class Epicurve {
             .style("shape-rendering", "crispEdges")
             .style("stroke-width", 1)
             .style("stroke-dasharray", ("3, 3"))
-            .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth()/2))
+            .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
             .attr("y1", 0)
-            .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth()/2))
+            .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
             .attr("y2", this.height)
             .attr("opacity", "0.2");
 
@@ -214,52 +217,109 @@ class Epicurve {
             .attr("class", "month-text")
             .attr("x", d => -1)
             .attr("y", d => this.xScale(d) + this.xScale.bandwidth() + 7)
-            .text(d => this.monthNames[new Date(d).getMonth()+1])
+            .text(d => this.monthNames[new Date(d).getMonth() + 1])
             .attr("text-anchor", "end")
             .style("font", "10px sans-serif")
             .style("alignment-baseline", "top")
             .attr("transform", "rotate(-90)");
     }
 
-    initMouseOverLine(d3This, clazz, color, xScale, yScale) {
-        let hoverG = this.svg.append("g")
-            .attr("class", "hover-effects");
+    /**
+     * Transforms the standard epicurve datapoint into a structure to be read by the hover code.
+     */
+    transformToHoverData(d) {
+        if (!d) {
+            return [];
+        }
 
-        // Render y text background
-        hoverG.append("svg:rect")
-            .attr("class", clazz)
-            .attr("x", this.width + 8)
-            .attr("y", yScale(0))
-            .attr("width", 45)
-            .attr("height", 12)
-            //.style("fill", "#fff")
-            .style("fill", "#103052")
-            .attr("opacity", "0");
+        return [{clazz: "reportedcasesbar", color: "#325b8d", label: d.label, y: d.reportedCases},
+            {clazz: "caseline", color: "#35a5ff", label: d.label, y: d.cases},
+            {clazz: "avgline", color: "#ff7f0e", label: d.label, y: d.movingAvg}]
+    }
 
-        // Render line
-        hoverG.append("line")
-            .attr("class", clazz)
-            .style("stroke", color)
-            .style("shape-rendering", "crispEdges")
-            .style("stroke-width", 1)
-            .attr("x1", xScale("2020-05-13") - 10)
-            .attr("y1", yScale(0))
-            .attr("x2", xScale("2020-05-13") + 2)
-            .attr("y2", yScale(0))
-            .attr("opacity", "0");
+    /**
+     * Handles rendering the hover effects.
+     * @param data should be in standard epicurve format.
+     */
+    updateMouseOverLine(data) {
+        const thisWidth = this.width;
+        const line = d3.line()
+            .x(d => d.x)
+            .y(d => d.y);
 
-        // Render text
-        hoverG.append("text")
-            .attr("x", this.width + 17)
-            .attr("alignment-baseline", "start")
-            .attr("y", yScale(0) + 9)
-            .attr("dx", "-.8em")
-            .attr("dy", "-.55em")
-            .attr("class", clazz)
-            .style("fill", color)
-            .style("font", "10px sans-serif")
-            .text("0")
-            .attr("opacity", "0");
+        // Get around scoping issues...
+        let blockYscale = this.yScale;
+        let blockXscale = this.xScale;
+
+        // We'll call this in the updateGroup. Builds the path from the hovered point to the axis on the right.
+        const buildPath = d => {
+            return [{x: blockXscale(d.label) + 6, y: blockYscale(d.y)},   // originating point
+                {x: thisWidth, y: blockYscale(d.y)},                 // axis point
+                {x: thisWidth + 6, y: blockYscale(d.y) + 6}]         // right-most point with any offset applied for crowding.
+        }
+
+        // Convert the incoming data to the format used by the hover join below.
+        let rawHoverData = this.transformToHoverData(data, d => d.clazz);
+
+        // Dispatch mouseover events for the individual points. Note that we're relying on a custom data attribute selector [isHover="1"]. The event handlers
+        // must set this attribute is needed.
+        rawHoverData.forEach(hoverD => {
+            let unHover = d3.selectAll("." + hoverD.clazz + "[isHover=\"1\"]");
+            unHover.dispatch("mouseout");
+
+            let hover = d3.selectAll("." + hoverD.clazz).filter(d => d.label === data.label);
+            hover.dispatch("click");
+        });
+
+        this.svg.selectAll(".hover-effects")
+            .data(rawHoverData)
+            .join(enter => {
+                    // Create group to put the elements under
+                    let enterGroup = enter.append("g").attr("class", "hover-effects");
+
+                    // Render y text background
+                    enterGroup.append("svg:rect")
+                        .attr("class", d => d.clazz + "-hover")
+                        .attr("x", this.width + 8)
+                        .attr("y", d => blockYscale(d.y) - 6)
+                        .attr("width", 45)
+                        .attr("height", 12)
+                        .style("fill", "#103052")
+                        .attr("opacity", "1");
+
+                    // Render line
+                    enterGroup.append("path")
+                        .attr("class", d => d.clazz + "-hover")
+                        .style("stroke", d => d.color)
+                        .style("shape-rendering", "crispEdges")
+                        .style("stroke-width", 1)
+                        .style("fill", "none")
+                        .attr("d", d => line(buildPath(d)))
+                        .attr("opacity", "1");
+
+                    // Render text
+                    enterGroup.append("text")
+                        .attr("class", d => d.clazz + "-hover")
+                        .attr("x", this.width + 17)
+                        .attr("alignment-baseline", "start")
+                        .attr("y", d => blockYscale(d.y) + 9)
+                        .attr("dx", "-.8em")
+                        .attr("dy", "-.55em")
+                        .style("fill", d => d.color)
+                        .style("font", "10px sans-serif")
+                        .text(d => d.y)
+                        .attr("opacity", "1");
+                },
+                updateGroup => {
+                    // Update positions
+                    updateGroup.select("rect").attr("y", d => blockYscale(d.y) - 6);
+
+                    updateGroup.select("path").attr("d", d => line(buildPath(d)));
+
+                    updateGroup.select("text")
+                        .attr("y", d => blockYscale(d.y) + 9)
+                        .text(d => d.y);
+                });
     }
 
     createAxisLabels(xLabel, yLabel) {
@@ -375,12 +435,10 @@ class Epicurve {
             .attr('r', 2)
             .style("visibility", d => isVisible ? "visible" : "hidden")
             .on('click', function (d, i) {
-                updateMouseOverLine(d, this, clazz + "-hover", color, xCallback, yCallback, thisXScale, dYScale);
-
-                d3.select(this).attr("r", 5);
+                d3.select(this).attr("r", 5).attr("isHover", "1");
             })
             .on('mouseout', function (d, i) {
-                d3.select(this).attr("r", 2);
+                d3.select(this).attr("r", 2).attr("isHover", "0");
             });
 
 
@@ -438,13 +496,13 @@ class Epicurve {
             .on('click', function (d) {
                 d3.select(this)
                     .attr("opacity", "1")
+                    .attr("isHover", "1")
                     .attr("d", d3.symbol().size(100).type(d3.symbolDiamond));
-
-                updateMouseOverLine(d, this, clazz + "-hover", color, xCallback, yCallback, thisXScale, thisYScale);
             })
             .on('mouseout', function (d, i) {
                 d3.select(this)
                     .attr("opacity", "0.5")
+                    .attr("isHover", "0")
                     .attr("d", d3.symbol().size(20).type(d3.symbolDiamond));
             });
 
@@ -1268,36 +1326,6 @@ function handleDeathMouseOut(d, i, d3This, color) {
         .style("fill", color)
         .attr("opacity", "0");
     tip.hide(d, i);
-}
-
-function updateMouseOverLine(d, d3This, clazz, color, xCallback, yCallback, xScale, yScale) {
-    // Render line
-    let lineSelect = d3.selectAll(".hover-effects line." + clazz);
-
-    lineSelect
-        .attr("x1", xScale(xCallback(d)) + 8)
-        .attr("y1", yScale(yCallback(d)))
-        .attr("x2", d3.select(d3This.parentNode.parentNode).attr("width") - 83)
-        .attr("y2", yScale(yCallback(d)));
-
-    lineSelect.attr("opacity", "1")
-
-    // Render y text background
-    let rectSelect = d3.selectAll(".hover-effects rect." + clazz);
-
-    rectSelect
-        .attr("y", yScale(yCallback(d)) - 6);
-
-    rectSelect.attr("opacity", "1")
-
-    // Render text
-    let textSelect = d3.selectAll(".hover-effects text." + clazz);
-
-    textSelect
-        .attr("y", yScale(yCallback(d)) + 9)
-        .text(yCallback(d).toLocaleString());
-
-    textSelect.attr("opacity", "1")
 }
 
 function dispatchMouseEvents(clazz, scaledX, prevNode, currentNode) {

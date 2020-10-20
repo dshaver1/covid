@@ -125,7 +125,7 @@
         arrow: true,
         placement: 'bottom'
     });
-    
+
     let selectedCounty = getCountyFromUrl(window.location.search);
     let reportDateToId = [];
     let epicurve, timeData, chartData, summaryData, sliderTime, chart, tip;
@@ -168,18 +168,20 @@
     epicurve = new Epicurve(dphSvg, width, height, dphxScale, dphyScale, dphxAxis, dphyAxis);
 
     Promise.all([
-        d3.csv("reports/v2/csv/"+selectedCounty+"/summary_"+selectedCounty+".csv"),
-        d3.csv("reports/v2/csv/"+selectedCounty+"/cases_"+selectedCounty+".csv"),
-        d3.csv("reports/v2/csv/"+selectedCounty+"/deaths_"+selectedCounty+".csv"),
-        d3.csv("reports/v2/csv/"+selectedCounty+"/caseDeltas_"+selectedCounty+".csv"),
-        d3.csv("reports/v2/csv/"+selectedCounty+"/deathDeltas_"+selectedCounty+".csv"),
-        d3.csv("reports/v2/csv/"+selectedCounty+"/movingAvgs_"+selectedCounty+".csv"),
-        d3.csv("reports/v2/csv/"+selectedCounty+"/histogramCases_"+selectedCounty+".csv"),
+        d3.csv("reports/v2/csv/" + selectedCounty + "/summary_" + selectedCounty + ".csv"),
+        d3.csv("reports/v2/csv/" + selectedCounty + "/cases_" + selectedCounty + ".csv"),
+        d3.csv("reports/v2/csv/" + selectedCounty + "/deaths_" + selectedCounty + ".csv"),
+        d3.csv("reports/v2/csv/" + selectedCounty + "/caseDeltas_" + selectedCounty + ".csv"),
+        d3.csv("reports/v2/csv/" + selectedCounty + "/deathDeltas_" + selectedCounty + ".csv"),
+        d3.csv("reports/v2/csv/" + selectedCounty + "/movingAvgs_" + selectedCounty + ".csv"),
+        d3.csv("reports/v2/csv/" + selectedCounty + "/histogramCases_" + selectedCounty + ".csv"),
     ]).then(function (files) {
         summaryData = files[0];
         chartData = epicurve.parseChartData(summaryData, files[1], files[2], files[3], files[4], null, files[5], files[6]);
         let latestSummary = summaryData[summaryData.length - 1];
         let latestDate = latestSummary.reportDate;
+        let latestChartData = chartData[latestSummary.id];
+        let latestPoint = latestChartData[latestChartData.length-1];
         summaryData.forEach(d => reportDateToId[d.reportDate] = d.id)
 
         console.log("Got files! files[0].length: " + summaryData.length + ", files[1].length: " + chartData.length);
@@ -201,7 +203,7 @@
         }));
         dphyScale.domain([epicurve.getYScaleMin(getLastElement(chartData)), epicurve.getYScaleMax(getLastElement(chartData))]);
         //drawAxisLines();
-        
+
         // add DPH axis
         epicurve.createBottomAxis(chartData);
         epicurve.createRightSideAxis("Cases Per Day", true);
@@ -209,13 +211,11 @@
         let dateString = getLastElement(timeData);
 
         updateAllGraphs(dateString);
-        
-        epicurve.initDateSelect(epicurve.xScale);
+
         epicurve.initDateLines();
-        epicurve.initMouseOverLine(this, "reportedcasesbar-hover", "#325b8d", epicurve.xScale, epicurve.yScale);
-        epicurve.initMouseOverLine(this, "caseline-hover", "#35a5ff", epicurve.xScale, epicurve.yScale);
-        epicurve.initMouseOverLine(this, "avgline-hover", "#ff7f0e", epicurve.xScale, epicurve.yScale);
-        
+        epicurve.initDateSelect(epicurve.xScale);
+        epicurve.updateMouseOverLine(latestPoint);
+
         epicurve.createTooltips();
 
         let infoToolTip = createInfoTooltip();
@@ -273,8 +273,8 @@
 
         return infoToolTip;
     }
-    
-    let slow = _.throttle(function(d) {
+
+    let slow = _.throttle(function (d) {
         console.log("Updating all graphs for dateString " + d);
         let offsetDate = epicurve.applyDateOffset(d, 13);
 
@@ -289,21 +289,23 @@
     function updateAllGraphs(dateString) {
         slow(dateString);
     }
-    
-    addEventListener("newDateEvent", function(event) {
+
+    addEventListener("newDateEvent", function (event) {
         let newReportDate = event.detail.label;
         console.log("newDate event! " + newReportDate)
-        
+
+/*
         epicurve.prevNode["reportedcasesbar"].dispatch("mouseout");
         epicurve.currentNode["reportedcasesbar"].dispatch("mouseout");
         epicurve.prevNode["caseline-circle"].dispatch("mouseout");
         epicurve.currentNode["caseline-circle"].dispatch("mouseout");
         epicurve.prevNode["avgline-circle"].dispatch("mouseout");
         epicurve.currentNode["avgline-circle"].dispatch("mouseout");
-        
+*/
+
         let newId = reportDateToId[newReportDate];
         updateAllGraphs(newId);
-        
+
         d3.select('p#value-time').text(newId);
     })
 
