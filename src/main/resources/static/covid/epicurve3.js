@@ -114,13 +114,19 @@ class Epicurve {
                         return d;
                     });
 
-                d3.select(".mouse-date")
-                    .attr("opacity", "1")
+                d3.selectAll(".mouse-date")
+                    .attr("opacity", "0")
                     .text(scaledX)
                     .attr("y", mouse[0]);
             })
             .on('start', function (d) {
-                console.log('drag start');
+                handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
+
+                let dragStartD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                constructorThis.updateMouseOverLine(dragStartD);
+
+                d3.selectAll(".mouse-date")
+                    .attr("opacity", "0")
             })
             .on('end', function (d) {
                 console.log('drag end');
@@ -198,7 +204,7 @@ class Epicurve {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
                 let d = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
-                constructorThis.updateMouseOverLine(d)
+                constructorThis.updateMouseOverLine(d);
             })
             .on('wheel', d => {
                 let wheelDelta = d3.event.deltaY;
@@ -321,7 +327,7 @@ class Epicurve {
 
         // We'll call this in the updateGroup. Builds the path from the hovered point to the axis on the right.
         const buildPath = d => {
-            return [{x: blockXscale(d.label) + 6, y: blockYscale(d.y)},              // originating point
+            return [{x: blockXscale(d.label) + 8, y: blockYscale(d.y)},              // originating point
                 {x: thisWidth, y: blockYscale(d.y)},                                 // axis point
                 {x: thisWidth + 6, y: blockYscale(d.y + d.offset)}]     // right-most point with any offset applied for crowding.
         }
@@ -704,8 +710,6 @@ class Epicurve {
         selectedData
             .merge(selectedData)
             .attr("width", this.xScale.bandwidth() * (offset + 1))
-            .transition()
-            .duration(90)
             .attr("x", d => this.xScale(d))
             .transition()
             .attr("opacity", "0.05");
@@ -728,8 +732,6 @@ class Epicurve {
         // update boundary line location
         boundaryLineSelectedData
             .merge(boundaryLineSelectedData)
-            .transition()
-            .duration(90)
             .attr("x1", d => this.xScale(d))
             .attr("x2", d => this.xScale(d));
 
@@ -749,8 +751,6 @@ class Epicurve {
 
         textSelectedData
             .merge(textSelectedData)
-            .transition()
-            .duration(90)
             .attr("y", d => this.xScale(d.date) + this.xScale.bandwidth() + 5);
     }
 
