@@ -270,9 +270,10 @@ class Epicurve {
             return [];
         }
 
-        return [{clazz: "reportedcasesbar", color: "#325b8d", label: d.label, y: d.reportedCases, offset: 0},
-            {clazz: "caseline", color: "#35a5ff", label: d.label, y: d.cases, offset: 0},
-            {clazz: "avgline", color: "#ff7f0e", label: d.label, y: d.movingAvg, offset: 0}]
+        return [{clazz: "reportedcasesbar", color: () => "#325b8d", label: d.label, y: d.reportedCases, offset: 0},
+            {clazz: "caseline", color: () => "#35a5ff", label: d.label, y: d.cases, offset: 0},
+            {clazz: "avgline", color: () => "#ff7f0e", label: d.label, y: d.movingAvg, offset: 0},
+            {clazz: "casedeltabar", color: (f) => f.y < 0 ? "#777" : "#35a5ff", label: d.label, y: d.casesDelta, offset: 0, addOnText: "Δ"}]
     }
 
     /**
@@ -355,7 +356,7 @@ class Epicurve {
                     // Render line
                     enterGroup.append("path")
                         .attr("class", d => d.clazz + "-hover")
-                        .style("stroke", d => d.color)
+                        .style("stroke", d => d.color(d))
                         .style("shape-rendering", "crispEdges")
                         .style("stroke-width", 1)
                         .style("fill", "none")
@@ -370,20 +371,24 @@ class Epicurve {
                         .attr("y", d => blockYScale(d.y) + 9)
                         .attr("dx", "-.8em")
                         .attr("dy", "-.55em")
-                        .style("fill", d => d.color)
+                        .style("fill", d => d.color(d))
                         .style("font", "10px sans-serif")
-                        .text(d => d.y)
+                        .text(d => d.addOnText ? d.y + "" + d.addOnText : d.y)
                         .attr("opacity", "1");
                 },
                 updateGroup => {
                     // Update positions
-                    updateGroup.select("rect").attr("y", d => blockYScale(d.y + d.offset) - 6);
+                    updateGroup.select("rect")
+                        .attr("y", d => blockYScale(d.y + d.offset) - 6);
 
-                    updateGroup.select("path").attr("d", d => line(buildPath(d)));
+                    updateGroup.select("path")
+                        .attr("d", d => line(buildPath(d)))
+                        .style("stroke", d => d.color(d));
 
                     updateGroup.select("text")
                         .attr("y", d => blockYScale(d.y + d.offset) + 9)
-                        .text(d => d.y);
+                        .style("fill", d => d.color(d))
+                        .text(d => d.addOnText ? d.y + "" + d.addOnText : d.y);
                 });
     }
 
