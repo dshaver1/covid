@@ -196,6 +196,9 @@ class Epicurve {
             })
             .on('click', function () {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
+
+                let d = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                constructorThis.updateMouseOverLine(d)
             })
             .on('wheel', d => {
                 let wheelDelta = d3.event.deltaY;
@@ -211,8 +214,13 @@ class Epicurve {
                 if (targetDate) {
                     handleMouseClick(targetDate, xScale);
 
-                    let d = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
-                    constructorThis.updateMouseOverLine(d)
+                    let clickedD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.clicked-mouse-date").text()).data()[0];
+                    let mouseD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                    if (!mouseD || new Date(clickedD.label) <= new Date(mouseD.label)) {
+                        constructorThis.updateMouseOverLine(clickedD);
+                    } else {
+                        constructorThis.updateMouseOverLine(mouseD);
+                    }
                 }
             })
             .call(drag);
@@ -240,13 +248,13 @@ class Epicurve {
             .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
             .attr("y1", 0)
             .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
-            .attr("y2", this.height+6)
+            .attr("y2", this.height + 6)
             .attr("opacity", "0.2");
 
         enterDates
             .append("text")
             .attr("class", "month-text")
-            .attr("x", d => -this.height-7)
+            .attr("x", d => -this.height - 7)
             .attr("y", d => this.xScale(d) + this.xScale.bandwidth())
             .text(d => this.monthNames[new Date(d).getMonth() + 1])
             .attr("text-anchor", "end")
@@ -263,9 +271,9 @@ class Epicurve {
             return [];
         }
 
-        return [{clazz: "reportedcasesbar", color: "#325b8d", label: d.label, y: d.reportedCases},
-            {clazz: "caseline", color: "#35a5ff", label: d.label, y: d.cases},
-            {clazz: "avgline", color: "#ff7f0e", label: d.label, y: d.movingAvg}]
+        return [{clazz: "reportedcasesbar", color: "#325b8d", label: d.label, y: d.reportedCases, offset: 0},
+            {clazz: "caseline", color: "#35a5ff", label: d.label, y: d.cases, offset: 0},
+            {clazz: "avgline", color: "#ff7f0e", label: d.label, y: d.movingAvg, offset: 0}]
     }
 
     /**
@@ -279,6 +287,7 @@ class Epicurve {
         }
         //console.log("UpdateMouseOverLine data: " + data.label);
 
+        const minDistance = 150;
         const thisWidth = this.width;
         const line = d3.line()
             .x(d => d.x)
@@ -288,15 +297,34 @@ class Epicurve {
         let blockYscale = this.yScale;
         let blockXscale = this.xScale;
 
-        // We'll call this in the updateGroup. Builds the path from the hovered point to the axis on the right.
-        const buildPath = d => {
-            return [{x: blockXscale(d.label) + 6, y: blockYscale(d.y)},   // originating point
-                {x: thisWidth, y: blockYscale(d.y)},                 // axis point
-                {x: thisWidth + 6, y: blockYscale(d.y) + 6}]         // right-most point with any offset applied for crowding.
+        // Convert the incoming data to the format used by the hover join below.
+        let rawHoverData = this.transformToHoverData(data).sort((d1, d2) => {
+            if (d1.y < d2.y) {
+                return -1;
+            }
+            if (d1.y > d2.y) {
+                return 1;
+            }
+            return 0;
+        });
+
+        // Add offsets to avoid overlapping text
+        for (let i = 1; i < rawHoverData.length; i++) {
+            let prev = rawHoverData[i - 1];
+            let curr = rawHoverData[i];
+            let diff = curr.y - prev.y - prev.offset;
+
+            if (diff < minDistance) {
+                rawHoverData[i].offset = minDistance - diff;
+            }
         }
 
-        // Convert the incoming data to the format used by the hover join below.
-        let rawHoverData = this.transformToHoverData(data);
+        // We'll call this in the updateGroup. Builds the path from the hovered point to the axis on the right.
+        const buildPath = d => {
+            return [{x: blockXscale(d.label) + 6, y: blockYscale(d.y)},              // originating point
+                {x: thisWidth, y: blockYscale(d.y)},                                 // axis point
+                {x: thisWidth + 6, y: blockYscale(d.y + d.offset)}]     // right-most point with any offset applied for crowding.
+        }
 
         // Dispatch mouseover events for the individual points. Note that we're relying on a custom data attribute selector [isHover="1"]. The event handlers
         // must set this attribute is needed.
@@ -349,12 +377,12 @@ class Epicurve {
                 },
                 updateGroup => {
                     // Update positions
-                    updateGroup.select("rect").attr("y", d => blockYscale(d.y) - 6);
+                    updateGroup.select("rect").attr("y", d => blockYscale(d.y + d.offset) - 6);
 
                     updateGroup.select("path").attr("d", d => line(buildPath(d)));
 
                     updateGroup.select("text")
-                        .attr("y", d => blockYscale(d.y) + 9)
+                        .attr("y", d => blockYscale(d.y + d.offset) + 9)
                         .text(d => d.y);
                 });
     }
@@ -909,9 +937,9 @@ class Epicurve {
         let lastElement = getLastElement(data);
         let xAxisTickValues = [];
 
-/*        for (let i = 0; i < lastElement.length; i += 7) {
-            xAxisTickValues.push(lastElement[i].label);
-        }*/
+        /*        for (let i = 0; i < lastElement.length; i += 7) {
+                    xAxisTickValues.push(lastElement[i].label);
+                }*/
 
         return xAxisTickValues;
     }
