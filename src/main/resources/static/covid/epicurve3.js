@@ -25,8 +25,8 @@ class Epicurve {
             .style("shape-rendering", "crispEdges")
             .attr("class", "prelim-region")
             .attr("x", d => this.xScale(d))
-            .attr("y", d => 0)
-            .attr("height", d => this.height)
+            .attr("y", 0)
+            .attr("height", this.height)
             .attr("width", this.xScale.bandwidth())
             .style("fill", "#c6d1ff")
             .attr("opacity", "0");
@@ -93,13 +93,13 @@ class Epicurve {
             .style("stroke-width", 1)
             .style("shape-rendering", "crispEdges")
             .attr("opacity", "0")
-            .attr("x1", d => xScale(0))
-            .attr("x2", d => xScale(0))
-            .attr("y1", d => this.yScale(0) + 9)
-            .attr("y2", d => this.yScale(0) + 14);
+            .attr("x1", xScale(0))
+            .attr("x2", xScale(0))
+            .attr("y1", this.yScale(0) + 9)
+            .attr("y2", this.yScale(0) + 14);
 
         let drag = d3.drag()
-            .on('drag', function (d) {
+            .on('drag', function() {
                 let mouse = d3.mouse(this);
                 let scaledX = getDateAtMouse(mouse, xScale);
                 handleMouseClick(scaledX, xScale);
@@ -109,7 +109,7 @@ class Epicurve {
 
                 d3.select(".mouse-line")
                     .attr("d", function () {
-                        var d = "M" + mouse[0] + "," + (height + 6);
+                        let d = "M" + mouse[0] + "," + (height + 6);
                         d += " " + mouse[0] + "," + 0;
                         return d;
                     });
@@ -119,7 +119,7 @@ class Epicurve {
                     .text(scaledX)
                     .attr("y", mouse[0]);
             })
-            .on('start', function (d) {
+            .on('start', function() {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
                 let dragStartD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
@@ -128,7 +128,7 @@ class Epicurve {
                 d3.selectAll(".mouse-date")
                     .attr("opacity", "0")
             })
-            .on('end', function (d) {
+            .on('end', function() {
                 console.log('drag end');
             });
 
@@ -173,23 +173,16 @@ class Epicurve {
             .on('mousemove', function () { // mouse moving over canvas
                 let mouse = d3.mouse(this);
                 let scaledX = getDateAtMouse(mouse, xScale);
-                let opacity = "1";
                 if (!scaledX) {
                     scaledX = xScale.domain()[xScale.domain().length - 1];
                 }
-
-                if (new Date(scaledX) > new Date(d3.select(".clicked-mouse-date").text())) {
-                    opacity = "0";
-                }
-
-                //d3.selectAll(".hover-effects").style("opacity", opacity);
 
                 let d = d3.selectAll(".caseline").filter(d => d.label === scaledX).data()[0];
                 constructorThis.updateMouseOverLine(d)
 
                 d3.select(".mouse-line")
                     .attr("d", function () {
-                        var d = "M" + mouse[0] + "," + (height + 6);
+                        let d = "M" + mouse[0] + "," + (height + 6);
                         d += " " + mouse[0] + "," + 0;
                         return d;
                     });
@@ -200,13 +193,13 @@ class Epicurve {
                     .attr("y", mouse[0]);
 
             })
-            .on('click', function () {
+            .on('click', function() {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
                 let d = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                 constructorThis.updateMouseOverLine(d);
             })
-            .on('wheel', d => {
+            .on('wheel', function() {
                 let wheelDelta = d3.event.deltaY;
                 let direction = wheelDelta < 0 ? '-1' : '1';
                 console.log("Scrolled " + wheelDelta + " " + direction);
@@ -222,7 +215,7 @@ class Epicurve {
 
                     let clickedD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.clicked-mouse-date").text()).data()[0];
                     let mouseD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
-                    if (!mouseD || new Date(clickedD.label) <= new Date(mouseD.label)) {
+                    if (!mouseD || (clickedD && new Date(clickedD.label) <= new Date(mouseD.label))) {
                         constructorThis.updateMouseOverLine(clickedD);
                     } else {
                         constructorThis.updateMouseOverLine(mouseD);
@@ -260,7 +253,7 @@ class Epicurve {
         enterDates
             .append("text")
             .attr("class", "month-text")
-            .attr("x", d => -this.height - 7)
+            .attr("x", -this.height - 7)
             .attr("y", d => this.xScale(d) + this.xScale.bandwidth())
             .text(d => this.monthNames[new Date(d).getMonth() + 1])
             .attr("text-anchor", "end")
@@ -300,8 +293,8 @@ class Epicurve {
             .y(d => d.y);
 
         // Get around scoping issues...
-        let blockYscale = this.yScale;
-        let blockXscale = this.xScale;
+        let blockYScale = this.yScale;
+        let blockXScale = this.xScale;
 
         // Convert the incoming data to the format used by the hover join below.
         let rawHoverData = this.transformToHoverData(data).sort((d1, d2) => {
@@ -327,9 +320,9 @@ class Epicurve {
 
         // We'll call this in the updateGroup. Builds the path from the hovered point to the axis on the right.
         const buildPath = d => {
-            return [{x: blockXscale(d.label) + 7, y: blockYscale(d.y)},              // originating point
-                {x: thisWidth, y: blockYscale(d.y)},                                 // axis point
-                {x: thisWidth + 6, y: blockYscale(d.y + d.offset)}]     // right-most point with any offset applied for crowding.
+            return [{x: blockXScale(d.label) + 7, y: blockYScale(d.y)},              // originating point
+                {x: thisWidth, y: blockYScale(d.y)},                                 // axis point
+                {x: thisWidth + 6, y: blockYScale(d.y + d.offset)}]     // right-most point with any offset applied for crowding.
         }
 
         // Dispatch mouseover events for the individual points. Note that we're relying on a custom data attribute selector [isHover="1"]. The event handlers
@@ -352,7 +345,7 @@ class Epicurve {
                     enterGroup.append("svg:rect")
                         .attr("class", d => d.clazz + "-hover")
                         .attr("x", this.width + 8)
-                        .attr("y", d => blockYscale(d.y) - 6)
+                        .attr("y", d => blockYScale(d.y) - 6)
                         .attr("width", 45)
                         .attr("height", 12)
                         .style("fill", "#103052")
@@ -373,7 +366,7 @@ class Epicurve {
                         .attr("class", d => d.clazz + "-hover")
                         .attr("x", this.width + 17)
                         .attr("alignment-baseline", "start")
-                        .attr("y", d => blockYscale(d.y) + 9)
+                        .attr("y", d => blockYScale(d.y) + 9)
                         .attr("dx", "-.8em")
                         .attr("dy", "-.55em")
                         .style("fill", d => d.color)
@@ -383,12 +376,12 @@ class Epicurve {
                 },
                 updateGroup => {
                     // Update positions
-                    updateGroup.select("rect").attr("y", d => blockYscale(d.y + d.offset) - 6);
+                    updateGroup.select("rect").attr("y", d => blockYScale(d.y + d.offset) - 6);
 
                     updateGroup.select("path").attr("d", d => line(buildPath(d)));
 
                     updateGroup.select("text")
-                        .attr("y", d => blockYscale(d.y + d.offset) + 9)
+                        .attr("y", d => blockYScale(d.y + d.offset) + 9)
                         .text(d => d.y);
                 });
     }
@@ -456,7 +449,6 @@ class Epicurve {
     updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, yScale) {
         let dYScale = yScale ? yScale : this.yScale;
         let selectedData = this.svg.selectAll("." + clazz).data([data], d => xCallback(d));
-        let thisXScale = this.xScale;
 
         // Draw initial line
         selectedData.enter()
@@ -482,9 +474,9 @@ class Epicurve {
                 // Don't draw the line if it's in the preliminary region.
                 .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart)));
 
-        var circleClass = clazz + '-circle';
-        var isVisible = "visible" === this.svg.selectAll('.' + clazz).style("visibility");
-        var selectedCircles = this.svg.selectAll('.' + circleClass).data(data);
+        let circleClass = clazz + '-circle';
+        let isVisible = "visible" === this.svg.selectAll('.' + clazz).style("visibility");
+        let selectedCircles = this.svg.selectAll('.' + circleClass).data(data);
 
         // Removed data
         selectedCircles.exit().transition().duration(90).style("opacity", 0).remove();
@@ -499,11 +491,11 @@ class Epicurve {
             .attr("fill", color)
             .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
             .attr('r', 1)
-            .style("visibility", d => isVisible ? "visible" : "hidden")
-            .on('click', function (d, i) {
+            .style("visibility", isVisible ? "visible" : "hidden")
+            .on('click', function() {
                 d3.select(this).attr("r", 5).attr("isHover", "1");
             })
-            .on('mouseout', function (d, i) {
+            .on('mouseout', function() {
                 d3.select(this).attr("r", 1).attr("isHover", "0");
             });
 
@@ -520,8 +512,6 @@ class Epicurve {
 
     updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
         let filteredData = data.filter(d => !isNaN(yCallback(d)));
-        let thisXScale = this.xScale;
-        let thisYScale = this.yScale;
 
         filteredData.forEach(d => {
             d.x = xCallback(d);
@@ -553,13 +543,13 @@ class Epicurve {
             .attr("fill", color)
             .attr("opacity", "0.5")
             .attr("transform", d => "translate(" + d.scaledX + "," + d.scaledY + ")")
-            .on('click', function (d) {
+            .on('click', function() {
                 d3.select(this)
                     .attr("opacity", "1")
                     .attr("isHover", "1")
                     .attr("d", d3.symbol().size(100).type(d3.symbolDiamond));
             })
-            .on('mouseout', function (d, i) {
+            .on('mouseout', function() {
                 d3.select(this)
                     .attr("opacity", "0.5")
                     .attr("isHover", "0")
@@ -586,9 +576,9 @@ class Epicurve {
             .attr("class", clazz)
             .style("stroke", color)
             .style("stroke-width", 2)
-            .attr("x1", d => this.xScale(0))
+            .attr("x1", this.xScale(0))
             .attr("y1", d => this.yScale(mid - (mid * d)))
-            .attr("x2", d => this.xScale(right))
+            .attr("x2", this.xScale(right))
             .attr("y2", d => this.yScale((mid * d) + mid));
 
         selectedLine.merge(selectedLine)
@@ -603,7 +593,7 @@ class Epicurve {
         selectedText.enter()
             .append("text")
             .attr("class", textClass)
-            .attr("x", d => this.xScale(right - 130))
+            .attr("x", this.xScale(right - 130))
             .attr("y", d => this.yScale((mid * d) + mid) - 10)
             .text(d => "r: " + d)
             .attr("text-anchor", "top")
@@ -680,14 +670,14 @@ class Epicurve {
     }
 
     drawMouseOverRects(xCallback, data) {
-        var selectedData = this.svg.selectAll(".mouseoverclazz").data(data);
-        var enterData = selectedData.enter();
+        let selectedData = this.svg.selectAll(".mouseoverclazz").data(data);
+        let enterData = selectedData.enter();
 
         let rects = enterData.append("rect")
             .attr("class", "mouseoverclazz")
             .attr("x", d => this.xScale(xCallback(d)))
-            .attr("y", d => 0)
-            .attr("height", d => this.height)
+            .attr("y", 0)
+            .attr("height", this.height)
             .attr("width", this.xScale.bandwidth())
             .style("fill", "#999")
             .attr("opacity", "0")
@@ -742,7 +732,7 @@ class Epicurve {
         textEnterData
             .append("text")
             .attr("class", "prelim-text")
-            .attr("x", d => -80)
+            .attr("x", -80)
             .attr("y", d => this.xScale(d.date) + this.xScale.bandwidth() + 5)
             .text(d => xCallback(d))
             .attr("text-anchor", "top")
@@ -779,7 +769,7 @@ class Epicurve {
     }
 
     /**
-     * Parses the provided incoming csv files into a more useable JSON document, indexed by report ID (ex: 2020-05-27T09:00:03)
+     * Parses the provided incoming csv files into a more usable JSON document, indexed by report ID (ex: 2020-05-27T09:00:03)
      *
      * @param summaryData The summary csv
      * @param caseData The case csv
@@ -788,6 +778,7 @@ class Epicurve {
      * @param deathDeltaData The death delta csv
      * @param caseProjectionData The case projection csv
      * @param movingAvgData The moving averages csv
+     * @param histogramData The histogram data
      * @returns [{
      *     cases: 2,
      *     deaths: 0,
@@ -812,12 +803,10 @@ class Epicurve {
         });
 
         for (let i = 0; i < caseData.length; i++) {
-            let currentSummaryData = summaryData[i];
             let currentCaseData = caseData[i];
             let currentDeathData = deathData[i];
             let currentCaseDeltaData = caseDeltaData[i];
             let currentDeathDeltaData = deathDeltaData[i];
-            //let currentCaseProjectionData = caseProjectionData[i];
             let currentMovingAvgData = movingAvgData[i];
             let currentReportDates = Object.keys(currentCaseData).filter(function (d) {
                 return d !== 'id'
@@ -933,17 +922,6 @@ class Epicurve {
             );
     }
 
-    createXAxisTickValues(data) {
-        let lastElement = getLastElement(data);
-        let xAxisTickValues = [];
-
-        /*        for (let i = 0; i < lastElement.length; i += 7) {
-                    xAxisTickValues.push(lastElement[i].label);
-                }*/
-
-        return xAxisTickValues;
-    }
-
     createAxis(data, yLabel, yLabel2) {
         this.createBottomAxis(data);
 
@@ -963,11 +941,11 @@ class Epicurve {
         }
     }
 
-    createBottomAxis(data) {
+    createBottomAxis() {
         this.svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + this.height + ")")
-            .call(this.xAxis.tickValues(this.createXAxisTickValues(data)))
+            .call(this.xAxis.tickValues([]))
             .selectAll("text")
             .style("text-anchor", "end")
             .attr("dx", "-.8em")
@@ -975,8 +953,8 @@ class Epicurve {
             .attr("transform", "rotate(-90)");
     }
 
-    createRightSideAxis(label, leftlabel) {
-        let translate = leftlabel ? "translate(-8,5)rotate(-90)" : "translate(5,5)rotate(-90)";
+    createRightSideAxis(label, leftLabel) {
+        let translate = leftLabel ? "translate(-8,5)rotate(-90)" : "translate(5,5)rotate(-90)";
 
         this.svg.append("g")
             //.attr("transform", "translate("+(this.width-4)+",0)")
@@ -1018,7 +996,7 @@ class Epicurve {
     createTooltips() {
         tip = d3.tip().attr('class', 'd3-tip').direction('e').offset([0, 5])
             .html(function (d) {
-                var content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
+                let content = "<span style='margin-left: 2.5px;'><b>" + d.label + "</b></span><br>";
                 content += `
                     <table style="margin-top: 2.5px;">
                             <tr><td>Reported Cases: </td><td style="text-align: right">` + getReportedCases(d) + `</td></tr>
@@ -1090,7 +1068,7 @@ class Epicurve {
             .style("fill", d => d.color)
             .attr('r', 2);
 
-        this.svg.selectAll("mylabels")
+        this.svg.selectAll("myLabels")
             .data(legend)
             .enter()
             .append("text")
@@ -1116,7 +1094,7 @@ class Epicurve {
 
     createBoxLegend(legend) {
         let size = 8
-        this.svg.selectAll("mydots")
+        this.svg.selectAll("myDots")
             .data(legend)
             .enter()
             .append("rect")
@@ -1138,7 +1116,7 @@ class Epicurve {
             .style("fill", d => d.color)
 
 
-        this.svg.selectAll("mylabels")
+        this.svg.selectAll("myLabels")
             .data(legend)
             .enter()
             .append("text")
@@ -1168,7 +1146,7 @@ class Epicurve {
             .type(d3.symbolDiamond)
             .size(20);
 
-        this.svg.selectAll("myshapes")
+        this.svg.selectAll("myShapes")
             .data(legend)
             .enter()
             .append("path")
@@ -1190,7 +1168,7 @@ class Epicurve {
             .style("stroke", d => d.color);
 
 
-        this.svg.selectAll("mylabels")
+        this.svg.selectAll("myLabels")
             .data(legend)
             .enter()
             .append("text")
@@ -1303,7 +1281,7 @@ function createSlider(data) {
         .width(350)
         .tickValues(tickValueArray);
 
-    var gTime = d3
+    let gTime = d3
         .select('div#slider-time')
         .append('svg')
         .attr('width', 400)
@@ -1337,7 +1315,7 @@ function toggleVisibilityExclusive(d) {
     toggleVisibility(d, true);
 }
 
-function toggleVisibility(d, exclusive) {
+function toggleVisibility(d) {
     d.clazz.forEach(c => {
         let currentVis = d3.selectAll("." + c).style("visibility");
         console.log("Legend click! Toggling " + d.key + "... current visibility: " + currentVis);
