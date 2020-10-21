@@ -498,13 +498,13 @@ class Epicurve {
             .attr("stroke", highlightColor)
             .attr("fill", color)
             .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
-            .attr('r', 2)
+            .attr('r', 1)
             .style("visibility", d => isVisible ? "visible" : "hidden")
             .on('click', function (d, i) {
                 d3.select(this).attr("r", 5).attr("isHover", "1");
             })
             .on('mouseout', function (d, i) {
-                d3.select(this).attr("r", 2).attr("isHover", "0");
+                d3.select(this).attr("r", 1).attr("isHover", "0");
             });
 
 
@@ -534,7 +534,7 @@ class Epicurve {
         let selectedData = this.svg.selectAll("." + clazz).data(filteredData);
 
         let triangle = d3.symbol()
-            .size(20)
+            .size(15)
             .type(d3.symbolDiamond);
 
         selectedData.exit().transition().duration(90).style("opacity", 0).remove();
