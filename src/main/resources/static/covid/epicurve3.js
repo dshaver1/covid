@@ -37,10 +37,20 @@ class Epicurve {
         let lastAvailableDate = xScale.domain()[xScale.domain().length - 1]
 
         let selectedMouseDate = this.svg.selectAll(".mouse-date").data([lastAvailableDate]);
+        selectedMouseDate.enter().append("svg:rect")
+            .attr("x", -this.height - 70)// Note that x and y are flipped because we are rotating the text.
+            .attr("y", 80)
+            .attr("class", "mouse-date")
+            .attr("width", 70)
+            .attr("height", 12)
+            .attr("transform", "translate(-5,1)rotate(-90)")
+            .style("fill", "#103052")
+            .attr("opacity", "0");
+
         selectedMouseDate.enter().append("text")
-            .attr("x", -this.height - 50)// Note that x and y are flipped because we are rotating the text.
+            .attr("x", -this.height - 53)// Note that x and y are flipped because we are rotating the text.
             .attr("y", 96)
-            .attr("transform", "translate(9,1)rotate(-90)")
+            .attr("transform", "translate(9,0)rotate(-90)")
             .attr("text-anchor", "start")
             .attr("dx", "-.8em")
             .attr("dy", "-.55em")
@@ -52,10 +62,20 @@ class Epicurve {
             .text(d => d);
 
         let clickedMouseDate = this.svg.selectAll(".clicked-mouse-date").data([lastAvailableDate]);
+        clickedMouseDate.enter().append("svg:rect")
+            .attr("x", -this.height - 70)// Note that x and y are flipped because we are rotating the text.
+            .attr("y", 80)
+            .attr("class", "clicked-mouse-date")
+            .attr("width", 70)
+            .attr("height", 12)
+            .attr("transform", "translate(-5,1)rotate(-90)")
+            .style("fill", "#103052")
+            .attr("opacity", "0");
+
         clickedMouseDate.enter().append("text")
-            .attr("x", -this.height - 50)// Note that x and y are flipped because we are rotating the text.
+            .attr("x", -this.height - 53)// Note that x and y are flipped because we are rotating the text.
             .attr("y", 96)
-            .attr("transform", "translate(9,1)rotate(-90)")
+            .attr("transform", "translate(9,0)rotate(-90)")
             .attr("text-anchor", "start")
             .attr("dx", "-.8em")
             .attr("dy", "-.55em")
@@ -168,7 +188,7 @@ class Epicurve {
                         return d;
                     });
 
-                d3.select(".mouse-date")
+                d3.selectAll(".mouse-date")
                     .attr("opacity", "1")
                     .text(scaledX)
                     .attr("y", mouse[0]);
@@ -221,14 +241,14 @@ class Epicurve {
             .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
             .attr("y1", 0)
             .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
-            .attr("y2", this.height)
+            .attr("y2", this.height+6)
             .attr("opacity", "0.2");
 
         enterDates
             .append("text")
             .attr("class", "month-text")
-            .attr("x", d => -1)
-            .attr("y", d => this.xScale(d) + this.xScale.bandwidth() + 7)
+            .attr("x", d => -this.height-7)
+            .attr("y", d => this.xScale(d) + this.xScale.bandwidth())
             .text(d => this.monthNames[new Date(d).getMonth() + 1])
             .attr("text-anchor", "end")
             .style("font", "10px sans-serif")
@@ -652,19 +672,6 @@ class Epicurve {
 
     draw14DayWindow(xCallback, offsetDate, offset) {
         let selectedData = this.svg.selectAll(".prelim-region").data([offsetDate]);
-        /*        let enterData = selectedData.enter();
-
-                // draw initial region
-                enterData
-                    .append("rect")
-                    .style("shape-rendering", "crispEdges")
-                    .attr("class", "prelim-region")
-                    .attr("x", d => this.xScale(d))
-                    .attr("y", d => 0)
-                    .attr("height", d => this.height)
-                    .attr("width", this.xScale.bandwidth() * (offset + 1))
-                    .style("fill", "#c6d1ff")
-                    .attr("opacity", "0.05");*/
 
         // update region location
         selectedData
@@ -903,9 +910,9 @@ class Epicurve {
         let lastElement = getLastElement(data);
         let xAxisTickValues = [];
 
-        for (let i = 0; i < lastElement.length; i += 7) {
+/*        for (let i = 0; i < lastElement.length; i += 7) {
             xAxisTickValues.push(lastElement[i].label);
-        }
+        }*/
 
         return xAxisTickValues;
     }
@@ -1411,7 +1418,7 @@ function handleMouseClick(scaledX, xScale) {
 
     dispatchEvent(event);
 
-    d3.select(".clicked-mouse-date")
+    d3.selectAll(".clicked-mouse-date")
         .attr("opacity", "1")
         .text(scaledX)
         .attr("y", xScale(scaledX) + (xScale.step() / 2));
