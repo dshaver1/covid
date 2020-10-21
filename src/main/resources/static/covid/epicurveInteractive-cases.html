@@ -292,21 +292,12 @@
 
     addEventListener("newDateEvent", function (event) {
         let newReportDate = event.detail.label;
-        console.log("newDate event! " + newReportDate)
-
-/*
-        epicurve.prevNode["reportedcasesbar"].dispatch("mouseout");
-        epicurve.currentNode["reportedcasesbar"].dispatch("mouseout");
-        epicurve.prevNode["caseline-circle"].dispatch("mouseout");
-        epicurve.currentNode["caseline-circle"].dispatch("mouseout");
-        epicurve.prevNode["avgline-circle"].dispatch("mouseout");
-        epicurve.currentNode["avgline-circle"].dispatch("mouseout");
-*/
+        //console.log("newDate event! " + newReportDate)
 
         let newId = reportDateToId[newReportDate];
         updateAllGraphs(newId);
 
-        d3.select('p#value-time').text(newId);
+        d3.select('p#value-time').text(newId ? newId : "2020-05-13T154823");
     })
 
     function getLabel(data) {

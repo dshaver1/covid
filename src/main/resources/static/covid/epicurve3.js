@@ -33,12 +33,7 @@ class Epicurve {
     }
 
     initDateSelect(xScale) {
-        let constructorPrevNode = this.prevNode;
-        let constructorCurrNode = this.currentNode;
-        let constructorXScale = this.xScale;
-        let constructorYScale = this.yScale;
         let constructorThis = this;
-        let earliestDate = new Date("2020-05-14");
         let lastAvailableDate = xScale.domain()[xScale.domain().length - 1]
 
         let selectedMouseDate = this.svg.selectAll(".mouse-date").data([lastAvailableDate]);
@@ -83,6 +78,34 @@ class Epicurve {
             .attr("y1", d => this.yScale(0) + 9)
             .attr("y2", d => this.yScale(0) + 14);
 
+        let drag = d3.drag()
+            .on('drag', function (d) {
+                let mouse = d3.mouse(this);
+                let scaledX = getDateAtMouse(mouse, xScale);
+                handleMouseClick(scaledX, xScale);
+
+                let data = d3.selectAll(".caseline").filter(d => d.label === scaledX).data()[0];
+                constructorThis.updateMouseOverLine(data);
+
+                d3.select(".mouse-line")
+                    .attr("d", function () {
+                        var d = "M" + mouse[0] + "," + (height + 6);
+                        d += " " + mouse[0] + "," + 0;
+                        return d;
+                    });
+
+                d3.select(".mouse-date")
+                    .attr("opacity", "1")
+                    .text(scaledX)
+                    .attr("y", mouse[0]);
+            })
+            .on('start', function (d) {
+                console.log('drag start');
+            })
+            .on('end', function (d) {
+                console.log('drag end');
+            });
+
         let mouseG = this.svg.append("g")
             .attr("class", "mouse-over-effects");
 
@@ -94,6 +117,7 @@ class Epicurve {
             .style("opacity", "0");
 
         mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
+            .attr('class', 'action-rect')
             .attr('width', width) // can't catch mouse events on a g element
             .attr('height', height)
             .attr('fill', 'none')
@@ -122,12 +146,7 @@ class Epicurve {
             })
             .on('mousemove', function () { // mouse moving over canvas
                 let mouse = d3.mouse(this);
-                //console.log("mouse: " + mouse);
-                //console.log("xScale.step(): " + xScale.step());
-                let index = Math.floor(((mouse[0] - xScale("2020-02-17")) / xScale.step()));
-                //console.log("index: " + index);
-                let scaledX = xScale.domain()[index];
-                //console.log("scaledX: " + scaledX);
+                let scaledX = getDateAtMouse(mouse, xScale);
                 let opacity = "1";
                 if (!scaledX) {
                     scaledX = xScale.domain()[xScale.domain().length - 1];
@@ -156,37 +175,30 @@ class Epicurve {
 
             })
             .on('click', function () {
-                let mouse = d3.mouse(this);
-                let index = Math.floor(((mouse[0] - xScale("2020-02-17")) / xScale.step()));
-                let scaledX = xScale.domain()[index];
-                if (!scaledX) {
-                    scaledX = xScale.domain()[xScale.domain().length - 1];
+                handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
+            })
+            .on('wheel', d => {
+                let wheelDelta = d3.event.deltaY;
+                let direction = wheelDelta < 0 ? '-1' : '1';
+                console.log("Scrolled " + wheelDelta + " " + direction);
+                d3.event.preventDefault();
+                let selectedDateString = d3.select(".clicked-mouse-date") ? d3.select(".clicked-mouse-date").text() : xScale.domain()[xScale.domain().length - 1];
+                console.log("Current scroll date: " + selectedDateString);
+                let targetIndex = Math.floor(((xScale(selectedDateString) - xScale("2020-02-17") - (xScale.step() * direction)) / xScale.step()));
+                let targetDate = xScale.domain()[targetIndex];
+                console.log("targetDate: " + targetDate);
+
+                if (targetDate) {
+                    handleMouseClick(targetDate, xScale);
+
+                    let d = d3.selectAll(".caseline").filter(d => d.label === d3.select(".mouse-date").text()).data()[0];
+                    console.log("current d: " + d);
+                    constructorThis.updateMouseOverLine(d)
                 }
+            })
+            .call(drag);
 
-                if (new Date(scaledX) < earliestDate) {
-                    scaledX = getFormattedDate(earliestDate);
-                }
-
-                console.log("scaledX click: " + scaledX);
-
-                const event = new CustomEvent('newDateEvent', {detail: {label: scaledX}});
-
-                dispatchEvent(event);
-
-                d3.select(".clicked-mouse-date")
-                    .attr("opacity", "1")
-                    .text(scaledX)
-                    .attr("y", xScale(scaledX) + (xScale.step() / 2));
-
-                d3.select(".clicked-mouse-date-line")
-                    .transition()
-                    .duration(100)
-                    .attr("opacity", "1")
-                    .attr("x1", xScale(scaledX) + (xScale.step() / 2))
-                    .attr("x2", xScale(scaledX) + (xScale.step() / 2));
-
-                d3.selectAll(".hover-effects").style("opacity", "0");
-            });
+        this.svg.select(".action-rect").moveToFront();
     }
 
     initDateLines() {
@@ -242,6 +254,12 @@ class Epicurve {
      * @param data should be in standard epicurve format.
      */
     updateMouseOverLine(data) {
+        if (!data) {
+            console.log("UpdateMouseOverLine no data!!!");
+            return
+        }
+        //console.log("UpdateMouseOverLine data: " + data.label);
+
         const thisWidth = this.width;
         const line = d3.line()
             .x(d => d.x)
@@ -259,7 +277,7 @@ class Epicurve {
         }
 
         // Convert the incoming data to the format used by the hover join below.
-        let rawHoverData = this.transformToHoverData(data, d => d.clazz);
+        let rawHoverData = this.transformToHoverData(data);
 
         // Dispatch mouseover events for the individual points. Note that we're relying on a custom data attribute selector [isHover="1"]. The event handlers
         // must set this attribute is needed.
@@ -272,7 +290,7 @@ class Epicurve {
         });
 
         this.svg.selectAll(".hover-effects")
-            .data(rawHoverData)
+            .data(rawHoverData, d => d.clazz)
             .join(enter => {
                     // Create group to put the elements under
                     let enterGroup = enter.append("g").attr("class", "hover-effects");
@@ -368,15 +386,10 @@ class Epicurve {
             .attr("width", this.xScale.bandwidth())
             .style("fill", d => yCallback(d) > 0 ? color : highlightColor);
 
-        selectedData.transition().duration(100)
+        selectedData.transition().duration(90)
             .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
             .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)))
             .style("fill", d => yCallback(d) > 0 ? color : highlightColor);
-
-        // Ensure notable dates lines are on top!
-        this.svg.selectAll("." + clazz).moveToFront();
-        this.svg.selectAll("line").moveToFront();
-        this.svg.selectAll('.mouseoverclazz').moveToFront();
     }
 
     updateLineChartY1(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
@@ -409,7 +422,7 @@ class Epicurve {
         selectedData
             .merge(selectedData)
             .transition()
-            .duration(100)
+            .duration(90)
             .attr("d", d3.line()
                 .x(d => this.getLineX(xCallback(d), isBanded))
                 .y(d => this.getLineY(yCallback(d), dYScale))
@@ -421,7 +434,7 @@ class Epicurve {
         var selectedCircles = this.svg.selectAll('.' + circleClass).data(data);
 
         // Removed data
-        selectedCircles.exit().transition().duration(100).style("opacity", 0).remove();
+        selectedCircles.exit().transition().duration(90).style("opacity", 0).remove();
 
         // Initial data
         selectedCircles.enter()
@@ -446,16 +459,10 @@ class Epicurve {
         selectedCircles
             .merge(selectedCircles)
             .transition()
-            .duration(100)
+            .duration(90)
             .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
             .attr('cx', d => this.getLineX(xCallback(d), isBanded))
             .attr('cy', d => this.getLineY(yCallback(d), dYScale));
-
-        // Ensure notable dates lines are on top!
-        this.svg.selectAll("." + clazz).moveToFront();
-        this.svg.selectAll("line").moveToFront();
-        this.svg.selectAll('.' + circleClass).moveToFront();
-        this.svg.selectAll('.mouseoverclazz').moveToFront();
     }
 
     updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
@@ -477,7 +484,7 @@ class Epicurve {
             .size(20)
             .type(d3.symbolDiamond);
 
-        selectedData.exit().transition().duration(100).style("opacity", 0).remove();
+        selectedData.exit().transition().duration(90).style("opacity", 0).remove();
 
         let isVisible = true;
 
@@ -509,7 +516,7 @@ class Epicurve {
         selectedData
             .merge(selectedData)
             .transition()
-            .duration(100);
+            .duration(90);
     }
 
     updateCorrelationLine(correlationCoefficient, clazz, color) {
@@ -533,7 +540,7 @@ class Epicurve {
 
         selectedLine.merge(selectedLine)
             .transition()
-            .duration(100)
+            .duration(90)
             .attr("y1", d => this.yScale(mid - (mid * d)))
             .attr("y2", d => this.yScale((mid * d) + mid));
 
@@ -555,7 +562,7 @@ class Epicurve {
         selectedText
             .merge(selectedText)
             .transition()
-            .duration(100)
+            .duration(90)
             .text(d => "r: " + d)
             .attr("y", d => this.yScale((mid * d) + mid) - 10);
 
@@ -664,7 +671,7 @@ class Epicurve {
             .merge(selectedData)
             .attr("width", this.xScale.bandwidth() * (offset + 1))
             .transition()
-            .duration(100)
+            .duration(90)
             .attr("x", d => this.xScale(d))
             .transition()
             .attr("opacity", "0.05");
@@ -688,7 +695,7 @@ class Epicurve {
         boundaryLineSelectedData
             .merge(boundaryLineSelectedData)
             .transition()
-            .duration(100)
+            .duration(90)
             .attr("x1", d => this.xScale(d))
             .attr("x2", d => this.xScale(d));
 
@@ -709,7 +716,7 @@ class Epicurve {
         textSelectedData
             .merge(textSelectedData)
             .transition()
-            .duration(100)
+            .duration(90)
             .attr("y", d => this.xScale(d.date) + this.xScale.bandwidth() + 5);
     }
 
@@ -1379,6 +1386,42 @@ function getFormattedDate(date) {
     let day = date.getDate().toString().padStart(2, '0');
 
     return year + '-' + month + '-' + day;
+}
+
+const earliestDate = new Date("2020-05-14");
+
+function getDateAtMouse(mouse, xScale) {
+    let index = Math.floor(((mouse[0] - xScale("2020-02-17")) / xScale.step()));
+    let scaledX = xScale.domain()[index];
+    if (!scaledX) {
+        scaledX = xScale.domain()[xScale.domain().length - 1];
+    }
+
+    if (new Date(scaledX) < this.earliestDate) {
+        scaledX = getFormattedDate(this.earliestDate);
+    }
+
+    //console.log("scaledX " + scaledX + " @ mouse " + mouse[0]);
+
+    return scaledX;
+}
+
+function handleMouseClick(scaledX, xScale) {
+    let event = new CustomEvent('newDateEvent', {detail: {label: scaledX}});
+
+    dispatchEvent(event);
+
+    d3.select(".clicked-mouse-date")
+        .attr("opacity", "1")
+        .text(scaledX)
+        .attr("y", xScale(scaledX) + (xScale.step() / 2));
+
+    d3.select(".clicked-mouse-date-line")
+        .attr("opacity", "1")
+        .attr("x1", xScale(scaledX) + (xScale.step() / 2))
+        .attr("x2", xScale(scaledX) + (xScale.step() / 2));
+
+    d3.selectAll(".hover-effects").style("opacity", "0");
 }
 
 d3.selection.prototype.moveToFront = function () {
