@@ -285,16 +285,17 @@ class Epicurve {
             return
         }
         //console.log("UpdateMouseOverLine data: " + data.label);
+        // Get around scoping issues...
+        let blockYScale = this.yScale;
+        let blockXScale = this.xScale;
 
-        const minDistance = 150;
+        const minDistance = 12;
+        const scaledMinDistance = blockYScale.invert(0) - blockYScale.invert(minDistance);
         const thisWidth = this.width;
         const line = d3.line()
             .x(d => d.x)
             .y(d => d.y);
 
-        // Get around scoping issues...
-        let blockYScale = this.yScale;
-        let blockXScale = this.xScale;
 
         // Convert the incoming data to the format used by the hover join below.
         let rawHoverData = this.transformToHoverData(data).sort((d1, d2) => {
@@ -311,10 +312,10 @@ class Epicurve {
         for (let i = 1; i < rawHoverData.length; i++) {
             let prev = rawHoverData[i - 1];
             let curr = rawHoverData[i];
-            let diff = curr.y - prev.y - prev.offset;
+            let scaledDiff = curr.y - prev.y - prev.offset;
 
-            if (diff < minDistance) {
-                rawHoverData[i].offset = minDistance - diff;
+            if (scaledDiff < scaledMinDistance) {
+                rawHoverData[i].offset = scaledMinDistance - scaledDiff;
             }
         }
 
