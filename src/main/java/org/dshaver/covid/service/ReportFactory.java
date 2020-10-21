@@ -119,8 +119,7 @@ public class ReportFactory {
 
     public Report createReport(ManualRawData rawData, Report previousReport) throws Exception {
         List<EpicurvePoint> epicurvePoints =
-                objectMapper.readValue(rawData.getPayload().get(0), new TypeReference<List<EpicurvePointImpl2>>() {
-                });
+                objectMapper.readValue(rawData.getPayload().get(0), objectMapper.getTypeFactory().constructCollectionType(List.class, EpicurvePointImpl2.class));
         Epicurve epicurve = new Epicurve("Georgia");
         epicurve.setData(epicurvePoints);
 
