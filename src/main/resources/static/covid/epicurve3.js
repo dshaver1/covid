@@ -99,7 +99,7 @@ class Epicurve {
             .attr("y2", this.height + 6);
 
         let drag = d3.drag()
-            .on('drag', function() {
+            .on('drag', function () {
                 let mouse = d3.mouse(this);
                 let scaledX = getDateAtMouse(mouse, xScale);
                 handleMouseClick(scaledX, xScale);
@@ -119,7 +119,7 @@ class Epicurve {
                     .text(scaledX)
                     .attr("y", mouse[0]);
             })
-            .on('start', function() {
+            .on('start', function () {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
                 let dragStartD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
@@ -128,15 +128,15 @@ class Epicurve {
                 d3.selectAll(".mouse-date")
                     .attr("opacity", "0")
             })
-            .on('end', function() {
+            .on('end', function () {
                 console.log('drag end');
 
-                // TODO Replace this!
+/*                // TODO Replace this!
                 let mouse = d3.mouse(this);
                 let scaledX = getDateAtMouse(mouse, xScale);
                 let event = new CustomEvent('newCountyEvent', {detail: {label: scaledX, county: "cobb"}});
 
-                dispatchEvent(event);
+                dispatchEvent(event);*/
             });
 
         let mouseG = this.svg.append("g")
@@ -200,13 +200,13 @@ class Epicurve {
                     .attr("y", mouse[0]);
 
             })
-            .on('click', function() {
+            .on('click', function () {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
                 let d = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                 constructorThis.updateMouseOverLine(d);
             })
-            .on('wheel', function() {
+            .on('wheel', function () {
                 let wheelDelta = d3.event.deltaY;
                 let direction = wheelDelta < 0 ? '-1' : '1';
                 console.log("Scrolled " + wheelDelta + " " + direction);
@@ -461,66 +461,51 @@ class Epicurve {
 
     updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, yScale) {
         let dYScale = yScale ? yScale : this.yScale;
-        let selectedData = this.svg.selectAll("." + clazz).data([data], d => xCallback(d));
 
-        // Draw initial line
-        selectedData.enter()
-            .append("path")
-            .attr("class", clazz)
-            .attr("d", d3.line()
-                .x(d => this.getLineX(xCallback(d), isBanded))
-                .y(d => this.getLineY(yCallback(d), dYScale))
-                // Don't draw the line if it's in the preliminary region.
-                .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart)))
-            .attr("fill", "none")
-            .attr("stroke", color)
-            .attr("stroke-width", 1);
-
-        // Update line
-        selectedData
-            .merge(selectedData)
-            .transition()
-            .duration(90)
-            .attr("d", d3.line()
-                .x(d => this.getLineX(xCallback(d), isBanded))
-                .y(d => this.getLineY(yCallback(d), dYScale))
-                // Don't draw the line if it's in the preliminary region.
-                .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart)));
+        // Handle line
+        this.svg.selectAll("." + clazz).data([data], d => xCallback(d))
+            .join(enter => enter.append("path")
+                    .attr("class", clazz)
+                    .attr("d", d3.line()
+                        .x(d => this.getLineX(xCallback(d), isBanded))
+                        .y(d => this.getLineY(yCallback(d), dYScale))
+                        // Don't draw the line if it's in the preliminary region.
+                        .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart)))
+                    .attr("fill", "none")
+                    .attr("stroke", color)
+                    .attr("stroke-width", 1),
+                update => update.transition().duration(90)
+                    .attr("d", d3.line()
+                        .x(d => this.getLineX(xCallback(d), isBanded))
+                        .y(d => this.getLineY(yCallback(d), dYScale))
+                        // Don't draw the line if it's in the preliminary region.
+                        .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart))));
 
         let circleClass = clazz + '-circle';
         let isVisible = "visible" === this.svg.selectAll('.' + clazz).style("visibility");
-        let selectedCircles = this.svg.selectAll('.' + circleClass).data(data);
 
-        // Removed data
-        selectedCircles.exit().transition().duration(90).style("opacity", 0).remove();
-
-        // Initial data
-        selectedCircles.enter()
-            .append('circle')
-            .attr('class', circleClass + " " + clazz)
-            .attr('cx', d => this.getLineX(xCallback(d), isBanded))
-            .attr('cy', d => this.getLineY(yCallback(d), dYScale))
-            .attr("stroke", highlightColor)
-            .attr("fill", color)
-            .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
-            .attr('r', 1)
-            .style("visibility", isVisible ? "visible" : "hidden")
-            .on('click', function() {
-                d3.select(this).attr("r", 5).attr("isHover", "1");
-            })
-            .on('mouseout', function() {
-                d3.select(this).attr("r", 1).attr("isHover", "0");
-            });
-
-
-        // Updated data
-        selectedCircles
-            .merge(selectedCircles)
-            .transition()
-            .duration(90)
-            .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
-            .attr('cx', d => this.getLineX(xCallback(d), isBanded))
-            .attr('cy', d => this.getLineY(yCallback(d), dYScale));
+        // Handle circles
+        this.svg.selectAll('.' + circleClass).data(data)
+            .join(enter => enter.append('circle')
+                    .attr('class', circleClass + " " + clazz)
+                    .attr('cx', d => this.getLineX(xCallback(d), isBanded))
+                    .attr('cy', d => this.getLineY(yCallback(d), dYScale))
+                    .attr("stroke", highlightColor)
+                    .attr("fill", color)
+                    .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
+                    .attr('r', 1)
+                    .style("visibility", isVisible ? "visible" : "hidden")
+                    .on('click', function () {
+                        d3.select(this).attr("r", 5).attr("isHover", "1");
+                    })
+                    .on('mouseout', function () {
+                        d3.select(this).attr("r", 1).attr("isHover", "0");
+                    }),
+                update => update.transition().duration(90)
+                    .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
+                    .attr('cx', d => this.getLineX(xCallback(d), isBanded))
+                    .attr('cy', d => this.getLineY(yCallback(d), dYScale)),
+                exit => exit.transition().duration(90).style("opacity", 0).remove());
     }
 
     updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
@@ -534,13 +519,9 @@ class Epicurve {
             d.color = color;
         });
 
-        let selectedData = this.svg.selectAll("." + clazz).data(filteredData);
-
         let triangle = d3.symbol()
             .size(15)
             .type(d3.symbolDiamond);
-
-        selectedData.exit().transition().duration(90).style("opacity", 0).remove();
 
         let isVisible = true;
 
@@ -548,31 +529,29 @@ class Epicurve {
             isVisible = "visible" === this.svg.selectAll('.' + clazz).style("visibility");
         }
 
-        selectedData.enter().append("path")
-            .attr("class", clazz)
-            .style("visibility", isVisible ? "visible" : "hidden")
-            .attr("d", triangle)
-            .attr("stroke", color)
-            .attr("fill", color)
-            .attr("opacity", "0.5")
-            .attr("transform", d => "translate(" + d.scaledX + "," + d.scaledY + ")")
-            .on('click', function() {
-                d3.select(this)
-                    .attr("opacity", "1")
-                    .attr("isHover", "1")
-                    .attr("d", d3.symbol().size(100).type(d3.symbolDiamond));
-            })
-            .on('mouseout', function() {
-                d3.select(this)
+        this.svg.selectAll("." + clazz).data(filteredData)
+            .join(enter => enter.append("path")
+                    .attr("class", clazz)
+                    .style("visibility", isVisible ? "visible" : "hidden")
+                    .attr("d", triangle)
+                    .attr("stroke", color)
+                    .attr("fill", color)
                     .attr("opacity", "0.5")
-                    .attr("isHover", "0")
-                    .attr("d", d3.symbol().size(20).type(d3.symbolDiamond));
-            });
-
-        selectedData
-            .merge(selectedData)
-            .transition()
-            .duration(90);
+                    .attr("transform", d => "translate(" + d.scaledX + "," + d.scaledY + ")")
+                    .on('click', function () {
+                        d3.select(this)
+                            .attr("opacity", "1")
+                            .attr("isHover", "1")
+                            .attr("d", d3.symbol().size(100).type(d3.symbolDiamond));
+                    })
+                    .on('mouseout', function () {
+                        d3.select(this)
+                            .attr("opacity", "0.5")
+                            .attr("isHover", "0")
+                            .attr("d", d3.symbol().size(20).type(d3.symbolDiamond));
+                    }),
+                update => update.transition().attr("transform", d => "translate(" + d.scaledX + "," + d.scaledY + ")"),
+                exit => exit.transition().duration(90).style("opacity", 0).remove());
     }
 
     updateCorrelationLine(correlationCoefficient, clazz, color) {
