@@ -95,8 +95,8 @@ class Epicurve {
             .attr("opacity", "0")
             .attr("x1", xScale(0))
             .attr("x2", xScale(0))
-            .attr("y1", this.yScale(0) + 9)
-            .attr("y2", this.yScale(0) + 14);
+            .attr("y1", this.height + 1)
+            .attr("y2", this.height + 6);
 
         let drag = d3.drag()
             .on('drag', function() {
