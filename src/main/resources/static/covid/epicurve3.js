@@ -130,6 +130,13 @@ class Epicurve {
             })
             .on('end', function() {
                 console.log('drag end');
+
+                // TODO Replace this!
+                let mouse = d3.mouse(this);
+                let scaledX = getDateAtMouse(mouse, xScale);
+                let event = new CustomEvent('newCountyEvent', {detail: {label: scaledX, county: "cobb"}});
+
+                dispatchEvent(event);
             });
 
         let mouseG = this.svg.append("g")
@@ -373,7 +380,7 @@ class Epicurve {
                         .attr("dy", "-.55em")
                         .style("fill", d => d.color(d))
                         .style("font", "10px sans-serif")
-                        .text(d => d.addOnText ? d.y + "" + d.addOnText : d.y)
+                        .text(d => d.addOnText ? d.y.toLocaleString() + "" + d.addOnText : d.y.toLocaleString())
                         .attr("opacity", "1");
                 },
                 updateGroup => {
@@ -388,7 +395,7 @@ class Epicurve {
                     updateGroup.select("text")
                         .attr("y", d => blockYScale(d.y + d.offset) + 9)
                         .style("fill", d => d.color(d))
-                        .text(d => d.addOnText ? d.y + "" + d.addOnText : d.y);
+                        .text(d => d.addOnText ? d.y.toLocaleString() + "" + d.addOnText : d.y.toLocaleString());
                 });
     }
 
@@ -966,7 +973,7 @@ class Epicurve {
             //.attr("transform", "translate("+(this.width-4)+",0)")
             .attr("transform", "translate(" + (this.width) + ",0)")
             .attr("class", "y axis")
-            .call(this.yAxis2 ? this.yAxis2 : this.yAxis)
+            //.call(this.yAxis2 ? this.yAxis2 : this.yAxis)
             .append("text")
             .attr("y", 5)
             .attr("x", 5)
