@@ -42,7 +42,7 @@ class Epicurve {
             .attr("y", 80)
             .attr("class", "mouse-date")
             .attr("width", 70)
-            .attr("height", 12)
+            .attr("height", 10)
             .attr("transform", "translate(-5,1)rotate(-90)")
             .style("fill", "#103052")
             .attr("opacity", "0");
