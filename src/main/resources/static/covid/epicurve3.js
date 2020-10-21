@@ -327,7 +327,7 @@ class Epicurve {
 
         // We'll call this in the updateGroup. Builds the path from the hovered point to the axis on the right.
         const buildPath = d => {
-            return [{x: blockXscale(d.label) + 8, y: blockYscale(d.y)},              // originating point
+            return [{x: blockXscale(d.label) + 7, y: blockYscale(d.y)},              // originating point
                 {x: thisWidth, y: blockYscale(d.y)},                                 // axis point
                 {x: thisWidth + 6, y: blockYscale(d.y + d.offset)}]     // right-most point with any offset applied for crowding.
         }
