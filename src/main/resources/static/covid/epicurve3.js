@@ -176,7 +176,7 @@ class Epicurve {
                     opacity = "0";
                 }
 
-                d3.selectAll(".hover-effects").style("opacity", opacity);
+                //d3.selectAll(".hover-effects").style("opacity", opacity);
 
                 let d = d3.selectAll(".caseline").filter(d => d.label === scaledX).data()[0];
                 constructorThis.updateMouseOverLine(d)
@@ -205,14 +205,13 @@ class Epicurve {
                 let selectedDateString = d3.select(".clicked-mouse-date") ? d3.select(".clicked-mouse-date").text() : xScale.domain()[xScale.domain().length - 1];
                 console.log("Current scroll date: " + selectedDateString);
                 let targetIndex = Math.floor(((xScale(selectedDateString) - xScale("2020-02-17") - (xScale.step() * direction)) / xScale.step()));
-                let targetDate = xScale.domain()[targetIndex];
+                let targetDate = xScale.domain()[targetIndex] ? xScale.domain()[targetIndex] : xScale.domain()[xScale.domain().length - 1];
                 console.log("targetDate: " + targetDate);
 
                 if (targetDate) {
                     handleMouseClick(targetDate, xScale);
 
-                    let d = d3.selectAll(".caseline").filter(d => d.label === d3.select(".mouse-date").text()).data()[0];
-                    console.log("current d: " + d);
+                    let d = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                     constructorThis.updateMouseOverLine(d)
                 }
             })
@@ -1428,7 +1427,7 @@ function handleMouseClick(scaledX, xScale) {
         .attr("x1", xScale(scaledX) + (xScale.step() / 2))
         .attr("x2", xScale(scaledX) + (xScale.step() / 2));
 
-    d3.selectAll(".hover-effects").style("opacity", "0");
+    //d3.selectAll(".hover-effects").style("opacity", "0");
 }
 
 d3.selection.prototype.moveToFront = function () {
