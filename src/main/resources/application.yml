@@ -176,7 +176,7 @@ covid.enabledCounties:
 spring.profiles: cloud
 
 covid:
-  cron.polling: 0 55 19,1,7,13 * * *
+  cron.polling: 0 55 18,0,6,12 * * *
   index.path: /mnt/data/covid/index.json
   dirs:
     reports:
