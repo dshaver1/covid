@@ -1434,8 +1434,8 @@ function getDateAtMouse(mouse, xScale) {
         scaledX = xScale.domain()[xScale.domain().length - 1];
     }
 
-    if (new Date(scaledX) < this.earliestDate) {
-        scaledX = getFormattedDate(this.earliestDate);
+    if (new Date(scaledX) < earliestDate) {
+        scaledX = getFormattedDate(earliestDate);
     }
 
     //console.log("scaledX " + scaledX + " @ mouse " + mouse[0]);
@@ -1444,19 +1444,25 @@ function getDateAtMouse(mouse, xScale) {
 }
 
 function handleMouseClick(scaledX, xScale) {
-    let event = new CustomEvent('newDateEvent', {detail: {label: scaledX}});
+    let targetDate = scaledX;
+
+    if (new Date(scaledX) < earliestDate) {
+        targetDate = "2020-05-13";
+    }
+
+    let event = new CustomEvent('newDateEvent', {detail: {label: targetDate}});
 
     dispatchEvent(event);
 
     d3.selectAll(".clicked-mouse-date")
         .attr("opacity", "1")
-        .text(scaledX)
-        .attr("y", xScale(scaledX) + (xScale.step() / 2));
+        .text(targetDate)
+        .attr("y", xScale(targetDate) + (xScale.step() / 2));
 
     d3.select(".clicked-mouse-date-line")
         .attr("opacity", "1")
-        .attr("x1", xScale(scaledX) + (xScale.step() / 2))
-        .attr("x2", xScale(scaledX) + (xScale.step() / 2));
+        .attr("x1", xScale(targetDate) + (xScale.step() / 2))
+        .attr("x2", xScale(targetDate) + (xScale.step() / 2));
 
     //d3.selectAll(".hover-effects").style("opacity", "0");
 }
