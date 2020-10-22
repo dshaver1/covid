@@ -2,32 +2,40 @@ package org.dshaver.covid.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Streams;
-import org.dshaver.covid.domain.BasicFile;
-import org.dshaver.covid.domain.DownloadResponse;
-import org.dshaver.covid.domain.RawData;
-import org.dshaver.covid.domain.RawDataV1;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.dshaver.covid.domain.*;
 import org.dshaver.covid.service.*;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl1;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.dshaver.covid.dao.BaseFileRepository.idFormatter;
+import static org.dshaver.covid.service.CsvService.cleanCounty;
 
 /**
  * Created by xpdf64 on 2020-06-12.
@@ -43,6 +51,7 @@ public class RawDataController {
     private final ReportService reportService;
     private final FileRegistry fileRegistry;
     private final RawDataDownloaderDelegator rawDataDownloader;
+    private final CsvService csvService;
 
     @Inject
     public RawDataController(RawDataWriter rawDataWriter,
@@ -52,7 +61,8 @@ public class RawDataController {
                              ObjectMapper objectMapper,
                              ReportService reportService,
                              FileRegistry fileRegistry,
-                             RawDataDownloaderDelegator rawDataDownloader) {
+                             RawDataDownloaderDelegator rawDataDownloader,
+                             CsvService csvService) {
         this.rawDataWriter = rawDataWriter;
         this.fileRepository = fileRepository;
         this.extractorImpl1 = extractorImpl1;
@@ -61,6 +71,7 @@ public class RawDataController {
         this.reportService = reportService;
         this.fileRegistry = fileRegistry;
         this.rawDataDownloader = rawDataDownloader;
+        this.csvService = csvService;
     }
 
     @PostMapping("/covid/api/poll")
@@ -135,6 +146,39 @@ public class RawDataController {
         fileRegistry.checkAndSaveIndex();
     }
 
+    @GetMapping("/covid/api/download/{county}")
+    public ResponseEntity<Resource> downloadCountyZip(@PathVariable("county") String county) throws ArchiveException, IOException {
+        String cleanedCounty = cleanCounty(county);
+        logger.info("Got request to download zip of {} data!", cleanedCounty);
+        Optional<String> maybeLatestId = fileRegistry.getLatestId(Report.class);
+
+        if (!maybeLatestId.isPresent()) {
+            throw new IllegalStateException("No reports in the system? Bad news.");
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ArchiveOutputStream archive = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, outputStream);
+
+        Map<String, String> fileMap = Files.list(csvService.getCountyDirPath(county))
+                .collect(Collectors.toMap(p -> p.getFileName().toString(), this::safeReadFile));
+
+        ZipService.writeZip(fileMap, archive);
+        archive.finish();
+        ByteArrayResource byteArrayResource = new ByteArrayResource(outputStream.toByteArray());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("content-disposition", "attachment; filename=georgia-" + cleanedCounty + "-" + maybeLatestId.get() + ".zip");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(archive.getBytesWritten())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(byteArrayResource);
+    }
+
     @GetMapping("health")
     public String healthCheck() {
         return "UP";
@@ -146,5 +190,17 @@ public class RawDataController {
         } else {
             return ".js";
         }
+    }
+
+    private String safeReadFile(Path path) {
+        String fileContents = "";
+
+        try {
+            fileContents = String.join("\n", Files.readAllLines(path));
+        } catch (IOException e) {
+            logger.error("Could not read " + path);
+        }
+
+        return fileContents;
     }
 }

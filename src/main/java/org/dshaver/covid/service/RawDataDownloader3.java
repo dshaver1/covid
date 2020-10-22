@@ -55,8 +55,9 @@ public class RawDataDownloader3 implements RawDataDownloader<RawDataV3> {
                     indexStrings.add(line);
                     Matcher fourthChunkNonceMatcher = fourthChunkNoncePattern.matcher(line);
                     // Should only be 1 match... Gotta find before group.
-                    fourthChunkNonceMatcher.find();
-                    fourthChunkNonce = fourthChunkNonceMatcher.group(1);
+                    if (fourthChunkNonceMatcher.find()) {
+                        fourthChunkNonce = fourthChunkNonceMatcher.group(1);
+                    }
 
                     Matcher mainNonceMatcher = mainNoncePattern.matcher(line);
                     // Should only be 1 match... Gotta find before group.
@@ -84,21 +85,25 @@ public class RawDataDownloader3 implements RawDataDownloader<RawDataV3> {
                 logger.error("Error opening stream!");
             }
 
-            logger.info("Downloading from {}...", fourthChunkUrl);
-            RawDataV3 rawDataFourth = new RawDataV3();
-            try (InputStream inputStream = mainUrl.openStream()) {
-                rawDataFourth = transform(inputStream, true);
-            } catch (IOException e) {
-                logger.error("Error opening stream!");
-            }
-
             RawDataV3 rawData = new RawDataV3();
             rawData.setCreateTime(rawDataMain.getCreateTime());
             rawData.setId(rawDataMain.getId());
             rawData.setReportDate(rawDataMain.getReportDate());
             List<String> payload = indexStrings;
             payload.addAll(rawDataMain.getPayload());
-            payload.addAll(rawDataFourth.getPayload());
+
+            if (StringUtils.isNotEmpty(fourthChunkNonce)) {
+                logger.info("Downloading from {}...", fourthChunkUrl);
+                RawDataV3 rawDataFourth = new RawDataV3();
+                try (InputStream inputStream = mainUrl.openStream()) {
+                    rawDataFourth = transform(inputStream, true);
+                } catch (IOException e) {
+                    logger.error("Error opening stream!");
+                }
+
+                payload.addAll(rawDataFourth.getPayload());
+            }
+
             rawData.setPayload(payload);
 
             try {

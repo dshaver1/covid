@@ -38,7 +38,6 @@ public class ReportService {
     private final HistogramReportRepository histogramReportDao;
     private final HistogramReportFactory histogramReportFactory;
     private final CsvService csvService;
-    private final String reportTgtDir;
     private final FileRegistry fileRegistry;
     private final TaskExecutor taskExecutor;
     private final AggregateReportFactory aggregateReportFactory;
@@ -55,7 +54,6 @@ public class ReportService {
                          HistogramReportRepository histogramReportDao,
                          HistogramReportFactory histogramReportFactory,
                          CsvService csvService,
-                         @Value("${covid.dirs.reports.csv}") String reportTgtDir,
                          FileRegistry fileRegistry,
                          @Qualifier("singleTaskExecutor") TaskExecutor taskExecutor,
                          AggregateReportFactory aggregateReportFactory) {
@@ -70,7 +68,6 @@ public class ReportService {
         this.histogramReportDao = histogramReportDao;
         this.histogramReportFactory = histogramReportFactory;
         this.csvService = csvService;
-        this.reportTgtDir = reportTgtDir;
         this.fileRegistry = fileRegistry;
         this.taskExecutor = taskExecutor;
         this.aggregateReportFactory = aggregateReportFactory;
@@ -120,7 +117,7 @@ public class ReportService {
 
     public void processRange(LocalDate startDate, LocalDate endDate, boolean deleteFirst, boolean saveIntermediate) {
         if (deleteFirst) {
-            csvService.deleteAllCsvs(reportTgtDir);
+            csvService.deleteAllCsvs();
         }
 
         Stream.concat(rawDataRepositoryV0.streamSelectedPaths().map(rawDataRepositoryV0::readFile), Stream.concat(
@@ -172,14 +169,14 @@ public class ReportService {
             String county = epicurve.getCounty().toLowerCase();
 
             try {
-                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "cases", county), county, header, report, ArrayReport::getCases);
-                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "caseDeltas", county), county, header, report, ArrayReport::getCaseDeltas);
-                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "movingAvgs", county), county, header, report, ArrayReport::getMovingAvgs);
-                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "deaths", county), county, header, report, ArrayReport::getDeaths);
-                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "deathDeltas", county), county, header, report, ArrayReport::getDeathDeltas);
-                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "pcrTests", county), county, header, report, ArrayReport::getPcrTest);
-                csvService.appendFile(csvService.getCountyFilePath(reportTgtDir, "pcrPositives", county), county, header, report, ArrayReport::getPcrPos);
-                csvService.appendSummary(csvService.getCountyFilePath(reportTgtDir, "summary", county), county, report);
+                csvService.appendFile(csvService.getCountyFilePath("cases", county), county, header, report, ArrayReport::getCases);
+                csvService.appendFile(csvService.getCountyFilePath("caseDeltas", county), county, header, report, ArrayReport::getCaseDeltas);
+                csvService.appendFile(csvService.getCountyFilePath("movingAvgs", county), county, header, report, ArrayReport::getMovingAvgs);
+                csvService.appendFile(csvService.getCountyFilePath("deaths", county), county, header, report, ArrayReport::getDeaths);
+                csvService.appendFile(csvService.getCountyFilePath("deathDeltas", county), county, header, report, ArrayReport::getDeathDeltas);
+                csvService.appendFile(csvService.getCountyFilePath("pcrTests", county), county, header, report, ArrayReport::getPcrTest);
+                csvService.appendFile(csvService.getCountyFilePath("pcrPositives", county), county, header, report, ArrayReport::getPcrPos);
+                csvService.appendSummary(csvService.getCountyFilePath("summary", county), county, report);
 
             } catch (Exception e) {
                 logger.error("Could not write csvs for county " + county, e);
@@ -197,8 +194,8 @@ public class ReportService {
         for (HistogramReportV2 currentReport : histogramReport.getCountyHistogramMap().values()) {
             String county = currentReport.getCounty().toLowerCase();
 
-            csvService.appendHistogramFile(csvService.getCountyFilePath(reportTgtDir, "histogramCases", county), county, histogramHeader, histogramReport, HistogramReportV2::getCasesPercentageHist);
-            csvService.appendHistogramFile(csvService.getCountyFilePath(reportTgtDir, "histogramCasesCum", county), county, histogramHeader, histogramReport, HistogramReportV2::getCasesPercentageCumulative);
+            csvService.appendHistogramFile(csvService.getCountyFilePath("histogramCases", county), county, histogramHeader, histogramReport, HistogramReportV2::getCasesPercentageHist);
+            csvService.appendHistogramFile(csvService.getCountyFilePath("histogramCasesCum", county), county, histogramHeader, histogramReport, HistogramReportV2::getCasesPercentageCumulative);
         }
     }
 

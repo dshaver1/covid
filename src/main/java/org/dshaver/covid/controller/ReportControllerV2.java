@@ -56,19 +56,19 @@ public class ReportControllerV2 {
 
         switch (file) {
             case "cases":
-                return csvService.readFile(reportTgtDir, "cases.csv");
+                return csvService.readFile("cases.csv");
             case "caseDeltas":
-                return csvService.readFile(reportTgtDir, "caseDeltas.csv");
+                return csvService.readFile("caseDeltas.csv");
             case "caseProjections":
-                return csvService.readFile(reportTgtDir, "caseProjections.csv");
+                return csvService.readFile("caseProjections.csv");
             case "movingAvgs":
-                return csvService.readFile(reportTgtDir, "movingAvgs.csv");
+                return csvService.readFile("movingAvgs.csv");
             case "deaths":
-                return csvService.readFile(reportTgtDir, "deaths.csv");
+                return csvService.readFile("deaths.csv");
             case "deathDeltas":
-                return csvService.readFile(reportTgtDir, "deathDeltas.csv");
+                return csvService.readFile("deathDeltas.csv");
             case "summary":
-                return csvService.readFile(reportTgtDir, "summary.csv");
+                return csvService.readFile("summary.csv");
             default:
                 throw new UnsupportedOperationException("Unrecognized filename request: " + file + ".csv");
         }
@@ -81,19 +81,19 @@ public class ReportControllerV2 {
 
         switch (type) {
             case "cases":
-                return csvService.readFile(reportTgtDir, "cases_" + county.toLowerCase() + ".csv");
+                return csvService.readFile("cases_" + county.toLowerCase() + ".csv");
             case "caseDeltas":
-                return csvService.readFile(reportTgtDir, "caseDeltas_" + county.toLowerCase() + ".csv");
+                return csvService.readFile("caseDeltas_" + county.toLowerCase() + ".csv");
             case "caseProjections":
-                return csvService.readFile(reportTgtDir, "caseProjections_" + county.toLowerCase() + ".csv");
+                return csvService.readFile("caseProjections_" + county.toLowerCase() + ".csv");
             case "movingAvgs":
-                return csvService.readFile(reportTgtDir, "movingAvgs_" + county.toLowerCase() + ".csv");
+                return csvService.readFile("movingAvgs_" + county.toLowerCase() + ".csv");
             case "deaths":
-                return csvService.readFile(reportTgtDir, "deaths_" + county.toLowerCase() + ".csv");
+                return csvService.readFile("deaths_" + county.toLowerCase() + ".csv");
             case "deathDeltas":
-                return csvService.readFile(reportTgtDir, "deathDeltas_" + county.toLowerCase() + ".csv");
+                return csvService.readFile("deathDeltas_" + county.toLowerCase() + ".csv");
             case "summary":
-                return csvService.readFile(reportTgtDir, "summary_" + county.toLowerCase() + ".csv");
+                return csvService.readFile("summary_" + county.toLowerCase() + ".csv");
             default:
                 throw new UnsupportedOperationException("Unrecognized filename request: " + type + "_" + county + ".csv");
         }

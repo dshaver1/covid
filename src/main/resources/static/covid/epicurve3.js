@@ -214,13 +214,13 @@ class Epicurve {
                 if (targetDate) {
                     handleMouseClick(targetDate, xScale);
 
-                    let clickedD = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.clicked-mouse-date").text()).data()[0];
+/*                    let clickedD = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.clicked-mouse-date").text()).data()[0];
                     let mouseD = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                     if (!mouseD || (clickedD && new Date(clickedD.label) <= new Date(mouseD.label))) {
                         constructorThis.updateMouseOverLine(clickedD);
                     } else {
                         constructorThis.updateMouseOverLine(mouseD);
-                    }
+                    }*/
                 }
             })
             .call(drag);

@@ -8,6 +8,7 @@ import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.service.extractor.EpicurveExtractorImpl2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -27,10 +28,13 @@ public class CsvService {
             "icu", "icuVm", "casesVsDeathsCorrelation"};
 
     private final CountyService countyService;
+    private final String reportTgtDir;
 
     @Inject
-    public CsvService(CountyService countyService) {
+    public CsvService(CountyService countyService,
+                      @Value("${covid.dirs.reports.csv}") String reportTgtDir) {
         this.countyService = countyService;
+        this.reportTgtDir = reportTgtDir;
     }
 
     public String[] createHeader(Collection<ArrayReport> reports) {
@@ -118,18 +122,18 @@ public class CsvService {
         return String.join("\n", result);
     }
 
-    public String readFile(String dir, String filename) throws Exception {
-        Path path = Paths.get(dir).resolve(filename);
+    public String readFile(String filename) throws Exception {
+        Path path = Paths.get(reportTgtDir).resolve(filename);
         return String.join("\n", Files.readAllLines(path));
     }
 
-    public void deleteAllCsvs(String dir) {
+    public void deleteAllCsvs() {
         logger.info("Cleaning up ALL existing csvs...");
 
         for (String county : countyService.getAllEnabledCounties()) {
             logger.info("Cleaning up csvs for {}!", county);
             try {
-                Files.list(getCountyDirPath(dir, county)).forEach(path -> {
+                Files.list(getCountyDirPath(county)).forEach(path -> {
                     try {
                         Files.deleteIfExists(path);
                     } catch (IOException e) {
@@ -137,23 +141,23 @@ public class CsvService {
                     }
                 });
             } catch (NoSuchFileException e) {
-                logger.info("Could not delete files in {} because it doesn't exist!", dir);
+                logger.info("Could not delete files in {} because it doesn't exist!", reportTgtDir);
             } catch (IOException e) {
                 logger.error("Error deleting directory contents for " + county, e);
             }
         }
     }
 
-    public Path getCountyDirPath(String baseDir, String county) {
-        return Paths.get(baseDir, county);
+    public Path getCountyDirPath(String county) {
+        return Paths.get(reportTgtDir, county);
     }
 
-    public Path getCountyFilePath(String dir, String type, String county) {
-        Path path = Paths.get(dir).resolve(String.format("%s.csv", type));
+    public Path getCountyFilePath(String type, String county) {
+        Path path = Paths.get(reportTgtDir).resolve(String.format("%s.csv", type));
         if (county != null) {
             String filteredCounty = cleanCounty(county);
 
-            path = getCountyDirPath(dir, filteredCounty).resolve(String.format("%s_%s.csv", type, filteredCounty));
+            path = getCountyDirPath(filteredCounty).resolve(String.format("%s_%s.csv", type, filteredCounty));
         }
 
         try {
@@ -176,6 +180,7 @@ public class CsvService {
             logger.error("Could not delete files!", e);
         }
     }
+
     public void appendHistogramFile(Path path, String county, String[] header, HistogramReportContainer report, Function<HistogramReportV2, BigDecimal[]> bdFunction) {
         HistogramReportV2 countyReport = report.getCountyHistogramMap().get(county);
 
