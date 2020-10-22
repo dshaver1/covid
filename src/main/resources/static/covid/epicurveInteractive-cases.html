@@ -324,7 +324,7 @@
 
     function selectNewCounty() {
         let rawCounty = document.forms['countyForm'].elements['countyInput'].value;
-        let filteredCounties = allCounties.filter(county => county.toLowerCase() === rawCounty);
+        let filteredCounties = allCounties.filter(county => county.toLowerCase() === rawCounty.toLowerCase());
         
         if (filteredCounties && filteredCounties.length === 1) {
             selectedPrettyCounty = filteredCounties[0];
