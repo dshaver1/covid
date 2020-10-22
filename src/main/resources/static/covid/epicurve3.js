@@ -984,6 +984,7 @@ class Epicurve {
             .attr("class", "y axis")
             //.call(this.yAxis2 ? this.yAxis2 : this.yAxis)
             .append("text")
+            .attr("class", "county-case-label")
             .attr("y", 5)
             .attr("x", 5)
             //.attr("dy", ".71em")

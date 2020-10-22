@@ -164,17 +164,18 @@ public class RawDataController {
 
         ZipService.writeZip(fileMap, archive);
         archive.finish();
-        ByteArrayResource byteArrayResource = new ByteArrayResource(outputStream.toByteArray());
+        byte[] bytes = outputStream.toByteArray();
+        ByteArrayResource byteArrayResource = new ByteArrayResource(bytes);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("content-disposition", "attachment; filename=georgia-" + cleanedCounty + "-" + maybeLatestId.get() + ".zip");
+        headers.add("content-disposition", "attachment; filename=" + cleanedCounty + "-epicurve-data-" + maybeLatestId.get() + ".zip");
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .contentLength(archive.getBytesWritten())
+                .contentLength(bytes.length)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(byteArrayResource);
     }

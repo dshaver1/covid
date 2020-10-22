@@ -61,7 +61,7 @@
                             </div>
                             
                             <div class="col">
-                                <button type="submit" class="btn btn-sm btn-primary">Load Data</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Show Graph</button>
                             </div>
                         </div>
                     </form>
@@ -78,23 +78,13 @@
         <div class="row">
             <div class="col-sm-5"></div>
             <div class="col-sm-3" style="text-align: left">
-                <ul>
-                    <li>
-                        <a id="deathsDownloadLink" href="#">Deaths Per Day</a>
-                    </li>
-                    <li>
-                        <a id="casesDownloadLink" href="#">Cases Per Day</a>
-                    </li>
-                    <li>
-                        <a id="caseDeltasDownloadLink" href="#">Case Deltas Per Day</a>
-                    </li>
-                    <li>
-                        <a id="movingAvgDownloadLink" href="#">Case Moving Averages</a>
-                    </li>
-                    <li>
-                        <a id="summaryDownloadLink" href="#">Summary Data</a>
-                    </li>
-                </ul>
+                <form id="downloadForm">
+                    <div class="form-group row">
+                        <div class="col">
+                            <button id="download-button" type="submit" class="btn btn-sm btn-primary">Download Georgia Data</button>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="col-sm-5"></div>
         </div>
@@ -121,27 +111,32 @@
 <script src="epicurve3.js"></script>
 <script src="https://cdn.jsdelivr.net/lodash/4.13.1/lodash.min.js"></script>
 <script>
+    let selectedCounty = getCountyFromUrl(window.location.search);
+    let selectedPrettyCounty = "Georgia";
+    let allCounties = ["Georgia","Appling","Atkinson","Bacon","Baker","Baldwin","Banks","Barrow","Bartow","Ben-Hill","Berrien","Bibb","Bleckley","Brantley","Brooks","Bryan","Bulloch","Burke","Butts","Calhoun","Camden","Candler","Carroll","Catoosa","Charlton","Chatham","Chattahoochee","Chattooga","Cherokee","Clarke","Clay","Clayton","Clinch","Cobb","Coffee","Colquitt","Columbia","Cook","Coweta","Crawford","Crisp","Dade","Dawson","DeKalb","Decatur","Dodge","Dooly","Dougherty","Douglas","Early","Echols","Effingham","Elbert","Emanuel","Evans","Fannin","Fayette","Floyd","Forsyth","Franklin","Fulton","Gilmer","Glascock","Glynn","Gordon","Grady","Greene","Gwinnett","Habersham","Hall","Hancock","Haralson","Harris","Hart","Heard","Henry","Houston","Irwin","Jackson","Jasper","JeffDavis","Jefferson","Jenkins","Johnson","Jones","Lamar","Lanier","Laurens","Lee","Liberty","Lincoln","Long","Lowndes","Lumpkin","Macon","Madison","Marion","McDuffie","McIntosh","Meriwether","Miller","Mitchell","Monroe","Montgomery","Morgan","Murray","Muscogee","Newton","Non-Georgia-Resident","Oconee","Oglethorpe","Paulding","Peach","Pickens","Pierce","Pike","Polk","Pulaski","Putnam","Quitman","Rabun","Randolph","Richmond","Rockdale","Schley","Screven","Seminole","Spalding","Stephens","Stewart","Sumter","Talbot","Taliaferro","Tattnall","Taylor","Telfair","Terrell","Thomas","Tift","Toombs","Towns","Treutlen","Troup","Turner","Twiggs","Union","Unknown","Upson","Walker","Walton","Ware","Warren","Washington","Wayne","Webster","Wheeler","White","Whitfield","Wilcox","Wilkes","Wilkinson","Worth"];
+
     $(document).ready(function () {
+        let blockSelectedCounty = selectedCounty;
         $('[data-toggle="tooltip"]').tooltip();
-        let selectedCounty = getCountyFromUrl(window.location.search);
-        document.getElementById("deathsDownloadLink").href = constructCountyUrl("deaths", selectedCounty);
-        document.getElementById("casesDownloadLink").href = constructCountyUrl("cases", selectedCounty);
-        document.getElementById("caseDeltasDownloadLink").href = constructCountyUrl("caseDeltas", selectedCounty);
-        document.getElementById("movingAvgDownloadLink").href = constructCountyUrl("movingAvgs", selectedCounty);
-        document.getElementById("summaryDownloadLink").href = constructCountyUrl("summary", selectedCounty);
-        let allCounties = ["Georgia","Appling","Atkinson","Bacon","Baker","Baldwin","Banks","Barrow","Bartow","Ben-Hill","Berrien","Bibb","Bleckley","Brantley","Brooks","Bryan","Bulloch","Burke","Butts","Calhoun","Camden","Candler","Carroll","Catoosa","Charlton","Chatham","Chattahoochee","Chattooga","Cherokee","Clarke","Clay","Clayton","Clinch","Cobb","Coffee","Colquitt","Columbia","Cook","Coweta","Crawford","Crisp","Dade","Dawson","DeKalb","Decatur","Dodge","Dooly","Dougherty","Douglas","Early","Echols","Effingham","Elbert","Emanuel","Evans","Fannin","Fayette","Floyd","Forsyth","Franklin","Fulton","Gilmer","Glascock","Glynn","Gordon","Grady","Greene","Gwinnett","Habersham","Hall","Hancock","Haralson","Harris","Hart","Heard","Henry","Houston","Irwin","Jackson","Jasper","JeffDavis","Jefferson","Jenkins","Johnson","Jones","Lamar","Lanier","Laurens","Lee","Liberty","Lincoln","Long","Lowndes","Lumpkin","Macon","Madison","Marion","McDuffie","McIntosh","Meriwether","Miller","Mitchell","Monroe","Montgomery","Morgan","Murray","Muscogee","Newton","Non-Georgia-Resident","Oconee","Oglethorpe","Paulding","Peach","Pickens","Pierce","Pike","Polk","Pulaski","Putnam","Quitman","Rabun","Randolph","Richmond","Rockdale","Schley","Screven","Seminole","Spalding","Stephens","Stewart","Sumter","Talbot","Taliaferro","Tattnall","Taylor","Telfair","Terrell","Thomas","Tift","Toombs","Towns","Treutlen","Troup","Turner","Twiggs","Union","Unknown","Upson","Walker","Walton","Ware","Warren","Washington","Wayne","Webster","Wheeler","White","Whitfield","Wilcox","Wilkes","Wilkinson","Worth"];
 
         $("#countyInput").autocomplete({
             source: allCounties,
             autoFocus: true,
             minLength: 0
         });
+        $('#downloadForm').submit(function () {
+            window.open('http://dshaver.org/covid/api/download/' + selectedCounty, '_blank');
+            
+            return false;
+        });
+        
     });
 
     $('#countyForm').submit(function () {
         selectNewCounty();
         return false;
     });
+    
 </script>
 
 <script>
@@ -149,8 +144,6 @@
         arrow: true,
         placement: 'bottom'
     });
-
-    let selectedCounty = getCountyFromUrl(window.location.search);
     let reportDateToId = [];
     let epicurve, timeData, chartData, summaryData, sliderTime, chart, tip;
     let prevSliderValue = 0;
@@ -247,6 +240,10 @@
             epicurve.initDateLines();
             epicurve.initDateSelect(epicurve.xScale);
             epicurve.updateMouseOverLine(latestPoint);
+            
+            d3.select(".county-case-label").text(selectedPrettyCounty + " Cases");
+            
+            $('#download-button').html("Download " + selectedPrettyCounty + " Data")
 
         });
     }
@@ -319,7 +316,6 @@
         epicurve.updateLineChart(chartData[d], getLabel, getCases, "caseline", "#35a5ff", "#67b0ff", offsetDate, true);
         epicurve.updateLineChart(chartData[d], getLabel, getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate, true);
         //epicurve.drawMouseOverRects(getLabel, chartData[dateString]);
-        epicurve.
     }, 50);
 
     function updateAllGraphs(dateString) {
@@ -327,9 +323,17 @@
     }
 
     function selectNewCounty() {
-        selectedCounty = document.forms['countyForm'].elements['countyInput'].value.toLowerCase();
-        console.log("Loading new county data for: " + selectedCounty);
-        loadData();
+        let rawCounty = document.forms['countyForm'].elements['countyInput'].value;
+        let filteredCounties = allCounties.filter(county => county.toLowerCase() === rawCounty);
+        
+        if (filteredCounties && filteredCounties.length === 1) {
+            selectedPrettyCounty = filteredCounties[0];
+            selectedCounty = selectedPrettyCounty.toLowerCase();
+            console.log("Loading new county data for: " + selectedCounty);
+            loadData();
+        } else {
+            console.error(rawCounty + " is not a valid county!");
+        }
     }
 
     addEventListener("newDateEvent", function (event) {
