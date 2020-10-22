@@ -119,7 +119,7 @@ public class ArrayReport {
         if (countyOverview == null && cleanCounty.equals("georgia")) {
             return report.getConfirmedCases();
         } else if (countyOverview != null) {
-            return countyOverview.getPositive();
+            return countyOverview.getPositive() != null ? countyOverview.getPositive() : 0;
         } else {
             return 0;
         }
@@ -132,7 +132,7 @@ public class ArrayReport {
         if (countyOverview == null && cleanCounty.equals("georgia")) {
             return report.getConfirmedCasesVm();
         } else if (countyOverview != null) {
-            return countyOverview.getPositiveVm();
+            return countyOverview.getPositiveVm() != null ? countyOverview.getPositiveVm() : 0;
         } else {
             return 0;
         }
@@ -145,7 +145,7 @@ public class ArrayReport {
         if (countyOverview == null && cleanCounty.equals("georgia")) {
             return report.getDeaths();
         } else if (countyOverview != null) {
-            return countyOverview.getDeaths();
+            return countyOverview.getDeaths() != null ? countyOverview.getDeaths() : 0;
         } else {
             return 0;
         }
@@ -158,7 +158,7 @@ public class ArrayReport {
         if (countyOverview == null && cleanCounty.equals("georgia")) {
             return report.getDeathsVm();
         } else if (countyOverview != null) {
-            return countyOverview.getDeathsVm();
+            return countyOverview.getDeathsVm() != null ? countyOverview.getDeathsVm() : 0;
         } else {
             return 0;
         }

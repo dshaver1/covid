@@ -9,6 +9,8 @@ public class CountyOverview {
 
     @JsonAlias({"county_resident", "county_name"})
     private String countyName;
+
+    @JsonAlias({"positive", "positives"})
     private Integer positive;
     private Integer positiveVm;
     private Integer population;

@@ -197,7 +197,10 @@ public class ReportFactory {
             CountyOverview previousCountyOverview = previousReport.getCountyOverviewMap().get(cleanCounty);
             int positiveVm = 0;
             int deathsVm = 0;
-            if (previousCountyOverview != null) {
+            if (previousCountyOverview != null && o.getPositive() != null) {
+                logger.debug("countyStuff! countOverview: {}, getPositive: {}, getDeaths: {}, cleanCounty: {}, prevCounty: {}, previousReport: {}, " +
+                        "previousReport.getCountyOverviewMap().get(cleanCounty): {}, prevReport.getPositive(): {}", o != null, o.getPositive(), o.getDeaths(), cleanCounty,
+                        previousCountyOverview != null, previousReport != null, previousReport.getCountyOverviewMap().get(cleanCounty) != null, previousReport.getCountyOverviewMap().get(cleanCounty).getPositive());
                 positiveVm = o.getPositive() - (previousReport.getCountyOverviewMap().get(cleanCounty).getPositive());
                 deathsVm = o.getDeaths() - (previousReport.getCountyOverviewMap().get(cleanCounty).getDeaths());
             }
