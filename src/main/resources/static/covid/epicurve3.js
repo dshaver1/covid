@@ -16,6 +16,7 @@ class Epicurve {
             "July", "August", "September", "October", "November", "December"
         ];
 
+        this.globalDuration = 200;
         let selectedData = this.svg.selectAll(".prelim-region").data(["2020-08-08"]);
         let enterData = selectedData.enter();
 
@@ -104,7 +105,7 @@ class Epicurve {
                 let scaledX = getDateAtMouse(mouse, xScale);
                 handleMouseClick(scaledX, xScale);
 
-                let data = d3.selectAll(".caseline").filter(d => d.label === scaledX).data()[0];
+                let data = d3.selectAll(".caseline-circle").filter(d => d.label === scaledX).data()[0];
                 constructorThis.updateMouseOverLine(data);
 
                 d3.select(".mouse-line")
@@ -122,7 +123,7 @@ class Epicurve {
             .on('start', function () {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
-                let dragStartD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                let dragStartD = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                 constructorThis.updateMouseOverLine(dragStartD);
 
                 d3.selectAll(".mouse-date")
@@ -130,13 +131,6 @@ class Epicurve {
             })
             .on('end', function () {
                 console.log('drag end');
-
-/*                // TODO Replace this!
-                let mouse = d3.mouse(this);
-                let scaledX = getDateAtMouse(mouse, xScale);
-                let event = new CustomEvent('newCountyEvent', {detail: {label: scaledX, county: "cobb"}});
-
-                dispatchEvent(event);*/
             });
 
         let mouseG = this.svg.append("g")
@@ -184,7 +178,7 @@ class Epicurve {
                     scaledX = xScale.domain()[xScale.domain().length - 1];
                 }
 
-                let d = d3.selectAll(".caseline").filter(d => d.label === scaledX).data()[0];
+                let d = d3.selectAll(".caseline-circle").filter(d => d.label === scaledX).data()[0];
                 constructorThis.updateMouseOverLine(d)
 
                 d3.select(".mouse-line")
@@ -203,7 +197,7 @@ class Epicurve {
             .on('click', function () {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
-                let d = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                let d = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                 constructorThis.updateMouseOverLine(d);
             })
             .on('wheel', function () {
@@ -220,8 +214,8 @@ class Epicurve {
                 if (targetDate) {
                     handleMouseClick(targetDate, xScale);
 
-                    let clickedD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.clicked-mouse-date").text()).data()[0];
-                    let mouseD = d3.selectAll(".caseline").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                    let clickedD = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.clicked-mouse-date").text()).data()[0];
+                    let mouseD = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                     if (!mouseD || (clickedD && new Date(clickedD.label) <= new Date(mouseD.label))) {
                         constructorThis.updateMouseOverLine(clickedD);
                     } else {
@@ -278,8 +272,8 @@ class Epicurve {
         }
 
         return [{clazz: "reportedcasesbar", color: () => "#325b8d", label: d.label, y: d.reportedCases, offset: 0},
-            {clazz: "caseline", color: () => "#35a5ff", label: d.label, y: d.cases, offset: 0},
-            {clazz: "avgline", color: () => "#ff7f0e", label: d.label, y: d.movingAvg, offset: 0},
+            {clazz: "caseline-circle", color: () => "#35a5ff", label: d.label, y: d.cases, offset: 0},
+            {clazz: "avgline-circle", color: () => "#ff7f0e", label: d.label, y: d.movingAvg, offset: 0},
             {clazz: "casedeltabar", color: (f) => f.y < 0 ? "#777" : "#35a5ff", label: d.label, y: d.casesDelta, offset: 0, addOnText: "Δ"}]
     }
 
@@ -431,24 +425,33 @@ class Epicurve {
     }
 
     updateBarChart(data, xCallback, yCallback, clazz, color, highlightColor) {
-        let selectedData = this.svg.selectAll("." + clazz).data(data);
-        let enterData = selectedData.enter();
+        this.svg.selectAll("." + clazz).data(data)
+            .join(enter => {
+                    let rect = enter.append("rect")
+                        .style("shape-rendering", "crispEdges")
+                        .attr("class", clazz)
+                        .attr("width", this.xScale.bandwidth())
+                        .style("fill", d => yCallback(d) > 0 ? color : highlightColor)
+                        .attr("x", d => this.xScale(xCallback(d)))
+                        .attr("y", this.yScale(0))
+                        .attr("height", 0);
 
-        selectedData.exit().remove();
+                    rect.transition().duration(this.globalDuration)
+                        .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
+                        .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)));
+                },
+                update => update
+                    .transition().duration(this.globalDuration)
+                    .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
+                    .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)))
+                    .style("fill", d => yCallback(d) > 0 ? color : highlightColor),
+                exit => exit
+                    .transition().duration(this.globalDuration)
+                    .attr("y", this.yScale(0))
+                    .attr("height", 0)
+                    .remove());
 
-        enterData.append("rect")
-            .style("shape-rendering", "crispEdges")
-            .attr("class", clazz)
-            .attr("x", d => this.xScale(xCallback(d)))
-            .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
-            .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)))
-            .attr("width", this.xScale.bandwidth())
-            .style("fill", d => yCallback(d) > 0 ? color : highlightColor);
-
-        selectedData.transition().duration(90)
-            .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
-            .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)))
-            .style("fill", d => yCallback(d) > 0 ? color : highlightColor);
+        this.svg.select(".action-rect").moveToFront();
     }
 
     updateLineChartY1(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
@@ -461,51 +464,76 @@ class Epicurve {
 
     updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, yScale) {
         let dYScale = yScale ? yScale : this.yScale;
+        let line = d3.line()
+            .x(d => this.getLineX(xCallback(d), isBanded))
+            .y(d => this.getLineY(yCallback(d), dYScale))
+            .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart))
 
         // Handle line
         this.svg.selectAll("." + clazz).data([data], d => xCallback(d))
-            .join(enter => enter.append("path")
-                    .attr("class", clazz)
-                    .attr("d", d3.line()
-                        .x(d => this.getLineX(xCallback(d), isBanded))
-                        .y(d => this.getLineY(yCallback(d), dYScale))
-                        // Don't draw the line if it's in the preliminary region.
-                        .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart)))
-                    .attr("fill", "none")
-                    .attr("stroke", color)
-                    .attr("stroke-width", 1),
-                update => update.transition().duration(90)
-                    .attr("d", d3.line()
-                        .x(d => this.getLineX(xCallback(d), isBanded))
-                        .y(d => this.getLineY(yCallback(d), dYScale))
-                        // Don't draw the line if it's in the preliminary region.
-                        .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart))));
+            .join(enter => {
+                    let enterPath = enter.append("path")
+                        .attr("class", clazz)
+                        .attr("fill", "none")
+                        .attr("stroke", color)
+                        .attr("stroke-width", 1)
+                        .attr("d", d3.line()
+                            .x(d => this.getLineX(xCallback(d), isBanded))
+                            .y(dYScale(0)));
+
+                    // Line easein... not happy with it.
+                    /*                    let node = enterPath.node();
+                    let pathLength = node ? enterPath.node().getTotalLength() : 0;
+
+                    enterPath
+                        .attr("stroke-dashoffset", pathLength)
+                        .attr("stroke-dasharray", pathLength)
+
+                    enterPath.transition().ease(d3.easeSin).duration(1000)
+                        .attr("stroke-dashoffset", 0)*/
+
+                    enterPath.transition().duration(this.globalDuration)
+                        .attr("d", line)
+                },
+                update => update.transition().duration(this.globalDuration)
+                    .attr("d", line));
 
         let circleClass = clazz + '-circle';
         let isVisible = "visible" === this.svg.selectAll('.' + clazz).style("visibility");
 
         // Handle circles
         this.svg.selectAll('.' + circleClass).data(data)
-            .join(enter => enter.append('circle')
-                    .attr('class', circleClass + " " + clazz)
-                    .attr('cx', d => this.getLineX(xCallback(d), isBanded))
-                    .attr('cy', d => this.getLineY(yCallback(d), dYScale))
-                    .attr("stroke", highlightColor)
-                    .attr("fill", color)
+            .join(enter => {
+                    let circle = enter.append('circle')
+                        .attr('class', circleClass)
+                        .attr("stroke", highlightColor)
+                        .attr("fill", color)
+                        .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
+                        .attr('r', 1)
+                        .style("visibility", isVisible ? "visible" : "hidden")
+                        .on('click', function () {
+                            d3.select(this).attr("r", 5).attr("isHover", "1");
+                        })
+                        .on('mouseout', function () {
+                            d3.select(this).attr("r", 1).attr("isHover", "0");
+                        })
+                        .attr('cx', d => this.getLineX(xCallback(d), isBanded))
+                        .attr('cy', d => this.getLineY(0, dYScale));
+                    circle.transition().duration(this.globalDuration)
+                        .attr('cy', d => this.getLineY(yCallback(d), dYScale))
+                },
+                update => update
                     .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
-                    .attr('r', 1)
-                    .style("visibility", isVisible ? "visible" : "hidden")
-                    .on('click', function () {
-                        d3.select(this).attr("r", 5).attr("isHover", "1");
-                    })
-                    .on('mouseout', function () {
-                        d3.select(this).attr("r", 1).attr("isHover", "0");
-                    }),
-                update => update.transition().duration(90)
-                    .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
+                    .transition().duration(this.globalDuration)
                     .attr('cx', d => this.getLineX(xCallback(d), isBanded))
                     .attr('cy', d => this.getLineY(yCallback(d), dYScale)),
-                exit => exit.transition().duration(90).style("opacity", 0).remove());
+                exit => exit
+                    .transition().duration(this.globalDuration)
+                    .style("opacity", 0)
+                    .attr('cy', d => this.getLineY(0, dYScale))
+                    .remove());
+
+        this.svg.select(".action-rect").moveToFront();
     }
 
     updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
@@ -551,7 +579,9 @@ class Epicurve {
                             .attr("d", d3.symbol().size(20).type(d3.symbolDiamond));
                     }),
                 update => update.transition().attr("transform", d => "translate(" + d.scaledX + "," + d.scaledY + ")"),
-                exit => exit.transition().duration(90).style("opacity", 0).remove());
+                exit => exit.transition().duration(this.globalDuration).style("opacity", 0).remove());
+
+        this.svg.select(".action-rect").moveToFront();
     }
 
     updateCorrelationLine(correlationCoefficient, clazz, color) {
@@ -575,7 +605,7 @@ class Epicurve {
 
         selectedLine.merge(selectedLine)
             .transition()
-            .duration(90)
+            .duration(this.globalDuration)
             .attr("y1", d => this.yScale(mid - (mid * d)))
             .attr("y2", d => this.yScale((mid * d) + mid));
 
@@ -597,7 +627,7 @@ class Epicurve {
         selectedText
             .merge(selectedText)
             .transition()
-            .duration(90)
+            .duration(this.globalDuration)
             .text(d => "r: " + d)
             .attr("y", d => this.yScale((mid * d) + mid) - 10);
 
