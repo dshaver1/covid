@@ -24,7 +24,7 @@ import static org.dshaver.covid.service.RawDataParsingTools.find;
 @Component
 public class CountyOverviewExtractorImpl extends AbstractExtractor implements Extractor<String, CountyOverviewContainer> {
     private static final Logger logger = LoggerFactory.getLogger(CountyOverviewExtractorImpl.class);
-    private static final Pattern overviewPattern = Pattern.compile("(\\[\\{\"county_name\".+?}])");
+    private static final Pattern overviewPattern = Pattern.compile("(\\[\\{\"county_name\".+?}]|\\[\\{\"county_resident\".+?}])");
 
     @Inject
     protected CountyOverviewExtractorImpl(ObjectMapper objectMapper) {

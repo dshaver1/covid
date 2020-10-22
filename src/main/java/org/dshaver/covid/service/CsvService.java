@@ -310,14 +310,14 @@ public class CsvService {
             row.add(arrayReport.getReportDate().toString());
             row.add("" + arrayReport.getTotalTests());
             row.add("" + arrayReport.getTotalTestsVm());
-            row.add("" + arrayReport.getTotalConfirmedCases());
-            row.add("" + arrayReport.getTotalDeaths());
-            row.add("" + arrayReport.getConfirmedCasesVm());
-            row.add("" + arrayReport.getHospitalized());
-            row.add("" + arrayReport.getHospitalizedVm());
-            row.add("" + arrayReport.getDeathsVm());
-            row.add("" + arrayReport.getIcu());
-            row.add("" + arrayReport.getIcuVm());
+            row.add("" + arrayReport.getTotalConfirmedCases());//0
+            row.add("" + arrayReport.getTotalDeaths());//0
+            row.add("" + arrayReport.getConfirmedCasesVm());//0
+            row.add("" + arrayReport.getHospitalized());//29762
+            row.add("" + arrayReport.getHospitalizedVm());//106
+            row.add("" + arrayReport.getDeathsVm());//0
+            row.add("" + arrayReport.getIcu());//5523
+            row.add("" + arrayReport.getIcuVm());//9
 
             writer.write(String.join(",", row));
 

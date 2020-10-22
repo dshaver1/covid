@@ -49,6 +49,9 @@ public class ArrayReport {
     }
 
     public ArrayReport(Report report, String county) {
+        //            row.add("" + arrayReport.getTotalConfirmedCases());//0
+        //            row.add("" + arrayReport.getTotalDeaths());//0
+        //            row.add("" + arrayReport.getConfirmedCasesVm());//0
         this.id = report.getId();
         this.createTime = report.getCreateTime();
         this.reportDate = report.getReportDate();
