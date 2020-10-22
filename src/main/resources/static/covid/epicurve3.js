@@ -1339,15 +1339,17 @@ function toggleVisibilityExclusive(d) {
 
 function toggleVisibility(d) {
     d.clazz.forEach(c => {
-        let currentVis = d3.selectAll("." + c).style("visibility");
-        console.log("Legend click! Toggling " + d.key + "... current visibility: " + currentVis);
+        let selection = d3.selectAll("." + c);
+        if (selection && selection.data() && selection.data().length > 0) {
+            let currentVis = d3.selectAll("." + c).style("visibility");
+            console.log("Legend click! Toggling " + d.key + "... current visibility: " + currentVis);
+            let targetVis = "visible";
+            if (targetVis === currentVis) {
+                targetVis = "hidden";
+            }
 
-        let targetVis = "visible";
-        if (targetVis === currentVis) {
-            targetVis = "hidden";
+            d3.selectAll("." + c).transition().duration(200).style("visibility", targetVis);
         }
-
-        d3.selectAll("." + c).transition().duration(200).style("visibility", targetVis);
     });
 }
 
