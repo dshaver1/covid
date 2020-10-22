@@ -125,7 +125,7 @@
             minLength: 0
         });
         $('#downloadForm').submit(function () {
-            window.open('http://dshaver.org/covid/api/download/' + selectedCounty, '_blank');
+            window.open('http://dshaver.org:8080/covid/api/download/' + selectedCounty, '_blank');
             
             return false;
         });
