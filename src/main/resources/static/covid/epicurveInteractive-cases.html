@@ -134,7 +134,6 @@
 
     $('#countyForm').submit(function () {
         selectNewCounty();
-        window.history.pushState({county: selectedCounty}, 'Title', '?county=' + selectedCounty);
         return false;
     });
     
@@ -332,6 +331,8 @@
             selectedCounty = selectedPrettyCounty.toLowerCase();
             console.log("Loading new county data for: " + selectedCounty);
             loadData();
+
+            window.history.pushState({county: selectedCounty}, 'Title', '?county=' + selectedCounty);
         } else {
             console.error(rawCounty + " is not a valid county!");
         }
