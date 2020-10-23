@@ -30,6 +30,7 @@ public class WebConfig {
         objectMapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 
         return objectMapper;
     }

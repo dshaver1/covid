@@ -1,5 +1,7 @@
 package org.dshaver.covid.service;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.dshaver.covid.dao.RawDataRepositoryV3;
 import org.dshaver.covid.domain.RawDataV3;
@@ -11,13 +13,13 @@ import javax.inject.Inject;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,19 +32,21 @@ public class RawDataDownloader3 implements RawDataDownloader<RawDataV3> {
     private final Pattern timePattern = Pattern.compile(".*JSON.parse\\('\\{\"currdate\":\"(\\d{1,2}/\\d{1,2}/\\d{4},\\s\\d{1,2}:\\d{1,2}:\\d{1,2}\\s[AP]M)\"}.*");
     private final Pattern allJsonPattern = Pattern.compile("JSON\\.parse\\('(.*?)'\\)");
     private final Pattern mainNoncePattern = Pattern.compile("main\\.(\\w*)\\.chunk\\.js");
-    private final Pattern fourthChunkNoncePattern = Pattern.compile("\\{3:\"\\w*\",4:\"(\\w*)\"}");
+    private final Pattern numberedChunkNoncePattern = Pattern.compile("\"static/js/\".+(\\{(\\d{1,2}:\"[\\d|\\w]+\",?)+})");
     private final DateTimeFormatter timeFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().parseLenient().appendPattern("M/dd/uuuu, hh:mm:ss a").toFormatter();
     private final RawDataRepositoryV3 rawDataWriter;
+    private final ObjectMapper objectMapper;
 
     @Inject
-    public RawDataDownloader3(RawDataRepositoryV3 rawDataWriter) {
+    public RawDataDownloader3(RawDataRepositoryV3 rawDataWriter, ObjectMapper objectMapper) {
         this.rawDataWriter = rawDataWriter;
+        this.objectMapper = objectMapper;
     }
 
     public RawDataV3 download(String urlString) {
         logger.info("Downloading report from " + urlString);
         String mainNonce = "";
-        String fourthChunkNonce = "";
+        String numberedChunkString = "";
         List<String> indexStrings = new ArrayList<>();
         // Find chunk urls
         try {
@@ -53,10 +57,10 @@ public class RawDataDownloader3 implements RawDataDownloader<RawDataV3> {
                 br = new BufferedReader(new InputStreamReader(inputStream));
                 while ((line = br.readLine()) != null) {
                     indexStrings.add(line);
-                    Matcher fourthChunkNonceMatcher = fourthChunkNoncePattern.matcher(line);
+                    Matcher numberedChunkNonceMatcher = numberedChunkNoncePattern.matcher(line);
                     // Should only be 1 match... Gotta find before group.
-                    if (fourthChunkNonceMatcher.find()) {
-                        fourthChunkNonce = fourthChunkNonceMatcher.group(1);
+                    if (numberedChunkNonceMatcher.find()) {
+                        numberedChunkString = numberedChunkNonceMatcher.group(1);
                     }
 
                     Matcher mainNonceMatcher = mainNoncePattern.matcher(line);
@@ -74,8 +78,6 @@ public class RawDataDownloader3 implements RawDataDownloader<RawDataV3> {
         try {
             String mainUrlString = buildUrl(urlString, "main", mainNonce);
             URL mainUrl = new URL(mainUrlString);
-            String fourthChunkUrlString = buildUrl(urlString, "4", fourthChunkNonce);
-            URL fourthChunkUrl = new URL(fourthChunkUrlString);
 
             logger.info("Downloading from {}...", mainUrl);
             RawDataV3 rawDataMain = new RawDataV3();
@@ -92,16 +94,12 @@ public class RawDataDownloader3 implements RawDataDownloader<RawDataV3> {
             List<String> payload = indexStrings;
             payload.addAll(rawDataMain.getPayload());
 
-            if (StringUtils.isNotEmpty(fourthChunkNonce)) {
-                logger.info("Downloading from {}...", fourthChunkUrl);
-                RawDataV3 rawDataFourth = new RawDataV3();
-                try (InputStream inputStream = mainUrl.openStream()) {
-                    rawDataFourth = transform(inputStream, true);
-                } catch (IOException e) {
-                    logger.error("Error opening stream!");
-                }
+            if (StringUtils.isNotEmpty(numberedChunkString)) {
+                logger.info("Downloading all numbered chunks using nonce map... {}", numberedChunkString);
 
-                payload.addAll(rawDataFourth.getPayload());
+                List<String> numberedDownloads = downloadAllChunks(urlString, numberedChunkString);
+
+                payload.addAll(numberedDownloads);
             }
 
             rawData.setPayload(payload);
@@ -116,6 +114,40 @@ public class RawDataDownloader3 implements RawDataDownloader<RawDataV3> {
         } catch (MalformedURLException me) {
             throw new RuntimeException(me);
         }
+    }
+
+    private List<String> downloadAllChunks(String urlString, String numberedChunkString) throws MalformedURLException {
+        List<String> accumulator = new ArrayList<>();
+
+        Map<Integer, String> nonceMap = parseChunkMap(numberedChunkString);
+
+        for (Map.Entry<Integer, String> entry : nonceMap.entrySet()) {
+            String currentChunkUrlString = buildUrl(urlString, entry.getKey().toString(), entry.getValue());
+            logger.info("Downloading chunk from {}...", currentChunkUrlString);
+            URL currentChunkUrl = new URL(currentChunkUrlString);
+
+            RawDataV3 currentRawData = new RawDataV3();
+            try (InputStream inputStream = currentChunkUrl.openStream()) {
+                currentRawData = transform(inputStream, true);
+            } catch (IOException e) {
+                logger.error("Error opening stream! for chunk: " + entry.getKey() + " with nonce: " + entry.getValue(), e );
+            }
+
+            accumulator.addAll(currentRawData.getPayload());
+        }
+
+        return accumulator;
+    }
+
+    private Map<Integer, String> parseChunkMap(String numberedChunkString) {
+        try {
+            JavaType type = objectMapper.getTypeFactory().constructMapType(HashMap.class, Integer.class, String.class);
+            return objectMapper.readValue(numberedChunkString, type);
+        } catch (Exception e) {
+            logger.error("Could not read nonce map! " + numberedChunkString, e);
+        }
+
+        return null;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.dshaver.covid.service.extractor;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.dshaver.covid.dao.BaseFileRepository;
 import org.dshaver.covid.domain.overview.ReportOverview;
@@ -21,10 +21,13 @@ import static org.dshaver.covid.service.RawDataParsingTools.find;
 public class ReportOverviewExtractorImpl2 extends AbstractExtractor implements Extractor<String, ReportOverview> {
     private static final Logger logger = LoggerFactory.getLogger(ReportOverviewExtractorImpl2.class);
     private static final Pattern overviewPattern = Pattern.compile("(\\[\\{\"total_tests\".+?}])");
+    private final JavaType reportOverviewType;
 
     @Inject
     protected ReportOverviewExtractorImpl2(ObjectMapper objectMapper) {
         super(objectMapper);
+
+        reportOverviewType = this.getObjectMapper().getTypeFactory().constructCollectionType(List.class, ReportOverviewImpl2.class);
     }
 
     @Override
@@ -36,7 +39,7 @@ public class ReportOverviewExtractorImpl2 extends AbstractExtractor implements E
 
         try {
             if (overviewString.isPresent()) {
-                reportOverviewContainer = getObjectMapper().readValue(overviewString.get(), new TypeReference<List<ReportOverviewImpl2>>(){});
+                reportOverviewContainer = getObjectMapper().readValue(overviewString.get(), reportOverviewType);
                 if (reportOverviewContainer != null && !reportOverviewContainer.isEmpty()) {
                     ReportOverviewImpl2 overview = reportOverviewContainer.get(0);
                     overview.setId(id);
