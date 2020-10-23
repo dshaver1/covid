@@ -1434,10 +1434,6 @@ function getDateAtMouse(mouse, xScale) {
         scaledX = xScale.domain()[xScale.domain().length - 1];
     }
 
-    if (new Date(scaledX) < earliestDate) {
-        scaledX = getFormattedDate(earliestDate);
-    }
-
     //console.log("scaledX " + scaledX + " @ mouse " + mouse[0]);
 
     return scaledX;
