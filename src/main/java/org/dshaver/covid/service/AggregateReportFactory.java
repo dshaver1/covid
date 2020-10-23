@@ -60,25 +60,19 @@ public class AggregateReportFactory {
         aggregateReport.setReportDate(histogramReport.getReportDate());
         aggregateReport.setDaysTo90PercentCases(histogramReport.getCountyHistogramMap().values().stream()
                 .map(hist -> {
-                    CountyValuePair currentPair = new CountyValuePair();
-                    currentPair.setCounty(hist.getCounty());
-
                     int sum = IntStream.of(hist.getCasesHist()).sum();
                     if (sum > 100) {
                         for (int i = 0; i < 100; i++) {
                             if (hist.getCasesPercentageCumulative()[i].doubleValue() >= 90D) {
-                                currentPair.setValue(i);
-                                break;
+                                return new CountyValuePair(hist.getCounty(), i);
                             }
                         }
-
-                        return currentPair;
                     }
 
                     return null;
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CountyValuePair::getValue).reversed()))));
+                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CountyValuePair::value).reversed()))));
 
         aggregateReport.setBreaches(report.getEpicurves().values().stream().flatMap(epicurve -> {
             List<EpicurvePoint> points = new LinkedList<>(epicurve.getData());

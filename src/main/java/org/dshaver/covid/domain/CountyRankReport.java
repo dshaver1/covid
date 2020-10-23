@@ -30,7 +30,7 @@ public class CountyRankReport {
                         .mapToInt(EpicurvePoint::getCasesVm)
                         .map(Math::abs)
                         .sum()))
-                .sorted(Comparator.comparing(CountyValuePair::getValue).reversed())
+                .sorted(Comparator.comparing(CountyValuePair::value).reversed())
                 .collect(Collectors.toList())
                 .toArray(new CountyValuePair[]{});
 
