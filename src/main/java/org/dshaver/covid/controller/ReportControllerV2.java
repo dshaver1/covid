@@ -2,6 +2,7 @@ package org.dshaver.covid.controller;
 
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.ArrayReport;
+import org.dshaver.covid.domain.CountyRankReport;
 import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.service.AggregateReportFactory;
 import org.dshaver.covid.service.CsvService;
@@ -15,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -125,6 +123,18 @@ public class ReportControllerV2 {
         reports.addAll(reportRepository.findAll().collect(Collectors.toList()));
 
         return new ArrayReport(reports.last());
+    }
+
+    @GetMapping("/covid/api/reports/v2/countyRankByReportDate/{reportDate}")
+    public CountyRankReport getCountyRankReport(@PathVariable("reportDate")
+                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate,
+                                                @RequestParam(name = "prelim", required = false) String prelim) {
+        boolean prelimToggle = prelim != null && "before".equals(prelim.toLowerCase());
+        Optional<Report> maybeReport = reportRepository.findByReportDate(reportDate);
+
+        logger.info("Building CountyRankReport for {} with prelimToggle set to {}", reportDate, prelimToggle);
+
+        return maybeReport.map(report -> new CountyRankReport(report, prelimToggle)).orElseGet(CountyRankReport::new);
     }
 
     @PostMapping("/covid/api/reports/histogram/calculate")
