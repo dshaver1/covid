@@ -1,4 +1,4 @@
-const allCounties = ["Georgia","Unknown","Non-Georgia-Resident","Healthcare","Appling","Atkinson","Bacon","Baker","Baldwin","Banks","Barrow","Bartow","Ben-Hill","Berrien","Bibb","Bleckley","Brantley","Brooks","Bryan","Bulloch","Burke","Butts","Calhoun","Camden","Candler","Carroll","Catoosa","Charlton","Chatham","Chattahoochee","Chattooga","Cherokee","Clarke","Clay","Clayton","Clinch","Cobb","Coffee","Colquitt","Columbia","Cook","Coweta","Crawford","Crisp","Dade","Dawson","DeKalb","Decatur","Dodge","Dooly","Dougherty","Douglas","Early","Echols","Effingham","Elbert","Emanuel","Evans","Fannin","Fayette","Floyd","Forsyth","Franklin","Fulton","Gilmer","Glascock","Glynn","Gordon","Grady","Greene","Gwinnett","Habersham","Hall","Hancock","Haralson","Harris","Hart","Heard","Henry","Houston","Irwin","Jackson","Jasper","JeffDavis","Jefferson","Jenkins","Johnson","Jones","Lamar","Lanier","Laurens","Lee","Liberty","Lincoln","Long","Lowndes","Lumpkin","Macon","Madison","Marion","McDuffie","McIntosh","Meriwether","Miller","Mitchell","Monroe","Montgomery","Morgan","Murray","Muscogee","Newton","Oconee","Oglethorpe","Paulding","Peach","Pickens","Pierce","Pike","Polk","Pulaski","Putnam","Quitman","Rabun","Randolph","Richmond","Rockdale","Schley","Screven","Seminole","Spalding","Stephens","Stewart","Sumter","Talbot","Taliaferro","Tattnall","Taylor","Telfair","Terrell","Thomas","Tift","Toombs","Towns","Treutlen","Troup","Turner","Twiggs","Union","Upson","Walker","Walton","Ware","Warren","Washington","Wayne","Webster","Wheeler","White","Whitfield","Wilcox","Wilkes","Wilkinson","Worth"];
+const allCounties = ["Georgia", "Unknown", "Non-Georgia-Resident", "Healthcare", "Appling", "Atkinson", "Bacon", "Baker", "Baldwin", "Banks", "Barrow", "Bartow", "Ben-Hill", "Berrien", "Bibb", "Bleckley", "Brantley", "Brooks", "Bryan", "Bulloch", "Burke", "Butts", "Calhoun", "Camden", "Candler", "Carroll", "Catoosa", "Charlton", "Chatham", "Chattahoochee", "Chattooga", "Cherokee", "Clarke", "Clay", "Clayton", "Clinch", "Cobb", "Coffee", "Colquitt", "Columbia", "Cook", "Coweta", "Crawford", "Crisp", "Dade", "Dawson", "DeKalb", "Decatur", "Dodge", "Dooly", "Dougherty", "Douglas", "Early", "Echols", "Effingham", "Elbert", "Emanuel", "Evans", "Fannin", "Fayette", "Floyd", "Forsyth", "Franklin", "Fulton", "Gilmer", "Glascock", "Glynn", "Gordon", "Grady", "Greene", "Gwinnett", "Habersham", "Hall", "Hancock", "Haralson", "Harris", "Hart", "Heard", "Henry", "Houston", "Irwin", "Jackson", "Jasper", "JeffDavis", "Jefferson", "Jenkins", "Johnson", "Jones", "Lamar", "Lanier", "Laurens", "Lee", "Liberty", "Lincoln", "Long", "Lowndes", "Lumpkin", "Macon", "Madison", "Marion", "McDuffie", "McIntosh", "Meriwether", "Miller", "Mitchell", "Monroe", "Montgomery", "Morgan", "Murray", "Muscogee", "Newton", "Oconee", "Oglethorpe", "Paulding", "Peach", "Pickens", "Pierce", "Pike", "Polk", "Pulaski", "Putnam", "Quitman", "Rabun", "Randolph", "Richmond", "Rockdale", "Schley", "Screven", "Seminole", "Spalding", "Stephens", "Stewart", "Sumter", "Talbot", "Taliaferro", "Tattnall", "Taylor", "Telfair", "Terrell", "Thomas", "Tift", "Toombs", "Towns", "Treutlen", "Troup", "Turner", "Twiggs", "Union", "Upson", "Walker", "Walton", "Ware", "Warren", "Washington", "Wayne", "Webster", "Wheeler", "White", "Whitfield", "Wilcox", "Wilkes", "Wilkinson", "Worth"];
 
 
 class Epicurve {
@@ -18,6 +18,7 @@ class Epicurve {
         this.monthNames = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
+        this.monthDates = ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01"];
 
         this.globalDuration = 200;
         let selectedData = this.svg.selectAll(".prelim-region").data(["2020-08-08"]);
@@ -38,9 +39,10 @@ class Epicurve {
 
     initDateSelect(xScale) {
         let constructorThis = this;
-        let lastAvailableDate = xScale.domain()[xScale.domain().length - 1]
+        this.lastAvailableDate = xScale.domain()[xScale.domain().length - 1];
+        let constructorLastDate = this.lastAvailableDate;
 
-        let selectedMouseDate = this.svg.selectAll(".mouse-date").data([lastAvailableDate]);
+        let selectedMouseDate = this.svg.selectAll(".mouse-date").data([this.lastAvailableDate]);
         selectedMouseDate.enter().append("svg:rect")
             .attr("x", -this.height - 70)// Note that x and y are flipped because we are rotating the text.
             .attr("y", 80)
@@ -65,7 +67,7 @@ class Epicurve {
             .attr("opacity", "0")
             .text(d => d);
 
-        let clickedMouseDate = this.svg.selectAll(".clicked-mouse-date").data([lastAvailableDate]);
+        let clickedMouseDate = this.svg.selectAll(".clicked-mouse-date").data([this.lastAvailableDate]);
         clickedMouseDate.enter().append("svg:rect")
             .attr("x", -this.height - 70)// Note that x and y are flipped because we are rotating the text.
             .attr("y", 80)
@@ -90,7 +92,7 @@ class Epicurve {
             .attr("opacity", "0")
             .text(d => d);
 
-        let clickedMouseDateLine = this.svg.selectAll(".clicked-mouse-date-line").data([lastAvailableDate]);
+        let clickedMouseDateLine = this.svg.selectAll(".clicked-mouse-date-line").data([this.lastAvailableDate]);
         clickedMouseDateLine.enter().append("line")
             .attr("class", "clicked-mouse-date-line")
             .style("stroke", "white")
@@ -108,7 +110,7 @@ class Epicurve {
                 let scaledX = getDateAtMouse(mouse, xScale);
                 handleMouseClick(scaledX, xScale);
 
-                let data = d3.selectAll(".caseline-circle").filter(d => d.label === scaledX).data()[0];
+                let data = d3.selectAll(".casedeltabar").filter(d => d.label === scaledX).data()[0];
                 constructorThis.updateMouseOverLine(data);
 
                 d3.select(".mouse-line")
@@ -126,7 +128,7 @@ class Epicurve {
             .on('start', function () {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
-                let dragStartD = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                let dragStartD = d3.selectAll(".casedeltabar").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                 constructorThis.updateMouseOverLine(dragStartD);
 
                 d3.selectAll(".mouse-date")
@@ -181,7 +183,7 @@ class Epicurve {
                     scaledX = xScale.domain()[xScale.domain().length - 1];
                 }
 
-                let d = d3.selectAll(".caseline-circle").filter(d => d.label === scaledX).data()[0];
+                let d = d3.selectAll(".casedeltabar").filter(d => d.label === scaledX).data()[0];
                 constructorThis.updateMouseOverLine(d)
 
                 d3.select(".mouse-line")
@@ -200,7 +202,7 @@ class Epicurve {
             .on('click', function () {
                 handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
-                let d = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                let d = d3.selectAll(".casedeltabar").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                 constructorThis.updateMouseOverLine(d);
             })
             .on('wheel', function () {
@@ -210,20 +212,27 @@ class Epicurve {
                 d3.event.preventDefault();
                 let selectedDateString = d3.select(".clicked-mouse-date") ? d3.select(".clicked-mouse-date").text() : xScale.domain()[xScale.domain().length - 1];
                 console.log("Current scroll date: " + selectedDateString);
-                let targetIndex = Math.floor(((xScale(selectedDateString) - xScale("2020-02-17") - (xScale.step() * direction)) / xScale.step()));
+                let targetIndex = Math.floor(((xScale(selectedDateString) - xScale(xScale.domain()[0]) - (xScale.step() * direction)) / xScale.step()));
                 let targetDate = xScale.domain()[targetIndex] ? xScale.domain()[targetIndex] : xScale.domain()[xScale.domain().length - 1];
+                if (!targetDate || selectedDateString === targetDate) {
+                    if (new Date(targetDate + " 00:00:00") < new Date(constructorLastDate + " 00:00:00")) {
+                        targetDate = applyDateOffset(selectedDateString + "T000000", -1);
+                    } else {
+                        targetDate = constructorLastDate;
+                    }
+                }
                 console.log("targetDate: " + targetDate);
 
                 if (targetDate) {
                     handleMouseClick(targetDate, xScale);
 
-/*                    let clickedD = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.clicked-mouse-date").text()).data()[0];
-                    let mouseD = d3.selectAll(".caseline-circle").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
-                    if (!mouseD || (clickedD && new Date(clickedD.label) <= new Date(mouseD.label))) {
-                        constructorThis.updateMouseOverLine(clickedD);
-                    } else {
-                        constructorThis.updateMouseOverLine(mouseD);
-                    }*/
+                    /*                    let clickedD = d3.selectAll(".casedeltabar").filter(d => d.label === d3.select("text.clicked-mouse-date").text()).data()[0];
+                                        let mouseD = d3.selectAll(".casedeltabar").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                                        if (!mouseD || (clickedD && new Date(clickedD.label) <= new Date(mouseD.label))) {
+                                            constructorThis.updateMouseOverLine(clickedD);
+                                        } else {
+                                            constructorThis.updateMouseOverLine(mouseD);
+                                        }*/
                 }
             })
             .call(drag);
@@ -232,38 +241,84 @@ class Epicurve {
     }
 
     initDateLines() {
-        let filteredDates = this.xScale.domain()
-            .map(d => d + "T00:00:00")
-            .filter(d => new Date(d).getDate().toString().padStart(2, '0') === '01')
-            .map(d => d.substring(0, 10));
+        this.svg.selectAll(".month-lines").data(this.monthDates)
+            .join(enter => {
+                    enter
+                        .append("line")
+                        .attr("class", "month-lines")
+                        .style("stroke", "white")
+                        .style("shape-rendering", "crispEdges")
+                        .style("stroke-width", 1)
+                        .style("stroke-dasharray", ("3, 3"))
+                        .style("visibility", d => !this.xScale(d) ? "hidden" : "visible")
+                        .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
+                        .attr("y1", 0)
+                        .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
+                        .attr("y2", this.height + 6)
+                        .attr("opacity", "0.2");
+                },
+                update => {
+                    update
+                        .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
+                        .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
+                        .style("visibility", d => !this.xScale(d) ? "hidden" : "visible");
+                },
+                exit => {
+                    exit.remove();
+                });
 
-        console.log("filteredDates: " + filteredDates);
+        this.svg.selectAll(".month-text").data(this.monthDates)
+            .join(enter => {
+                    enter
+                        .append("text")
+                        .attr("class", "month-text")
+                        .attr("x", -this.height - 7)
+                        .attr("y", d => this.xScale(d) + this.xScale.bandwidth())
+                        .style("visibility", d => !this.xScale(d) ? "hidden" : "visible")
+                        .text(d => this.monthNames[new Date(d).getMonth() + 1])
+                        .attr("text-anchor", "end")
+                        .style("font", "10px sans-serif")
+                        .style("alignment-baseline", "top")
+                        .attr("transform", "rotate(-90)");
+                },
+                update => {
+                    update
+                        .attr("y", d => this.xScale(d) + this.xScale.bandwidth())
+                        .style("visibility", d => !this.xScale(d) ? "hidden" : "visible");
+                },
+                exit => {
+                    exit.remove();
+                });
 
-        let enterDates = this.svg.selectAll(".month-lines").data(filteredDates).enter();
 
-        enterDates
-            .append("line")
-            .attr("class", "month-lines")
-            .style("stroke", "white")
-            .style("shape-rendering", "crispEdges")
-            .style("stroke-width", 1)
-            .style("stroke-dasharray", ("3, 3"))
-            .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
-            .attr("y1", 0)
-            .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
-            .attr("y2", this.height + 6)
-            .attr("opacity", "0.2");
+        /*
 
-        enterDates
-            .append("text")
-            .attr("class", "month-text")
-            .attr("x", -this.height - 7)
-            .attr("y", d => this.xScale(d) + this.xScale.bandwidth())
-            .text(d => this.monthNames[new Date(d).getMonth() + 1])
-            .attr("text-anchor", "end")
-            .style("font", "10px sans-serif")
-            .style("alignment-baseline", "top")
-            .attr("transform", "rotate(-90)");
+        this.svg.selectAll("." + clazz).data(data)
+            .join(enter => {
+                    let rect = enter.append("rect")
+                        .style("shape-rendering", "crispEdges")
+                        .attr("class", clazz)
+                        .attr("width", this.xScale.bandwidth())
+                        .style("fill", d => yCallback(d) > 0 ? color : highlightColor)
+                        .attr("x", d => this.xScale(xCallback(d)))
+                        .attr("y", this.yScale(0))
+                        .attr("height", 0);
+
+                    rect.transition().duration(this.globalDuration)
+                        .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
+                        .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)));
+                },
+                update => update
+                    .transition().duration(this.globalDuration)
+                    .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
+                    .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)))
+                    .style("fill", d => yCallback(d) > 0 ? color : highlightColor),
+                exit => exit
+                    .transition().duration(this.globalDuration)
+                    .attr("y", this.yScale(0))
+                    .attr("height", 0)
+                    .remove());
+         */
     }
 
     /**
@@ -277,7 +332,14 @@ class Epicurve {
         return [{clazz: "reportedcasesbar", color: () => "#325b8d", label: d.label, y: d.reportedCases, offset: 0},
             {clazz: "caseline-circle", color: () => "#35a5ff", label: d.label, y: d.cases, offset: 0},
             {clazz: "avgline-circle", color: () => "#ff7f0e", label: d.label, y: d.movingAvg, offset: 0},
-            {clazz: "casedeltabar", color: (f) => f.y < 0 ? "#777" : "#35a5ff", label: d.label, y: d.casesDelta, offset: 0, addOnText: "Δ"}]
+            {
+                clazz: "casedeltabar",
+                color: (f) => f.y < 0 ? "#777" : "#35a5ff",
+                label: d.label,
+                y: +d.casesDelta,
+                offset: +0,
+                addOnText: "Δ"
+            }].filter(d => !!d.y)
     }
 
     /**
@@ -769,28 +831,35 @@ class Epicurve {
             .attr("y", d => this.xScale(d.date) + this.xScale.bandwidth() + 5);
     }
 
-    applyDateOffset(date, offset) {
-        let dateObj = this.convertDate(date);
-        dateObj.setDate(dateObj.getDate() - offset);
-        return this.getFormattedDate(dateObj);
-    }
 
-    getFormattedDate(date) {
-        let year = date.getFullYear();
-        let month = (1 + date.getMonth()).toString().padStart(2, '0');
-        let day = date.getDate().toString().padStart(2, '0');
+    parseDeltaData(summaryData, caseDeltaData, histogramData) {
+        console.log("Parsing case delta data...");
+        let tempChartData = [];
 
-        return year + '-' + month + '-' + day;
-    }
+        for (let i = 0; i < histogramData.length; i++) {
+            let currentCaseHistData = histogramData[i];
+            let currentCaseDeltaData = caseDeltaData[i];
+            let currentSummaryData = summaryData[i];
+            let currentReportDates = Object.keys(currentCaseDeltaData).filter(d => d !== 'id' && !!currentCaseDeltaData[d]);
+            let currentTimeseries = tempChartData[currentCaseDeltaData.id];
 
-    /**
-     * Convert a date string in 2020-10-10T101300 format into a Date() object.
-     */
-    convertDate(dateString) {
-        let filteredDateString = dateString.slice(0, 15) + ":" + dateString.slice(15 + Math.abs(0))
-        filteredDateString = filteredDateString.slice(0, 13) + ":" + filteredDateString.slice(13 + Math.abs(0));
-        filteredDateString = filteredDateString.replace("T", " ");
-        return new Date(filteredDateString);
+            if (!currentTimeseries) {
+                currentTimeseries = [];
+                tempChartData[currentCaseDeltaData.id] = currentTimeseries;
+            }
+
+            for (let j = 0; j < Math.min(100, currentReportDates.length); j++) {
+                let currentGraphDate = getReverseIdxValue(currentReportDates, -j);
+                currentTimeseries.push({
+                    id: currentSummaryData.id,
+                    label: currentGraphDate,
+                    casesDelta: currentCaseDeltaData[currentGraphDate],
+                    caseHist: currentCaseHistData[j]
+                });
+            }
+        }
+
+        return tempChartData;
     }
 
     /**
@@ -814,7 +883,7 @@ class Epicurve {
      *     label: "2020-05-27"
      * }]
      */
-    parseChartData(summaryData, caseData, deathData, caseDeltaData, deathDeltaData, caseProjectionData, movingAvgData, histogramData) {
+    parseChartData(summaryData, caseData, deathData, caseDeltaData, deathDeltaData, caseProjectionData, movingAvgData) {
         let tempChartData = [];
 
         let reportedCasesData = []
@@ -1429,18 +1498,10 @@ function getFilteredCountyName(inputCounty) {
     }
 }
 
-function getFormattedDate(date) {
-    let year = date.getFullYear();
-    let month = (1 + date.getMonth()).toString().padStart(2, '0');
-    let day = date.getDate().toString().padStart(2, '0');
-
-    return year + '-' + month + '-' + day;
-}
-
 const earliestDate = new Date("2020-05-14");
 
 function getDateAtMouse(mouse, xScale) {
-    let index = Math.floor(((mouse[0] - xScale("2020-02-17")) / xScale.step()));
+    let index = Math.floor(((mouse[0] - xScale(xScale.domain()[0])) / xScale.step()));
     let scaledX = xScale.domain()[index];
     if (!scaledX) {
         scaledX = xScale.domain()[xScale.domain().length - 1];
@@ -1473,6 +1534,30 @@ function handleMouseClick(scaledX, xScale) {
         .attr("x2", xScale(targetDate) + (xScale.step() / 2));
 
     //d3.selectAll(".hover-effects").style("opacity", "0");
+}
+
+function applyDateOffset(date, offset) {
+    let dateObj = this.convertDate(date);
+    dateObj.setDate(dateObj.getDate() - offset);
+    return getFormattedDate(dateObj);
+}
+
+function getFormattedDate(date) {
+    let year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');
+
+    return year + '-' + month + '-' + day;
+}
+
+/**
+ * Convert a date string in 2020-10-10T101300 format into a Date() object.
+ */
+function convertDate(dateString) {
+    let filteredDateString = dateString.slice(0, 15) + ":" + dateString.slice(15 + Math.abs(0))
+    filteredDateString = filteredDateString.slice(0, 13) + ":" + filteredDateString.slice(13 + Math.abs(0));
+    filteredDateString = filteredDateString.replace("T", " ");
+    return new Date(filteredDateString);
 }
 
 d3.selection.prototype.moveToFront = function () {
