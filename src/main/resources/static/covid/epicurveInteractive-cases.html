@@ -109,6 +109,7 @@
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script src="epicurve3.js"></script>
+<script src="d3-utils.js"></script>
 <script src="https://cdn.jsdelivr.net/lodash/4.13.1/lodash.min.js"></script>
 <script>
     let selectedCounty = getCountyFromUrl(window.location.search);
@@ -165,7 +166,7 @@
     let dphyScale = d3.scaleLinear().range([height, 0]);
 
     let dphyScaleLeft = d3.scaleLinear().range([height, 0]);
-    dphyScaleLeft.domain([0, 101]);
+    dphyScaleLeft.domain([0, 500]);
 
     // define the axis
     let dphxAxis = d3.axisBottom(dphxScale);
@@ -410,6 +411,23 @@
         }
     }
 
+    addEventListener("newFocusEvent", function (event) {
+        let newReportDate = event.detail.label;
+        let newFocus = event.detail.focus;
+        selectedFocus = newFocus;
+        console.log("newFocusEvent! date: " + newReportDate + " focus: " + selectedFocus);
+
+        let newId = reportDateToId[newReportDate];
+
+        if (selectedFocus === "caseDeltas") {
+            loadDeltaData();
+        } else {
+            loadData();
+        }
+
+        d3.select('p#value-time').text(newId ? newId : "2020-05-13T154823");
+    })
+
     addEventListener("newDateEvent", function (event) {
         let newReportDate = event.detail.label;
         //console.log("newDate event! " + newReportDate)
@@ -423,7 +441,7 @@
         }
 
         d3.select('p#value-time').text(newId ? newId : "2020-05-13T154823");
-    })
+    });
 
     addEventListener("newCountyEvent", function (event) {
         let newReportDate = event.detail.label;
@@ -434,7 +452,7 @@
 
         let newId = reportDateToId[newReportDate];
         loadData(newId);
-    })
+    });
 
     function getLabel(data) {
         return data.label;
