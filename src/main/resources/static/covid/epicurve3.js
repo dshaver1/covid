@@ -519,6 +519,70 @@ class Epicurve {
         this.svg.select(".action-rect").moveToFront();
     }
 
+    updateCurveLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, yScale) {
+        let dYScale = yScale ? yScale : this.yScale;
+        let line = d3.line().curve(d3.curveCardinal.tension(0.5))
+            .x(d => this.getLineX(xCallback(d), isBanded))
+            .y(d => this.getLineY(yCallback(d), dYScale))
+            .defined(d => this.isPointDefined(yCallback, d, prelimRegionStart))
+
+        // Handle line
+        this.svg.selectAll("." + clazz).data([data], d => xCallback(d))
+            .join(enter => {
+                    let enterPath = enter.append("path")
+                        .attr("class", clazz)
+                        .attr("fill", "none")
+                        .attr("stroke", color)
+                        .attr("opacity", "0.5")
+                        .attr("stroke-width", 2)
+                        .attr("d", d3.line()
+                            .x(d => this.getLineX(xCallback(d), isBanded))
+                            .y(dYScale(0)));
+
+                    enterPath.transition().duration(this.globalDuration)
+                        .attr("d", line)
+                },
+                update => update.transition().duration(this.globalDuration)
+                    .attr("d", line));
+
+        let circleClass = clazz + '-circle';
+        let isVisible = "visible" === this.svg.selectAll('.' + clazz).style("visibility");
+
+        // Handle circles
+        this.svg.selectAll('.' + circleClass).data(data)
+            .join(enter => {
+                    let circle = enter.append('circle')
+                        .attr('class', circleClass)
+                        .attr("stroke", highlightColor)
+                        .attr("fill", color)
+                        .attr("opacity", "0.5")
+                        .attr('r', 2)
+                        .style("visibility", isVisible ? "visible" : "hidden")
+                        .on('click', function () {
+                            d3.select(this).attr("r", 5).attr("isHover", "1");
+                        })
+                        .on('mouseout', function () {
+                            d3.select(this).attr("r", 1).attr("isHover", "0");
+                        })
+                        .attr('cx', d => this.getLineX(xCallback(d), isBanded))
+                        .attr('cy', d => this.getLineY(0, dYScale));
+                    circle.transition().duration(this.globalDuration)
+                        .attr('cy', d => this.getLineY(yCallback(d), dYScale))
+                },
+                update => update
+                    .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
+                    .transition().duration(this.globalDuration)
+                    .attr('cx', d => this.getLineX(xCallback(d), isBanded))
+                    .attr('cy', d => this.getLineY(yCallback(d), dYScale)),
+                exit => exit
+                    .transition().duration(this.globalDuration)
+                    .style("opacity", 0)
+                    .attr('cy', d => this.getLineY(0, dYScale))
+                    .remove());
+
+        this.svg.select(".action-rect").moveToFront();
+    }
+
     updateLineChartY1(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
         this.updateLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, this.yScale)
     }
@@ -832,12 +896,13 @@ class Epicurve {
     }
 
 
-    parseDeltaData(summaryData, caseDeltaData, histogramData) {
+    parseDeltaData(summaryData, caseDeltaData, histogramData, histogramCumData) {
         console.log("Parsing case delta data...");
         let tempChartData = [];
 
         for (let i = 0; i < histogramData.length; i++) {
             let currentCaseHistData = histogramData[i];
+            let currentCaseHistCumData = histogramCumData[i];
             let currentCaseDeltaData = caseDeltaData[i];
             let currentSummaryData = summaryData[i];
             let currentReportDates = Object.keys(currentCaseDeltaData).filter(d => d !== 'id' && !!currentCaseDeltaData[d]);
@@ -854,7 +919,8 @@ class Epicurve {
                     id: currentSummaryData.id,
                     label: currentGraphDate,
                     casesDelta: currentCaseDeltaData[currentGraphDate],
-                    caseHist: currentCaseHistData[j]
+                    caseHist: currentCaseHistData[j],
+                    caseCumHist: currentCaseHistCumData[j]
                 });
             }
         }
@@ -1063,6 +1129,19 @@ class Epicurve {
             .style("text-anchor", "end")
             .text(label)
             .attr("transform", translate);
+    }
+
+    createLeftSideAxis(label, axis) {
+        this.svg.append("g")
+            .attr("class", "y2 axis")
+            .call(axis)
+            .append("text")
+            .attr("y", 5)
+            .attr("x", 5)
+            //.attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(label)
+            .attr("transform", "translate(5,5)rotate(-90)");
     }
 
     getYScaleMax(data) {

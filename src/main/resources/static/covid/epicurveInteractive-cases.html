@@ -145,7 +145,7 @@
         placement: 'bottom'
     });
     let reportDateToId = [];
-    let epicurve, timeData, chartData, summaryData, sliderTime, chart, tip, caseDeltaData, histData, deltaData;
+    let epicurve, timeData, chartData, summaryData, sliderTime, chart, tip, caseDeltaData, histData, histCumData, deltaData;
     let prevSliderValue = 0;
     let deltaEnabled = false;
     let tipWidth = 100;
@@ -164,10 +164,15 @@
 
     let dphyScale = d3.scaleLinear().range([height, 0]);
 
+    let dphyScaleLeft = d3.scaleLinear().range([height, 0]);
+    dphyScaleLeft.domain([0, 101]);
+
     // define the axis
     let dphxAxis = d3.axisBottom(dphxScale);
 
     let dphyAxis = d3.axisRight(dphyScale).ticks(10);
+
+    let dphyAxisLeft = d3.axisLeft(dphyScaleLeft).ticks(10);
 
     let dphSvg = d3.select("#graphContent")
         .append("div")
@@ -185,14 +190,15 @@
 
     if (selectedFocus && selectedFocus === "caseDeltas") {
         console.log("Loading caseDelta focus...");
-        epicurve = new Epicurve(dphSvg, width, height, dphxScale, dphyScale, dphxAxis, dphyAxis);
+        epicurve = new Epicurve(dphSvg, width, height, dphxScale, dphyScale, dphxAxis, dphyAxis, dphyAxisLeft);
         epicurve.createBottomAxis();
         epicurve.createRightSideAxis("Cases", true);
+        epicurve.createLeftSideAxis("Delta Percentage", dphyAxisLeft);
 
         loadDeltaData();
     } else {
         console.log("Loading main focus...");
-        epicurve = new Epicurve(dphSvg, width, height, dphxScale, dphyScale, dphxAxis, dphyAxis);
+        epicurve = new Epicurve(dphSvg, width, height, dphxScale, dphyScale, dphxAxis, dphyAxis, dphyAxisLeft);
         epicurve.createBottomAxis();
         epicurve.createRightSideAxis("Cases", true);
 
@@ -201,34 +207,20 @@
     }
 
     function loadDeltaData(date) {
-        if (!chartData) {
-            // Must be a direct link with url params. Need to load fresh data.
-            Promise.all([
-                d3.csv("reports/v2/csv/" + selectedCounty + "/summary_" + selectedCounty + ".csv"),
-                d3.csv("reports/v2/csv/" + selectedCounty + "/caseDeltas_" + selectedCounty + ".csv"),
-                d3.csv("reports/v2/csv/" + selectedCounty + "/histogramCasesCum_" + selectedCounty + ".csv"),
-            ]).then(function (files) {
-                summaryData = files[0];
-                caseDeltaData = files[1];
-                histData = files[2];
-                summaryData.forEach(d => reportDateToId[d.reportDate] = d.id)
+        // Must be a direct link with url params. Need to load fresh data.
+        Promise.all([
+            d3.csv("reports/v2/csv/" + selectedCounty + "/summary_" + selectedCounty + ".csv"),
+            d3.csv("reports/v2/csv/" + selectedCounty + "/caseDeltas_" + selectedCounty + ".csv"),
+            d3.csv("reports/v2/csv/" + selectedCounty + "/histogramCases_" + selectedCounty + ".csv"),
+            d3.csv("reports/v2/csv/" + selectedCounty + "/histogramCasesCum_" + selectedCounty + ".csv")
+        ]).then(function (files) {
+            summaryData = files[0];
+            caseDeltaData = files[1];
+            histData = files[2];
+            histCumData = files[3];
+            summaryData.forEach(d => reportDateToId[d.reportDate] = d.id)
 
-                deltaData = epicurve.parseDeltaData(summaryData, caseDeltaData, histData);
-                
-                let peakDeltaDate = reportDateToId["2020-07-24"];
-                dphyScale.domain([epicurve.getYScaleMin(deltaData[peakDeltaDate]), d3.max(deltaData[peakDeltaDate], d => +d.casesDelta)]);
-
-                dphSvg.selectAll("g .y.axis")
-                    .transition()
-                    .duration(axisTransitionLength)
-                    .call(dphyAxis);
-
-                updateDeltaFocus(deltaData, getLastElement(getLastElement(deltaData)).id);
-                epicurve.initDateSelect(epicurve.xScale);
-                updateDynamicHtmlElements(summaryData, summaryData.map(d => d.id), selectedPrettyCounty);
-            });
-        } else {
-            deltaData = epicurve.parseDeltaData(summaryData, caseDeltaData, histData);
+            deltaData = epicurve.parseDeltaData(summaryData, caseDeltaData, histData, histCumData);
 
             let peakDeltaDate = reportDateToId["2020-07-24"];
             dphyScale.domain([epicurve.getYScaleMin(deltaData[peakDeltaDate]), d3.max(deltaData[peakDeltaDate], d => +d.casesDelta)]);
@@ -239,8 +231,9 @@
                 .call(dphyAxis);
 
             updateDeltaFocus(deltaData, getLastElement(getLastElement(deltaData)).id);
+            epicurve.initDateSelect(epicurve.xScale);
             updateDynamicHtmlElements(summaryData, summaryData.map(d => d.id), selectedPrettyCounty);
-        }
+        });
     }
 
     function loadData(date) {
@@ -276,7 +269,7 @@
                 .transition()
                 .duration(axisTransitionLength)
                 .call(dphyAxis);
-            
+
             let timeData = summaryData.map(d => d.id);
             let dateString = getLastElement(timeData);
 
@@ -392,6 +385,8 @@
         epicurve.initDateLines();
         epicurve.draw14DayWindow(getLabel, offsetDate, 13);
         epicurve.updateBarChart(selectedData, getLabel, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
+        epicurve.updateCurveLineChart(selectedData, getLabel, d => d.caseHist, "histline", "#c3e991", "#c3e991", null, true, dphyScaleLeft);
+        epicurve.updateCurveLineChart(selectedData, getLabel, d => d.caseCumHist, "histcumline", "#DFCC74", "#DFCC74", null, true, dphyScaleLeft);
     }
 
     function selectNewCounty() {
@@ -402,7 +397,12 @@
             selectedPrettyCounty = prettyCounty;
             selectedCounty = selectedPrettyCounty.toLowerCase();
             console.log("Loading new county data for: " + selectedCounty);
-            loadData();
+
+            if (selectedFocus === "caseDeltas") {
+                loadDeltaData();
+            } else {
+                loadData();
+            }
 
             window.history.pushState({county: selectedCounty}, 'Title', '?county=' + selectedCounty);
         } else {
@@ -415,7 +415,7 @@
         //console.log("newDate event! " + newReportDate)
 
         let newId = reportDateToId[newReportDate];
-        
+
         if (selectedFocus === "caseDeltas") {
             updateDeltaFocus(deltaData, newId);
         } else {
