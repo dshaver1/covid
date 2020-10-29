@@ -171,10 +171,13 @@ class Epicurve {
             .style("shape-rendering", "crispEdges")
             .style("opacity", "0");
 
+        let maxDelta = d3.max(d3.selectAll(".casedeltabar").data(), d => d.casesDelta);
+        let zoomRectHeight = maxDelta ? this.yScale(0) - this.yScale(maxDelta) : this.yScale(0) - this.yScale(200);
+
         mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
             .attr('class', 'action-rect')
             .attr('width', width) // can't catch mouse events on a g element
-            .attr('height', height)
+            .attr('height', this.yScale(0) - zoomRectHeight)
             .attr('fill', 'none')
             .attr('pointer-events', 'all')
             .style("cursor", "ew-resize")
@@ -223,9 +226,6 @@ class Epicurve {
 
             })
             .on('click', function () {
-                let targetFocus = thisCurrentFocus === "mainView" ? "caseDeltas" : "mainView";
-                let selectedDateString = d3.select(".clicked-mouse-date") ? d3.select(".clicked-mouse-date").text() : thisXScale.domain()[thisXScale.domain().length - 1];
-                handleDblClick(selectedDateString, targetFocus);
                 //handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
                 //let d = d3.selectAll(".casedeltabar").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                 //constructorThis.updateMouseOverLine(d);
@@ -265,14 +265,34 @@ class Epicurve {
             })
             .call(drag);
 
-        this.svg.select(".action-rect").moveToFront();
+        this.svg.select(".action-rect").raise();
+
+
+        mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
+            .attr('class', 'zoom-action-rect')
+            .attr('width', width) // can't catch mouse events on a g element
+            .attr('height', zoomRectHeight)
+            .attr('y', this.yScale(0) - zoomRectHeight)
+            .attr('fill', "none")
+            .attr('pointer-events', 'all')
+            .style("cursor", function () {
+                return thisCurrentFocus === "mainView" ? "zoom-in" : "zoom-out"
+            })
+            .on("click", function () {
+                let targetFocus = thisCurrentFocus === "mainView" ? "caseDeltas" : "mainView";
+                let selectedDateString = d3.select(".clicked-mouse-date") ? d3.select(".clicked-mouse-date").text() : thisXScale.domain()[thisXScale.domain().length - 1];
+                handleDblClick(selectedDateString, targetFocus);
+            });
+
+        this.svg.select(".zoom-action-rect").raise();
+
     }
 
     initDateLines(viewSwap) {
         let offScreen = 800;
-        let rightMostPoint = this.xScale(this.xScale.domain()[this.xScale.domain().length-1]);
+        let rightMostPoint = this.xScale(this.xScale.domain()[this.xScale.domain().length - 1]);
         let transitionLength = viewSwap ? 1000 : this.globalDuration;
-        let selectedDate = d3.select(".clicked-mouse-date").node() ? d3.select(".clicked-mouse-date").text() : this.xScale.domain()[this.xScale.domain().length-1];
+        let selectedDate = d3.select(".clicked-mouse-date").node() ? d3.select(".clicked-mouse-date").text() : this.xScale.domain()[this.xScale.domain().length - 1];
         let selectedDateObj = new Date(selectedDate + " 00:00:00");
         let thisXscale = this.xScale;
         let thisMonthMap = this.monthMap;
@@ -324,7 +344,7 @@ class Epicurve {
                         .attr("opacity", "1")
                         .attr("class", "month-text")
                         .attr("x", -this.height - 7)
-                        .attr("y",  d => d.dateObj >= selectedDateObj ? rightMostPoint + 20 : d.x - offScreen)
+                        .attr("y", d => d.dateObj >= selectedDateObj ? rightMostPoint + 20 : d.x - offScreen)
                         .text(d => d.label)
                         .attr("text-anchor", "end")
                         .style("font", "10px sans-serif")
@@ -425,7 +445,7 @@ class Epicurve {
             unHover.dispatch("mouseout");
 
             let hover = d3.selectAll("." + hoverD.clazz).filter(d => d.label === data.label);
-            hover.dispatch("click");
+            hover.dispatch("mouseover");
         });
 
         this.svg.selectAll(".hover-effects")
@@ -560,17 +580,26 @@ class Epicurve {
 
     updateBarChart(data, xCallback, yCallback, keyCallback, clazz, color, highlightColor, viewSwap) {
         let transitionLength = viewSwap ? 1000 : this.globalDuration;
+        let thisCurrentFocus = this.currentFocus;
+        let thisXScale = this.xScale;
         this.svg.selectAll("." + clazz).data(data, keyCallback)
             .join(enter => {
                     let rect = enter.append("rect")
                         .style("shape-rendering", "crispEdges")
                         .attr("class", clazz)
                         .attr("width", this.xScale.bandwidth())
-                        .style("cursor", "zoom-in")
+                        .style("cursor", function () {
+                            return thisCurrentFocus === "mainView" ? "zoom-in" : "zoom-out"
+                        })
                         .style("fill", d => yCallback(d) > 0 ? color : highlightColor)
                         .attr("x", d => this.xScale(xCallback(d)))
                         .attr("y", this.yScale(0))
-                        .attr("height", 0);
+                        .attr("height", 0)
+                        .on("click", () => {
+                            let targetFocus = thisCurrentFocus === "mainView" ? "caseDeltas" : "mainView";
+                            let selectedDateString = d3.select(".clicked-mouse-date") ? d3.select(".clicked-mouse-date").text() : thisXScale.domain()[thisXScale.domain().length - 1];
+                            handleDblClick(selectedDateString, targetFocus);
+                        });
 
                     rect.transition().duration(transitionLength)
                         .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
@@ -588,6 +617,8 @@ class Epicurve {
                     .attr("y", this.yScale(0))
                     .attr("height", 0)
                     .remove());
+
+        this.svg.selectAll("." + clazz).raise();
     }
 
     updateCurveLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, yScale) {
@@ -651,7 +682,7 @@ class Epicurve {
                     .attr('cy', d => this.getLineY(0, dYScale))
                     .remove());
 
-        this.svg.select(".action-rect").moveToFront();
+        this.svg.select(".action-rect").raise();
     }
 
     updateLineChartY1(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded) {
@@ -711,7 +742,7 @@ class Epicurve {
                         .attr("opacity", 0)
                         .attr('r', 1)
                         .style("visibility", isVisible ? "visible" : "hidden")
-                        .on('click', function () {
+                        .on('mouseover', function () {
                             d3.select(this).attr("r", 5).attr("isHover", "1");
                         })
                         .on('mouseout', function () {
@@ -733,7 +764,7 @@ class Epicurve {
                     //.attr('cy', d => this.getLineY(0, dYScale))
                     .remove());
 
-        this.svg.select(".action-rect").moveToFront();
+        this.svg.select(".action-rect").raise();
     }
 
     updateFloatingPoints(data, xCallback, yCallback, clazz, color) {
@@ -766,7 +797,7 @@ class Epicurve {
                     .attr("fill", color)
                     .attr("opacity", "0.5")
                     .attr("transform", d => "translate(" + d.scaledX + "," + d.scaledY + ")")
-                    .on('click', function () {
+                    .on('mouseover', function () {
                         d3.select(this)
                             .attr("opacity", "1")
                             .attr("isHover", "1")
@@ -781,7 +812,7 @@ class Epicurve {
                 update => update.transition().attr("transform", d => "translate(" + d.scaledX + "," + d.scaledY + ")"),
                 exit => exit.transition().duration(this.globalDuration).style("opacity", 0).remove());
 
-        this.svg.select(".action-rect").moveToFront();
+        this.svg.select(".action-rect").raise();
     }
 
     updateCorrelationLine(correlationCoefficient, clazz, color) {
