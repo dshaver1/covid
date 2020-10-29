@@ -97,6 +97,10 @@
                 <a href="https://twitter.com/xionnova">@xionnova</a>
             </p>
         </div>
+    
+        <div>
+            <div id="earliest-date" style="visibility: hidden"></div>
+        </div>
     </footer>
 </div>
 
@@ -194,7 +198,7 @@
         epicurve = new Epicurve(dphSvg, width, height, dphxScale, dphyScale, dphxAxis, dphyAxis, dphyAxisLeft);
         epicurve.createBottomAxis();
         epicurve.createRightSideAxis("Cases", true);
-        epicurve.createLeftSideAxis("Delta Percentage", dphyAxisLeft);
+        //epicurve.createLeftSideAxis("Delta Percentage", dphyAxisLeft);
 
         loadDeltaData();
     } else {
@@ -207,7 +211,7 @@
         createLegend();
     }
 
-    function loadDeltaData(date) {
+    function loadDeltaData(date, viewSwap) {
         // Must be a direct link with url params. Need to load fresh data.
         Promise.all([
             d3.csv("reports/v2/csv/" + selectedCounty + "/summary_" + selectedCounty + ".csv"),
@@ -220,6 +224,8 @@
             histData = files[2];
             histCumData = files[3];
             summaryData.forEach(d => reportDateToId[d.reportDate] = d.id)
+            epicurve.setEarliestDate(summaryData[0].reportDate);
+            epicurve.setLatestDate(summaryData[summaryData.length - 1].reportDate);
 
             deltaData = epicurve.parseDeltaData(summaryData, caseDeltaData, histData, histCumData);
 
@@ -230,14 +236,16 @@
                 .transition()
                 .duration(axisTransitionLength)
                 .call(dphyAxis);
+            
+            let selectedDate = date ? date : getLastElement(getLastElement(deltaData)).id;
 
-            updateDeltaFocus(deltaData, getLastElement(getLastElement(deltaData)).id);
-            epicurve.initDateSelect(epicurve.xScale);
-            updateDynamicHtmlElements(summaryData, summaryData.map(d => d.id), selectedPrettyCounty);
+            updateDeltaFocus(deltaData, selectedDate, viewSwap);
+            epicurve.initDateSelect();
+            updateDynamicHtmlElements(summaryData, summaryData.map(d => d.id), selectedPrettyCounty, Object.keys(deltaData)[0]);
         });
     }
 
-    function loadData(date) {
+    function loadData(date, viewSwap) {
         Promise.all([
             d3.csv("reports/v2/csv/" + selectedCounty + "/summary_" + selectedCounty + ".csv"),
             d3.csv("reports/v2/csv/" + selectedCounty + "/cases_" + selectedCounty + ".csv"),
@@ -254,6 +262,8 @@
             let latestSummary = summaryData[summaryData.length - 1];
             let latestDate = latestSummary.reportDate;
             summaryData.forEach(d => reportDateToId[d.reportDate] = d.id)
+            epicurve.setEarliestDate(summaryData[0].reportDate);
+            epicurve.setLatestDate(latestDate);
 
             console.log("Got files! files[0].length: " + summaryData.length + ", files[1].length: " + chartData.length);
             console.log("latestDate: " + latestDate)
@@ -261,9 +271,7 @@
 
             // Axis should be set to the latest data.
             // scale the range of the data
-            dphxScale.domain(getLastElement(chartData).map(function (d) {
-                return d.label;
-            }));
+            epicurve.updateXAxis(getLastElement(chartData).map(d => d.label));
             dphyScale.domain([epicurve.getYScaleMin(getLastElement(chartData)), epicurve.getYScaleMax(getLastElement(chartData))]);
             //drawAxisLines();
             dphSvg.selectAll("g .y.axis")
@@ -274,12 +282,12 @@
             let timeData = summaryData.map(d => d.id);
             let dateString = getLastElement(timeData);
 
-            updateAllGraphs(date ? date : dateString);
+            updateAllGraphs(date ? date : dateString, viewSwap);
 
             epicurve.initDateLines();
-            epicurve.initDateSelect(epicurve.xScale);
+            epicurve.initDateSelect();
 
-            updateDynamicHtmlElements(summaryData, timeData, selectedPrettyCounty);
+            updateDynamicHtmlElements(summaryData, timeData, selectedPrettyCounty, summaryData[0].id);
         });
     }
 
@@ -327,8 +335,9 @@
             }]);
     }
 
-    function updateDynamicHtmlElements(summaryData, timeData, selectedPrettyCounty) {
-        d3.select('div#update-timestamp').text(getLastElement(summaryData).id);
+    function updateDynamicHtmlElements(summaryData, timeData, selectedPrettyCounty, earliestDate) {
+        d3.select('div#earliest-date').text(earliestDate);
+        d3.select('div#update-timestamp').text(summaryData[summaryData.length - 1].id);
         d3.select('p#value-time').text(getLastElement(timeData));
         d3.select(".county-case-label").text(selectedPrettyCounty + " Cases");
         $('#download-button').html("Download " + selectedPrettyCounty + " Data");
@@ -348,7 +357,7 @@
         return infoToolTip;
     }
 
-    let slow = _.debounce(function (d) {
+    let slow = _.debounce(function (d, viewSwap) {
         if (!d) {
             console.error("Received undefined date. Can't update graphs!");
             return;
@@ -358,20 +367,21 @@
         let newId = d.length < 11 ? reportDateToId[d] : d;
         let selectedData = chartData[newId];
 
-        epicurve.draw14DayWindow(getLabel, offsetDate, 13);
+        epicurve.draw14DayWindow(getLabel, offsetDate, 13, viewSwap);
         epicurve.updateFloatingPoints(chartData[d], getLabel, getReportedCases, "reportedcasesbar", "#4573a8");
-        epicurve.updateBarChart(chartData[d], getLabel, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
+        epicurve.updateBarChart(chartData[d], getLabel, getCaseDeltas, d => d.label, "casedeltabar", "#35a5ff", "#000", viewSwap);
         epicurve.updateLineChart(chartData[d], getLabel, getCases, "caseline", "#35a5ff", "#67b0ff", offsetDate, true);
         epicurve.updateLineChart(chartData[d], getLabel, getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", offsetDate, true);
         epicurve.updateMouseOverLine(selectedData[selectedData.length - 1]);
+        epicurve.updateClickedMouseDate(newId.substr(0,10));
         //epicurve.drawMouseOverRects(getLabel, chartData[dateString]);
     }, 50);
 
-    function updateAllGraphs(dateString) {
-        slow(dateString);
+    function updateAllGraphs(dateString, viewSwap) {
+        slow(dateString, viewSwap);
     }
 
-    function updateDeltaFocus(data, id) {
+    function updateDeltaFocus(data, id, viewSwap) {
         console.log("Rendering delta focus...");
         let offsetDate = applyDateOffset(id, 13);
 
@@ -381,13 +391,30 @@
         if (!selectedData) {
             selectedData = getLastElement(data);
         }
-        dphxScale.domain(selectedData.map(d => d.label).reverse());
-
+        epicurve.updateXAxis(selectedData.map(d => d.label).reverse());
         epicurve.initDateLines();
-        epicurve.draw14DayWindow(getLabel, offsetDate, 13);
-        epicurve.updateBarChart(selectedData, getLabel, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
-        epicurve.updateCurveLineChart(selectedData, getLabel, d => d.caseHist, "histline", "#c3e991", "#c3e991", null, true, dphyScaleLeft);
-        epicurve.updateCurveLineChart(selectedData, getLabel, d => d.caseCumHist, "histcumline", "#DFCC74", "#DFCC74", null, true, dphyScaleLeft);
+        epicurve.draw14DayWindow(getLabel, offsetDate, 13, viewSwap);
+        epicurve.updateBarChart(selectedData, getLabel, getCaseDeltas, d => d.rank, "casedeltabar", "#35a5ff", "#000", viewSwap);
+        //epicurve.updateCurveLineChart(selectedData, getLabel, d => d.caseHist, "histline", "#c3e991", "#c3e991", null, true, dphyScaleLeft);
+        //epicurve.updateCurveLineChart(selectedData, getLabel, d => d.caseCumHist, "histcumline", "#DFCC74", "#DFCC74", null, true, dphyScaleLeft);
+        epicurve.updateClickedMouseDate(id.substr(0,10));
+    }
+    
+    function swapViews(targetFocus) {
+        if (targetFocus === "caseDeltas") {
+            // Exit from main view
+            epicurve.updateFloatingPoints([], getLabel, getReportedCases, "reportedcasesbar", "#4573a8");
+            //epicurve.updateBarChart([], getLabel, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
+            epicurve.updateLineChart([], getLabel, getCases, "caseline", "#35a5ff", "#67b0ff", null, true);
+            epicurve.updateLineChart([], getLabel, getMovingAvg, "avgline", "#ff7f0e", "#ff7f0e", null, true);
+        } else {
+            // Exit from caseDelta view
+            //epicurve.updateBarChart([], getLabel, getCaseDeltas, "casedeltabar", "#35a5ff", "#000");
+            epicurve.updateCurveLineChart([], getLabel, d => d.caseHist, "histline", "#c3e991", "#c3e991", null, true, dphyScaleLeft);
+            epicurve.updateCurveLineChart([], getLabel, d => d.caseCumHist, "histcumline", "#DFCC74", "#DFCC74", null, true, dphyScaleLeft);
+        }
+        
+        epicurve.currentFocus = targetFocus;
     }
 
     function selectNewCounty() {
@@ -419,10 +446,12 @@
 
         let newId = reportDateToId[newReportDate];
 
+        swapViews(newFocus);
+        
         if (selectedFocus === "caseDeltas") {
-            loadDeltaData();
+            loadDeltaData(newId, true);
         } else {
-            loadData();
+            loadData(newId, true);
         }
 
         d3.select('p#value-time').text(newId ? newId : "2020-05-13T154823");

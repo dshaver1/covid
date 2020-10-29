@@ -164,38 +164,14 @@ function getDateAtMouse(mouse, xScale) {
     return scaledX;
 }
 
-function handleMouseClick(scaledX, xScale) {
+function handleDblClick(scaledX, targetFocus) {
     let targetDate = scaledX;
 
     if (new Date(scaledX) < earliestDate) {
         targetDate = "2020-05-13";
     }
 
-    let event = new CustomEvent('newDateEvent', {detail: {label: targetDate}});
-
-    dispatchEvent(event);
-
-    d3.selectAll(".clicked-mouse-date")
-        .attr("opacity", "1")
-        .text(targetDate)
-        .attr("y", xScale(targetDate) + (xScale.step() / 2));
-
-    d3.select(".clicked-mouse-date-line")
-        .attr("opacity", "1")
-        .attr("x1", xScale(targetDate) + (xScale.step() / 2))
-        .attr("x2", xScale(targetDate) + (xScale.step() / 2));
-
-    //d3.selectAll(".hover-effects").style("opacity", "0");
-}
-
-function handleDblClick(scaledX) {
-    let targetDate = scaledX;
-
-    if (new Date(scaledX) < earliestDate) {
-        targetDate = "2020-05-13";
-    }
-
-    let event = new CustomEvent('newFocusEvent', {detail: {label: targetDate, focus: "caseDeltas"}});
+    let event = new CustomEvent('newFocusEvent', {detail: {label: targetDate, focus: targetFocus}});
 
     dispatchEvent(event);
 }

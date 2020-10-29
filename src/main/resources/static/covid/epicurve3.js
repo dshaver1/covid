@@ -14,6 +14,7 @@ class Epicurve {
         this.yAxis = yAxis;
         this.yScale2 = yScale2;
         this.yAxis2 = yAxis2;
+        this.currentFocus = "mainView";
 
         this.globalDuration = 200;
         let selectedData = this.svg.selectAll(".prelim-region").data(["2020-08-08"]);
@@ -32,10 +33,32 @@ class Epicurve {
             .attr("opacity", "0");
     }
 
-    initDateSelect(xScale) {
+    getLatestDate() {
+        return this.latestDate;
+    }
+
+    setLatestDate(latestDate) {
+        if (!this.latestDate) {
+            this.latestDate = latestDate;
+        }
+    }
+
+    getEarliestDate() {
+        return this.earliestDate;
+    }
+
+    setEarliestDate(earliestDate) {
+        if (!this.earliestDate) {
+            this.earliestDate = earliestDate;
+        }
+    }
+
+    initDateSelect() {
         let constructorThis = this;
-        this.lastAvailableDate = xScale.domain()[xScale.domain().length - 1];
+        this.lastAvailableDate = this.xScale.domain()[this.xScale.domain().length - 1];
         let constructorLastDate = this.lastAvailableDate;
+        let thisCurrentFocus = this.currentFocus;
+        let thisXScale = this.xScale;
 
         let selectedMouseDate = this.svg.selectAll(".mouse-date").data([this.lastAvailableDate]);
         selectedMouseDate.enter().append("svg:rect")
@@ -94,16 +117,16 @@ class Epicurve {
             .style("stroke-width", 1)
             .style("shape-rendering", "crispEdges")
             .attr("opacity", "0")
-            .attr("x1", xScale(0))
-            .attr("x2", xScale(0))
+            .attr("x1", thisXScale(0))
+            .attr("x2", thisXScale(0))
             .attr("y1", this.height + 1)
             .attr("y2", this.height + 6);
 
         let drag = d3.drag()
             .on('drag', function () {
                 let mouse = d3.mouse(this);
-                let scaledX = getDateAtMouse(mouse, xScale);
-                handleMouseClick(scaledX, xScale);
+                let scaledX = getDateAtMouse(mouse, thisXScale);
+                constructorThis.handleMouseClick(scaledX);
 
                 let data = d3.selectAll(".casedeltabar").filter(d => d.label === scaledX).data()[0];
                 constructorThis.updateMouseOverLine(data);
@@ -121,7 +144,7 @@ class Epicurve {
                     .attr("y", mouse[0]);
             })
             .on('start', function () {
-                handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
+                //handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
 
                 let dragStartD = d3.selectAll(".casedeltabar").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
                 constructorThis.updateMouseOverLine(dragStartD);
@@ -173,9 +196,9 @@ class Epicurve {
             })
             .on('mousemove', function () { // mouse moving over canvas
                 let mouse = d3.mouse(this);
-                let scaledX = getDateAtMouse(mouse, xScale);
+                let scaledX = getDateAtMouse(mouse, thisXScale);
                 if (!scaledX) {
-                    scaledX = xScale.domain()[xScale.domain().length - 1];
+                    scaledX = thisXScale.domain()[thisXScale.domain().length - 1];
                 }
 
                 let d = d3.selectAll(".casedeltabar").filter(d => d.label === scaledX).data()[0];
@@ -195,34 +218,44 @@ class Epicurve {
 
             })
             .on('click', function () {
-                handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
-
-                let d = d3.selectAll(".casedeltabar").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
-                constructorThis.updateMouseOverLine(d);
-            })
-            .on('dblclick', function () {
-                handleDblClick(getDateAtMouse(d3.mouse(this), xScale));
+                let targetFocus = thisCurrentFocus === "mainView" ? "caseDeltas" : "mainView";
+                let selectedDateString = d3.select(".clicked-mouse-date") ? d3.select(".clicked-mouse-date").text() : thisXScale.domain()[thisXScale.domain().length - 1];
+                handleDblClick(selectedDateString, targetFocus);
+                //handleMouseClick(getDateAtMouse(d3.mouse(this), xScale), xScale);
+                //let d = d3.selectAll(".casedeltabar").filter(d => d.label === d3.select("text.mouse-date").text()).data()[0];
+                //constructorThis.updateMouseOverLine(d);
             })
             .on('wheel', function () {
+                let latestDate = d3.select("div#update-timestamp").text();
+                let earliestDate = d3.select("div#earliest-date").text();
                 let wheelDelta = d3.event.deltaY;
                 let direction = wheelDelta < 0 ? '-1' : '1';
                 console.log("Scrolled " + wheelDelta + " " + direction);
                 d3.event.preventDefault();
-                let selectedDateString = d3.select(".clicked-mouse-date") ? d3.select(".clicked-mouse-date").text() : xScale.domain()[xScale.domain().length - 1];
+                let selectedDateString = d3.select(".clicked-mouse-date") ? d3.select(".clicked-mouse-date").text() : thisXScale.domain()[thisXScale.domain().length - 1];
                 console.log("Current scroll date: " + selectedDateString);
-                let targetIndex = Math.floor(((xScale(selectedDateString) - xScale(xScale.domain()[0]) - (xScale.step() * direction)) / xScale.step()));
-                let targetDate = xScale.domain()[targetIndex] ? xScale.domain()[targetIndex] : xScale.domain()[xScale.domain().length - 1];
+                let targetIndex = Math.floor(((thisXScale(selectedDateString) - thisXScale(thisXScale.domain()[0]) - (thisXScale.step() * direction)) / thisXScale.step()));
+                let targetDate = thisXScale.domain()[targetIndex] ? thisXScale.domain()[targetIndex] : thisXScale.domain()[thisXScale.domain().length - 1];
                 if (!targetDate || selectedDateString === targetDate) {
-                    if (new Date(targetDate + " 00:00:00") < new Date(constructorLastDate + " 00:00:00")) {
-                        targetDate = applyDateOffset(selectedDateString + "T000000", -1);
-                    } else {
-                        targetDate = constructorLastDate;
-                    }
+                    targetDate = applyDateOffset(selectedDateString + "T000000", -1)
                 }
+
+                let targetDateObj = new Date(targetDate + " 00:00:00");
+                let earliestDateObj = convertDate(earliestDate);
+                let latestDateObj = convertDate(latestDate);
+
+                if (targetDateObj < earliestDateObj) {
+                    console.log("Trying to scroll past the earliest available date!");
+                    targetDate = earliestDate.substr(0,10);
+                } else if (targetDateObj > latestDateObj) {
+                    console.log("Trying to scroll past the latest available date!");
+                    targetDate = latestDate.substr(0,10);
+                }
+
                 console.log("targetDate: " + targetDate);
 
                 if (targetDate) {
-                    handleMouseClick(targetDate, xScale);
+                    constructorThis.handleMouseClick(targetDate);
                 }
             })
             .call(drag);
@@ -418,6 +451,43 @@ class Epicurve {
                 });
     }
 
+    handleMouseClick(scaledX) {
+        let targetDate = scaledX;
+
+        if (new Date(scaledX) < earliestDate) {
+            targetDate = "2020-05-13";
+        }
+
+        let event = new CustomEvent('newDateEvent', {detail: {label: targetDate}});
+
+        dispatchEvent(event);
+
+        this.updateClickedMouseDate(targetDate);
+    }
+
+    updateClickedMouseDate(targetDate) {
+        d3.selectAll(".clicked-mouse-date")
+            .attr("opacity", "1")
+            .text(targetDate)
+            .attr("y", this.xScale(targetDate) + (this.xScale.step() / 2));
+
+        d3.select(".clicked-mouse-date-line")
+            .attr("opacity", "1")
+            .attr("x1", this.xScale(targetDate) + (this.xScale.step() / 2))
+            .attr("x2", this.xScale(targetDate) + (this.xScale.step() / 2));
+    }
+
+    updateXAxis(selectedData) {
+        this.xScale.domain(selectedData);
+        this.xAxis = d3.axisBottom(this.xScale);
+
+        this.svg.select("g .x.axis")
+            .transition()
+            .duration(this.globalDuration)
+            .call(this.xAxis.tickValues([]));
+            //.call(this.xAxis);
+    }
+
     createAxisLabels(xLabel, yLabel) {
         this.svg.append("g")
             .attr("class", "x axis")
@@ -449,34 +519,43 @@ class Epicurve {
         //.attr("transform", "translate(5,5)rotate(-90)");
     }
 
-    updateBarChart(data, xCallback, yCallback, clazz, color, highlightColor) {
-        this.svg.selectAll("." + clazz).data(data)
+    transitionBarChartScale(data, xCallback, yCallback, clazz) {
+        this.svg.selectAll("." + clazz).data(data, d => d.label)
+            .transition().duration(this.globalDuration)
+            .attr("x", d => this.xScale(xCallback(d)))
+            .attr("width", this.xScale.bandwidth());
+    }
+
+    updateBarChart(data, xCallback, yCallback, keyCallback, clazz, color, highlightColor, viewSwap) {
+        let transitionLength = viewSwap ? 1000 : this.globalDuration;
+        this.svg.selectAll("." + clazz).data(data, keyCallback)
             .join(enter => {
                     let rect = enter.append("rect")
                         .style("shape-rendering", "crispEdges")
                         .attr("class", clazz)
                         .attr("width", this.xScale.bandwidth())
+                        .style("cursor", "zoom-in")
                         .style("fill", d => yCallback(d) > 0 ? color : highlightColor)
                         .attr("x", d => this.xScale(xCallback(d)))
                         .attr("y", this.yScale(0))
                         .attr("height", 0);
 
-                    rect.transition().duration(this.globalDuration)
+                    rect.transition().duration(transitionLength)
                         .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
                         .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)));
                 },
                 update => update
-                    .transition().duration(this.globalDuration)
+                    .transition().duration(transitionLength)
+                    .attr("x", d => this.xScale(xCallback(d)))
                     .attr("y", d => yCallback(d) > 0 ? this.yScale(yCallback(d)) : this.yScale(0))
+                    .attr("width", this.xScale.bandwidth())
                     .attr("height", d => Math.abs(this.yScale(yCallback(d)) - this.yScale(0)))
                     .style("fill", d => yCallback(d) > 0 ? color : highlightColor),
                 exit => exit
-                    .transition().duration(this.globalDuration)
+                    .transition().duration(transitionLength)
                     .attr("y", this.yScale(0))
                     .attr("height", 0)
                     .remove());
-
-        this.svg.select(".action-rect").moveToFront();
     }
 
     updateCurveLineChart(data, xCallback, yCallback, clazz, color, highlightColor, prelimRegionStart, isBanded, yScale) {
@@ -591,13 +670,13 @@ class Epicurve {
         let isVisible = "visible" === this.svg.selectAll('.' + clazz).style("visibility");
 
         // Handle circles
-        this.svg.selectAll('.' + circleClass).data(data)
+        this.svg.selectAll('.' + circleClass).data(data, d => xCallback(d))
             .join(enter => {
                     let circle = enter.append('circle')
                         .attr('class', circleClass)
                         .attr("stroke", highlightColor)
                         .attr("fill", color)
-                        .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
+                        .attr("opacity", 0)
                         .attr('r', 1)
                         .style("visibility", isVisible ? "visible" : "hidden")
                         .on('click', function () {
@@ -607,9 +686,9 @@ class Epicurve {
                             d3.select(this).attr("r", 1).attr("isHover", "0");
                         })
                         .attr('cx', d => this.getLineX(xCallback(d), isBanded))
-                        .attr('cy', d => this.getLineY(0, dYScale));
+                        .attr('cy', d => this.getLineY(yCallback(d), dYScale));
                     circle.transition().duration(this.globalDuration)
-                        .attr('cy', d => this.getLineY(yCallback(d), dYScale))
+                        .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
                 },
                 update => update
                     .attr("opacity", d => this.getLineOpacity(yCallback, d, prelimRegionStart))
@@ -619,7 +698,7 @@ class Epicurve {
                 exit => exit
                     .transition().duration(this.globalDuration)
                     .style("opacity", 0)
-                    .attr('cy', d => this.getLineY(0, dYScale))
+                    //.attr('cy', d => this.getLineY(0, dYScale))
                     .remove());
 
         this.svg.select(".action-rect").moveToFront();
@@ -646,7 +725,7 @@ class Epicurve {
             isVisible = "visible" === this.svg.selectAll('.' + clazz).style("visibility");
         }
 
-        this.svg.selectAll("." + clazz).data(filteredData)
+        this.svg.selectAll("." + clazz).data(filteredData, d => xCallback(d))
             .join(enter => enter.append("path")
                     .attr("class", clazz)
                     .style("visibility", isVisible ? "visible" : "hidden")
@@ -804,15 +883,16 @@ class Epicurve {
         return rects;
     }
 
-    draw14DayWindow(xCallback, offsetDate, offset) {
+    draw14DayWindow(xCallback, offsetDate, offset, viewSwap) {
+        let transitionLength = viewSwap ? 1000 : this.globalDuration;
         let selectedData = this.svg.selectAll(".prelim-region").data([offsetDate]);
 
         // update region location
         selectedData
             .merge(selectedData)
+            .transition().duration(transitionLength)
             .attr("width", this.xScale.bandwidth() * (offset + 1))
             .attr("x", d => this.xScale(d))
-            .transition()
             .attr("opacity", "0.05");
 
         let boundaryLineSelectedData = this.svg.selectAll(".prelim-boundary-line").data([offsetDate]);
@@ -833,6 +913,7 @@ class Epicurve {
         // update boundary line location
         boundaryLineSelectedData
             .merge(boundaryLineSelectedData)
+            .transition().duration(transitionLength)
             .attr("x1", d => this.xScale(d))
             .attr("x2", d => this.xScale(d));
 
@@ -852,6 +933,7 @@ class Epicurve {
 
         textSelectedData
             .merge(textSelectedData)
+            .transition().duration(transitionLength)
             .attr("y", d => this.xScale(d.date) + this.xScale.bandwidth() + 5);
     }
 
@@ -859,12 +941,15 @@ class Epicurve {
     parseDeltaData(summaryData, caseDeltaData, histogramData, histogramCumData) {
         console.log("Parsing case delta data...");
         let tempChartData = [];
+        let firstHistDate = new Date(histogramData[0]["reportDate"] + " 00:00:00");
+        let filteredSummaryData = summaryData.filter(d => new Date(d.reportDate + " 00:00:00") >= firstHistDate);
+        let filteredDeltaData = caseDeltaData.filter(d => convertDate(d.id) >= firstHistDate);
 
         for (let i = 0; i < histogramData.length; i++) {
             let currentCaseHistData = histogramData[i];
             let currentCaseHistCumData = histogramCumData[i];
-            let currentCaseDeltaData = caseDeltaData[i];
-            let currentSummaryData = summaryData[i];
+            let currentCaseDeltaData = filteredDeltaData[i];
+            let currentSummaryData = filteredSummaryData[i];
             let currentReportDates = Object.keys(currentCaseDeltaData).filter(d => d !== 'id' && !!currentCaseDeltaData[d]);
             let currentTimeseries = tempChartData[currentCaseDeltaData.id];
 
@@ -877,6 +962,7 @@ class Epicurve {
                 let currentGraphDate = getReverseIdxValue(currentReportDates, -j);
                 currentTimeseries.push({
                     id: currentSummaryData.id,
+                    rank: j,
                     label: currentGraphDate,
                     casesDelta: currentCaseDeltaData[currentGraphDate],
                     caseHist: currentCaseHistData[j],
@@ -930,12 +1016,13 @@ class Epicurve {
             let currentMovingAvgData = movingAvgData[i];
             let currentReportDates = Object.keys(currentCaseData).filter(function (d) {
                 return d !== 'id'
-            });
+            }).reverse();
             let currentTimeseries = tempChartData[currentCaseData.id];
             if (!currentTimeseries) {
                 currentTimeseries = [];
                 tempChartData[currentCaseData.id] = currentTimeseries;
             }
+            let j = 0;
             currentReportDates
                 .filter(function (d) {
                     return !!currentCaseData[d];
@@ -950,9 +1037,13 @@ class Epicurve {
                         //casesProjection: +currentCaseProjectionData[d],
                         movingAvg: +currentMovingAvgData[d],
                         reportedCases: +reportedCasesData[d],
-                        reportedDeaths: +reportedDeathsData[d]
+                        reportedDeaths: +reportedDeathsData[d],
+                        rank: j
                     });
+                    j++;
                 });
+
+            currentTimeseries.reverse();
         }
 
         return tempChartData;

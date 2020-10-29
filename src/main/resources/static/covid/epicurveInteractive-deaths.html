@@ -291,7 +291,7 @@
         let offsetDate = epicurve.applyDateOffset(dateString, 13);
 
         epicurve.updateFloatingPoints(chartData[dateString], getLabel, getReportedDeaths, "reportedcasesbar", "#632626");
-        epicurve.updateBarChart(chartData[dateString], getLabel, getDeathDeltas, "casedeltabar", "#ff0000", "#000");
+        epicurve.updateBarChart(chartData[dateString], getLabel, getDeathDeltas, d => d.label, "casedeltabar", "#ff0000", "#000");
         epicurve.updateLineChart(chartData[dateString], getLabel, getDeaths, "caseline", "#ff0000", "#ff0000", offsetDate, true);
         epicurve.draw14DayWindow(getLabel, offsetDate, 13);
         epicurve.drawMouseOverRects(getLabel, chartData[dateString]);
