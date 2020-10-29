@@ -884,7 +884,7 @@ class Epicurve {
     }
 
     draw14DayWindow(xCallback, offsetDate, offset, viewSwap) {
-        let transitionLength = viewSwap ? 1000 : this.globalDuration;
+        let transitionLength = viewSwap ? 1000 : 0;
         let selectedData = this.svg.selectAll(".prelim-region").data([offsetDate]);
 
         // update region location
