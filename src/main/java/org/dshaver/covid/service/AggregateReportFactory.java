@@ -4,7 +4,6 @@ import org.dshaver.covid.dao.AggregateReportRepository;
 import org.dshaver.covid.dao.HistogramReportRepository;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.*;
-import org.dshaver.covid.domain.epicurve.Epicurve;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Service
 public class AggregateReportFactory {
@@ -64,7 +62,7 @@ public class AggregateReportFactory {
                     if (sum > 100) {
                         for (int i = 0; i < 100; i++) {
                             if (hist.getCasesPercentageCumulative()[i].doubleValue() >= 90D) {
-                                return new CountyValuePair(hist.getCounty(), i);
+                                return new IntCountyValuePair(hist.getCounty(), i);
                             }
                         }
                     }
@@ -72,7 +70,7 @@ public class AggregateReportFactory {
                     return null;
                 })
                 .filter(Objects::nonNull)
-                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(CountyValuePair::value).reversed()))));
+                .collect(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(IntCountyValuePair::value).reversed()))));
 
         aggregateReport.setBreaches(report.getEpicurves().values().stream().flatMap(epicurve -> {
             List<EpicurvePoint> points = new LinkedList<>(epicurve.getData());

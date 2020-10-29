@@ -1,8 +1,10 @@
 package org.dshaver.covid.controller;
 
+import org.dshaver.covid.dao.HistogramReportRepository;
 import org.dshaver.covid.dao.ReportRepository;
 import org.dshaver.covid.domain.ArrayReport;
 import org.dshaver.covid.domain.CountyRankReport;
+import org.dshaver.covid.domain.HistogramReportContainer;
 import org.dshaver.covid.domain.Report;
 import org.dshaver.covid.service.AggregateReportFactory;
 import org.dshaver.covid.service.CsvService;
@@ -27,6 +29,7 @@ public class ReportControllerV2 {
     private static final Logger logger = LoggerFactory.getLogger(ReportControllerV2.class);
     private static final int DEFAULT_TARGET_HOUR = 18;
     private final ReportRepository reportRepository;
+    private final HistogramReportRepository histogramReportRepository;
     private final String reportTgtDir;
     private final CsvService csvService;
     private final HistogramReportFactory histogramReportFactory;
@@ -35,12 +38,14 @@ public class ReportControllerV2 {
 
     @Inject
     public ReportControllerV2(ReportRepository reportRepository,
+                              HistogramReportRepository histogramReportRepository,
                               @Value("${covid.dirs.reports.csv}") String reportTgtDir,
                               CsvService csvService,
                               HistogramReportFactory histogramReportFactory,
                               ReportService reportService,
                               AggregateReportFactory aggregateReportFactory) {
         this.reportRepository = reportRepository;
+        this.histogramReportRepository = histogramReportRepository;
         this.reportTgtDir = reportTgtDir;
         this.csvService = csvService;
         this.histogramReportFactory = histogramReportFactory;
@@ -125,6 +130,13 @@ public class ReportControllerV2 {
         return new ArrayReport(reports.last());
     }
 
+    /**
+     * Get a ranking of counties based on total number of cases before or after the prelim window (14 days)
+     *
+     * @param reportDate The report date to analyze
+     * @param prelim     Either 'before' or 'after' to represent whether or not you're looking for backlog or current cases.
+     * @return
+     */
     @GetMapping("/covid/api/reports/v2/countyRankByReportDate/{reportDate}")
     public CountyRankReport getCountyRankReport(@PathVariable("reportDate")
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate,
@@ -135,6 +147,16 @@ public class ReportControllerV2 {
         logger.info("Building CountyRankReport for {} with prelimToggle set to {}", reportDate, prelimToggle);
 
         return maybeReport.map(report -> new CountyRankReport(report, prelimToggle)).orElseGet(CountyRankReport::new);
+    }
+
+    @GetMapping("/covid/api/reports/v2/histogram/countyRankByReportDate/{reportDate}")
+    public CountyRankReport getHistogramCountyRankReport(@PathVariable("reportDate")
+                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
+        Optional<HistogramReportContainer> maybeReport = histogramReportRepository.findByReportDate(reportDate);
+
+        logger.info("Building HistogramCountyRankReport for {}", reportDate);
+
+        return maybeReport.map(CountyRankReport::new).orElseGet(CountyRankReport::new);
     }
 
     @PostMapping("/covid/api/reports/histogram/calculate")

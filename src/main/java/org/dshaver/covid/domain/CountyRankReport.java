@@ -1,18 +1,36 @@
 package org.dshaver.covid.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.dshaver.covid.domain.epicurve.EpicurvePoint;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
 @Data
 public class CountyRankReport {
-    private CountyValuePair[] countyRanks;
+
+    @JsonInclude(NON_EMPTY)
+    private IntCountyValuePair[] intCountyRanks;
+
+    @JsonInclude(NON_EMPTY)
+    private DoubleCountyValuePair[] doubleCountyRanks;
 
     public CountyRankReport() {
+    }
+
+    public CountyRankReport(HistogramReportContainer histogramReportContainer) {
+        doubleCountyRanks = histogramReportContainer.countyHistogramMap.values().stream()
+                .filter(countyReport -> Arrays.stream(countyReport.getCasesMedianHist()).sum() > 2)
+                .map(countyReport -> new DoubleCountyValuePair(countyReport.getCounty(), countyReport.getCasesPercentageCumulative()[13].doubleValue()))
+                .sorted(Comparator.comparing(DoubleCountyValuePair::value).reversed())
+                .collect(Collectors.toList())
+                .toArray(new DoubleCountyValuePair[]{});
     }
 
     public CountyRankReport(Report report, Boolean prelimToggle) {
@@ -22,23 +40,17 @@ public class CountyRankReport {
                 epicurvePoint -> LocalDate.parse(epicurvePoint.getTestDate()).isBefore(cutoffDate) :
                 epicurvePoint -> LocalDate.parse(epicurvePoint.getTestDate()).isAfter(cutoffDate);
 
-        countyRanks = report.getEpicurves().values()
+        intCountyRanks = report.getEpicurves().values()
                 .stream()
-                .map(epicurve -> new CountyValuePair(epicurve.getCounty(), epicurve.getData()
+                .map(epicurve -> new IntCountyValuePair(epicurve.getCounty(), epicurve.getData()
                         .stream()
                         .filter(dateFilter)
                         .mapToInt(EpicurvePoint::getCasesVm)
                         .map(Math::abs)
                         .sum()))
-                .sorted(Comparator.comparing(CountyValuePair::value).reversed())
+                .sorted(Comparator.comparing(IntCountyValuePair::value).reversed())
                 .collect(Collectors.toList())
-                .toArray(new CountyValuePair[]{});
+                .toArray(new IntCountyValuePair[]{});
 
-/*        countyRanks = report.getCountyOverviewMap().values()
-                .stream()
-                .map(o -> new CountyValuePair(o.getCountyName(), o.getPositiveVm()))
-                .sorted(Comparator.comparing(CountyValuePair::getValue).reversed())
-                .collect(Collectors.toList())
-                .toArray(new CountyValuePair[]{});*/
     }
 }
