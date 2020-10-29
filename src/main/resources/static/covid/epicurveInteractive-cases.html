@@ -241,6 +241,7 @@
 
             updateDeltaFocus(deltaData, selectedDate, viewSwap);
             epicurve.initDateSelect();
+            epicurve.updateClickedMouseDate(selectedDate.substr(0,10));
             updateDynamicHtmlElements(summaryData, summaryData.map(d => d.id), selectedPrettyCounty, Object.keys(deltaData)[0]);
         });
     }
@@ -284,7 +285,7 @@
 
             updateAllGraphs(date ? date : dateString, viewSwap);
 
-            epicurve.initDateLines();
+            epicurve.initDateLines(viewSwap);
             epicurve.initDateSelect();
 
             updateDynamicHtmlElements(summaryData, timeData, selectedPrettyCounty, summaryData[0].id);
@@ -392,7 +393,7 @@
             selectedData = getLastElement(data);
         }
         epicurve.updateXAxis(selectedData.map(d => d.label).reverse());
-        epicurve.initDateLines();
+        epicurve.initDateLines(viewSwap);
         epicurve.draw14DayWindow(getLabel, offsetDate, 13, viewSwap);
         epicurve.updateBarChart(selectedData, getLabel, getCaseDeltas, d => d.rank, "casedeltabar", "#35a5ff", "#000", viewSwap);
         //epicurve.updateCurveLineChart(selectedData, getLabel, d => d.caseHist, "histline", "#c3e991", "#c3e991", null, true, dphyScaleLeft);

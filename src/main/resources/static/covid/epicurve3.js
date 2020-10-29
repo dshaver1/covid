@@ -5,6 +5,11 @@ const monthDates = ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "202
 class Epicurve {
 
     constructor(svg, width, height, xScale, yScale, xAxis, yAxis, yScale2, yAxis2) {
+        this.monthMap = [];
+        for (let i = 0; i < monthNames.length; i++) {
+            this.monthMap[monthDates[i]] = monthNames[i];
+        }
+
         this.svg = svg;
         this.width = width;
         this.height = height;
@@ -246,10 +251,10 @@ class Epicurve {
 
                 if (targetDateObj < earliestDateObj) {
                     console.log("Trying to scroll past the earliest available date!");
-                    targetDate = earliestDate.substr(0,10);
+                    targetDate = earliestDate.substr(0, 10);
                 } else if (targetDateObj > latestDateObj) {
                     console.log("Trying to scroll past the latest available date!");
-                    targetDate = latestDate.substr(0,10);
+                    targetDate = latestDate.substr(0, 10);
                 }
 
                 console.log("targetDate: " + targetDate);
@@ -263,54 +268,81 @@ class Epicurve {
         this.svg.select(".action-rect").moveToFront();
     }
 
-    initDateLines() {
-        this.svg.selectAll(".month-lines").data(monthDates)
+    initDateLines(viewSwap) {
+        let offScreen = 800;
+        let rightMostPoint = this.xScale(this.xScale.domain()[this.xScale.domain().length-1]);
+        let transitionLength = viewSwap ? 1000 : this.globalDuration;
+        let selectedDate = d3.select(".clicked-mouse-date").node() ? d3.select(".clicked-mouse-date").text() : this.xScale.domain()[this.xScale.domain().length-1];
+        let selectedDateObj = new Date(selectedDate + " 00:00:00");
+        let thisXscale = this.xScale;
+        let thisMonthMap = this.monthMap;
+        let filteredDates = monthDates.filter(d => thisXscale(d)).map(d => {
+            return {
+                x: this.xScale(d) + (this.xScale.bandwidth() / 2),
+                date: d,
+                dateObj: new Date(d + " 00:00:00"),
+                label: thisMonthMap[d]
+            }
+        });
+
+        this.svg.selectAll(".month-lines").data(filteredDates, d => d.label)
             .join(enter => {
-                    enter
+                    let enterLine = enter
                         .append("line")
                         .attr("class", "month-lines")
                         .style("stroke", "white")
                         .style("shape-rendering", "crispEdges")
                         .style("stroke-width", 1)
                         .style("stroke-dasharray", ("3, 3"))
-                        .style("visibility", d => !this.xScale(d) ? "hidden" : "visible")
-                        .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
+                        .attr("x1", d => d.dateObj >= selectedDateObj ? rightMostPoint + 20 : d.x - offScreen)
+                        .attr("x2", d => d.dateObj >= selectedDateObj ? rightMostPoint + 20 : d.x - offScreen)
                         .attr("y1", 0)
-                        .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
                         .attr("y2", this.height + 6)
                         .attr("opacity", "0.2");
+
+                    enterLine.transition().duration(transitionLength)
+                        .attr("x1", d => d.x)
+                        .attr("x2", d => d.x)
                 },
                 update => {
-                    update
-                        .attr("x1", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
-                        .attr("x2", d => this.xScale(d) + (this.xScale.bandwidth() / 2))
-                        .style("visibility", d => !this.xScale(d) ? "hidden" : "visible");
+                    update.transition().duration(transitionLength)
+                        .attr("x1", d => d.x)
+                        .attr("x2", d => d.x);
                 },
                 exit => {
-                    exit.remove();
+                    exit.transition().duration(transitionLength)
+                        .attr("opacity", "0.0")
+                        .attr("x1", d => d.dateObj >= selectedDateObj ? rightMostPoint + 20 : d.x - offScreen)
+                        .attr("x2", d => d.dateObj >= selectedDateObj ? rightMostPoint + 20 : d.x - offScreen)
+                        .remove();
                 });
 
-        this.svg.selectAll(".month-text").data(monthDates)
+        this.svg.selectAll(".month-text").data(filteredDates, d => d.label)
             .join(enter => {
-                    enter
+                    let enterText = enter
                         .append("text")
+                        .attr("opacity", "1")
                         .attr("class", "month-text")
                         .attr("x", -this.height - 7)
-                        .attr("y", d => this.xScale(d) + this.xScale.bandwidth())
-                        .style("visibility", d => !this.xScale(d) ? "hidden" : "visible")
-                        .text(d => monthNames[new Date(d).getMonth() + 1])
+                        .attr("y",  d => d.dateObj >= selectedDateObj ? rightMostPoint + 20 : d.x - offScreen)
+                        .text(d => d.label)
                         .attr("text-anchor", "end")
                         .style("font", "10px sans-serif")
                         .style("alignment-baseline", "top")
                         .attr("transform", "rotate(-90)");
+
+                    enterText.transition().duration(transitionLength)
+                        .attr("y", d => this.xScale(d.date) + this.xScale.bandwidth());
                 },
                 update => {
-                    update
-                        .attr("y", d => this.xScale(d) + this.xScale.bandwidth())
-                        .style("visibility", d => !this.xScale(d) ? "hidden" : "visible");
+                    update.transition().duration(transitionLength)
+                        .attr("y", d => this.xScale(d.date) + this.xScale.bandwidth());
                 },
                 exit => {
-                    exit.remove();
+                    exit.transition().duration(transitionLength)
+                        .attr("opacity", "0")
+                        .attr("y", d => d.dateObj >= selectedDateObj ? rightMostPoint + 20 : d.x - offScreen)
+                        .remove();
                 });
     }
 
@@ -485,7 +517,7 @@ class Epicurve {
             .transition()
             .duration(this.globalDuration)
             .call(this.xAxis.tickValues([]));
-            //.call(this.xAxis);
+        //.call(this.xAxis);
     }
 
     createAxisLabels(xLabel, yLabel) {
