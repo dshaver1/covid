@@ -239,8 +239,8 @@
             
             let selectedDate = date ? date : getLastElement(getLastElement(deltaData)).id;
 
-            updateDeltaFocus(deltaData, selectedDate, viewSwap);
             epicurve.initDateSelect();
+            updateDeltaFocus(deltaData, selectedDate, viewSwap);
             epicurve.updateClickedMouseDate(selectedDate.substr(0,10));
             updateDynamicHtmlElements(summaryData, summaryData.map(d => d.id), selectedPrettyCounty, Object.keys(deltaData)[0]);
         });
@@ -283,10 +283,10 @@
             let timeData = summaryData.map(d => d.id);
             let dateString = getLastElement(timeData);
 
-            updateAllGraphs(date ? date : dateString, viewSwap);
-
             epicurve.initDateLines(viewSwap);
             epicurve.initDateSelect();
+            
+            updateAllGraphs(date ? date : dateString, viewSwap);
 
             updateDynamicHtmlElements(summaryData, timeData, selectedPrettyCounty, summaryData[0].id);
         });
